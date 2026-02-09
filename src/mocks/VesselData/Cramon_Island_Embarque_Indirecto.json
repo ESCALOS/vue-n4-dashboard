@@ -1,0 +1,212 @@
+{
+    "success": true,
+    "data": {
+        "manifest": {
+            "id": "2026-21",
+            "name": "Cramon Island"
+        },
+        "operation_type": "EMBARQUE_INDIRECTO",
+        "cargo_holds": [
+            {
+                "nbr": "BODEGA 01",
+                "manifest_goods": 0,
+                "manifest_weight": 52300000,
+                "processed_weight": 41840000,
+                "processed_goods": 0,
+                "processed_weight_percentage": 80,
+                "processed_goods_percentage": 0,
+                "shifts": {
+                    "29-01-2026 08:00-15:59": {
+                        "weight": 3845000,
+                        "goods": 0
+                    },
+                    "29-01-2026 16:00-23:59": {
+                        "weight": 4120000,
+                        "goods": 0
+                    },
+                    "30-01-2026 00:00-07:59": {
+                        "weight": 3680000,
+                        "goods": 0
+                    },
+                    "30-01-2026 08:00-15:59": {
+                        "weight": 4195000,
+                        "goods": 0
+                    }
+                }
+            },
+            {
+                "nbr": "BODEGA 02",
+                "manifest_goods": 0,
+                "manifest_weight": 44500000,
+                "processed_weight": 35600000,
+                "processed_goods": 0,
+                "processed_weight_percentage": 80,
+                "processed_goods_percentage": 0,
+                "shifts": {
+                    "29-01-2026 16:00-23:59": {
+                        "weight": 3850000,
+                        "goods": 0
+                    },
+                    "30-01-2026 08:00-15:59": {
+                        "weight": 4200000,
+                        "goods": 0
+                    },
+                    "30-01-2026 16:00-23:59": {
+                        "weight": 3450000,
+                        "goods": 0
+                    },
+                    "31-01-2026 00:00-07:59": {
+                        "weight": 3100000,
+                        "goods": 0
+                    }
+                }
+            },
+            {
+                "nbr": "BODEGA 03",
+                "manifest_goods": 0,
+                "manifest_weight": 38900000,
+                "processed_weight": 27230000,
+                "processed_goods": 0,
+                "processed_weight_percentage": 70,
+                "processed_goods_percentage": 0,
+                "shifts": {
+                    "30-01-2026 00:00-07:59": {
+                        "weight": 2950000,
+                        "goods": 0
+                    },
+                    "30-01-2026 08:00-15:59": {
+                        "weight": 3780000,
+                        "goods": 0
+                    },
+                    "30-01-2026 16:00-23:59": {
+                        "weight": 3200000,
+                        "goods": 0
+                    }
+                }
+            },
+            {
+                "nbr": "BODEGA 04",
+                "manifest_goods": 0,
+                "manifest_weight": 41200000,
+                "processed_weight": 20600000,
+                "processed_goods": 0,
+                "processed_weight_percentage": 50,
+                "processed_goods_percentage": 0,
+                "shifts": {
+                    "29-01-2026 08:00-15:59": {
+                        "weight": 2850000,
+                        "goods": 0
+                    },
+                    "30-01-2026 00:00-07:59": {
+                        "weight": 3100000,
+                        "goods": 0
+                    },
+                    "30-01-2026 16:00-23:59": {
+                        "weight": 2750000,
+                        "goods": 0
+                    }
+                }
+            },
+            {
+                "nbr": "BODEGA 05",
+                "manifest_goods": 0,
+                "manifest_weight": 35600000,
+                "processed_weight": 10680000,
+                "processed_goods": 0,
+                "processed_weight_percentage": 30,
+                "processed_goods_percentage": 0,
+                "shifts": {
+                    "30-01-2026 08:00-15:59": {
+                        "weight": 2960000,
+                        "goods": 0
+                    },
+                    "30-01-2026 16:00-23:59": {
+                        "weight": 2540000,
+                        "goods": 0
+                    },
+                    "31-01-2026 08:00-15:59": {
+                        "weight": 2180000,
+                        "goods": 0
+                    }
+                }
+            }
+        ],
+        "cargo_services": [
+            {
+                "nbr": "SSP20145",
+                "manifest_goods": 0,
+                "manifest_weight": 89500000,
+                "processed_weight": 62650000,
+                "processed_goods": 0,
+                "processed_weight_percentage": 70,
+                "processed_goods_percentage": 0,
+                "shifts": {
+                    "29-01-2026 08:00-15:59": {
+                        "weight": 5120000,
+                        "goods": 0
+                    },
+                    "29-01-2026 16:00-23:59": {
+                        "weight": 6280000,
+                        "goods": 0
+                    },
+                    "30-01-2026 00:00-07:59": {
+                        "weight": 5940000,
+                        "goods": 0
+                    },
+                    "30-01-2026 08:00-15:59": {
+                        "weight": 7150000,
+                        "goods": 0
+                    },
+                    "30-01-2026 16:00-23:59": {
+                        "weight": 5320000,
+                        "goods": 0
+                    }
+                }
+            },
+            {
+                "nbr": "SSP20345",
+                "manifest_goods": 0,
+                "manifest_weight": 123000000,
+                "processed_weight": 73800000,
+                "processed_goods": 0,
+                "processed_weight_percentage": 60,
+                "processed_goods_percentage": 0,
+                "shifts": {
+                    "29-01-2026 16:00-23:59": {
+                        "weight": 6450000,
+                        "goods": 0
+                    },
+                    "30-01-2026 00:00-07:59": {
+                        "weight": 5890000,
+                        "goods": 0
+                    },
+                    "30-01-2026 08:00-15:59": {
+                        "weight": 7825000,
+                        "goods": 0
+                    },
+                    "30-01-2026 16:00-23:59": {
+                        "weight": 6940000,
+                        "goods": 0
+                    },
+                    "31-01-2026 00:00-07:59": {
+                        "weight": 5695000,
+                        "goods": 0
+                    }
+                }
+            }
+        ],
+        "last_update": "2026-01-30T23:59:00Z",
+        "shifts_worked": [
+            "29-01-2026 16:00-23:59",
+            "30-01-2026 00:00-07:59",
+            "30-01-2026 08:00-15:59",
+            "30-01-2026 16:00-23:59",
+            "31-01-2026 00:00-07:59",
+            "31-01-2026 08:00-15:59",
+            "31-01-2026 16:00-23:59",
+            "01-02-2026 00:00-07:59",
+            "01-02-2026 08:00-15:59",
+            "01-02-2026 16:00-23:59"
+        ]
+    }
+}

@@ -1,0 +1,1 @@
+export type OperationType = 'DESPACHO' | 'ACOPIO' | 'EMBARQUE_DIRECTO' | 'EMBARQUE_INDIRECTO';
