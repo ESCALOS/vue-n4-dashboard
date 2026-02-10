@@ -4,6 +4,14 @@
         <EmptyState
             v-if="monitoredVessels.length === 0 && !showAddDialog" @show-add-vessel-form="show_add_vessel_form"
         />
+        <VesselTabs
+            v-if="monitoredVessels.length > 0"
+            :vessels="monitoredVessels"
+            :selected-vessel="selectedVessel"
+            @select="selectVessel"
+            @remove="removeVessel"
+        />
+
     </div>
 </template>
 
@@ -12,6 +20,8 @@ import { ref } from 'vue';
 import EmptyState from '../../components/monitoring/EmptyState.vue';
 import HeaderSection from '../../components/monitoring/HeaderSection.vue';
 import type { VesselData } from '../../interfaces/monitoring/VesselData';
+import VesselTabs from '../../components/monitoring/VesselTabs.vue';
+import type { VesselsResponse } from '../../interfaces/monitoring/responses/VesselResponse';
 
 const showAddDialog = ref(false);
 
@@ -20,9 +30,13 @@ const show_add_vessel_form = () => {
 }
 
 const monitoredVessels: VesselData[] = []; // Aquí se gestionarán las naves monitoreadas
+const selectedVessel = ref<VesselData | null>(null);
+const selectVessel = (vessel: VesselsResponse) => {
+    console.log('Nave seleccionada:', vessel);
+}
+
+const removeVessel = (vessel: VesselsResponse) => {
+    console.log('Eliminar nave:', vessel);
+}
 
 </script>
-
-<style scoped>
-
-</style>
