@@ -27,13 +27,19 @@
             :vessel-data="selectedVesselData"
             :is-connected="true"
             :loading="loading"
+            :active-tab="activeTab"
+            :view-mode="viewMode"
+            :current-shift="currentShift"
+            :summary="summary"
+            :total-goods-current-shift="totalGoodsCurrentShift"
+            :total-weight-current-shift="totalWeightCurrentShift"
         />
 
     </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import EmptyState from '../../components/monitoring/EmptyState.vue';
 import HeaderSection from '../../components/monitoring/HeaderSection.vue';
 import VesselTabs from '../../components/monitoring/VesselTabs.vue';
@@ -41,8 +47,11 @@ import type { VesselsRequest } from '../../interfaces/monitoring/api/VesselResqu
 import { useMonitoringDataMock } from '../../composables/monitoring/useMonitoringDataMock';
 import VesselDetail from '../../components/monitoring/VesselDetail.vue';
 import AddVesselForm from '../../components/monitoring/AddVesselForm.vue';
+import { useMonitoringCalculations } from '../../composables/monitoring/useMonitoringCalculations';
 
 const addVesselFormRef = ref<InstanceType<typeof AddVesselForm>>();
+const activeTab = ref<'holds' | 'services'>('holds');
+const viewMode = ref<'weight' | 'goods'>('weight');
 
 const {
   monitoredVessels,
@@ -54,8 +63,21 @@ const {
   selectVessel,
   addVessel,
   removeVessel
-
 } = useMonitoringDataMock();
+
+
+const {
+  currentShift,
+  totalGoodsCurrentShift,
+  totalWeightCurrentShift,
+  serviceSummary,
+  holdSummary
+} = useMonitoringCalculations(selectedVesselData);
+
+const summary = computed(() => ({
+  holds: holdSummary.value,
+  services: serviceSummary.value
+}));
 
 const handleAddVessel = async (vessel: VesselsRequest) => {
   await addVessel(vessel);

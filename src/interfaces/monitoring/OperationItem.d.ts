@@ -1,7 +1,7 @@
 export interface OperationItem {
     nbr: string;
-    manifest_weight: number;
-    manifest_goods: number;
+    manifested_weight: number;
+    manifested_goods: number;
 }
 
 export interface CargoService extends OperationItem { }

@@ -7,6 +7,16 @@ export const getProgressClass = (percentage: number): string => {
     return "progress-low";
 };
 
+// Clase para jornada
+export const getShiftClass = (shift: string): string => {
+    // Extraer la hora de la jornada (formato: "dd-MM-yyyy HH:mm - HH:mm")
+    const horaParte = shift.split(' ')[1]; // "HH:mm"
+
+    if (horaParte === '00:00') return "shift-night";
+    if (horaParte === '08:00') return "shift-day";
+    return "shift-evening";
+};
+
 // Obtener etiqueta de tipo de operación
 export const getOperationLabel = (tipo: OperationType): string => {
     const labels: Record<OperationType, string> = {

@@ -25,18 +25,43 @@
                 </button>
             </div>
         </div>
+
+        <SummaryCards
+            :holds-count="vesselData.summary.holds.length"
+            :services-count="vesselData.summary.services.length"
+            :shifts-count="vesselData.shifts_worked.length"
+            :current-shift="currentShift"
+            :view-mode="viewMode"
+            :total-weight-current-shift="totalWeightCurrentShift"
+            :total-goods-current-shift="totalGoodsCurrentShift"
+            :operation-type="vesselData.operation_type"
+            :summary="summary"
+        />
+
     </div>
 </template>
 
 <script setup lang="ts">
+import type { SummaryData } from '../../composables/monitoring/useMonitoringCalculations';
 import type { VesselData } from '../../interfaces/monitoring/VesselData';
 import ExcelExporterButton from './ExcelExporterButton.vue';
+import SummaryCards from './SummaryCards.vue';
 
+interface CompleteSummary {
+  holds: SummaryData;
+  services: SummaryData;
+}
 
 defineProps<{
     vesselData: VesselData,
     isConnected: boolean,
-    loading: boolean
+    loading: boolean,
+    activeTab: 'holds' | 'services'
+    viewMode: 'weight' | 'goods'
+    currentShift: string
+    summary: CompleteSummary
+    totalWeightCurrentShift: number
+    totalGoodsCurrentShift: number
 }>();
 
 </script>

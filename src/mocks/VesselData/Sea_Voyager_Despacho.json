@@ -10,12 +10,12 @@
             "holds": [
                 {
                     "nbr": "BODEGA 01",
-                    "manifest_goods": 0,
-                    "manifest_weight": 47480000,
+                    "manifested_goods": 0,
+                    "manifested_weight": 47480000,
                     "processed_weight": 47480000,
                     "processed_goods": 0,
-                    "processed_weight_percentage": 100,
-                    "processed_goods_percentage": 100,
+                    "percentage_weight": 34,
+                    "percentage_goods": 100,
                     "shifts": {
                         "29-01-2026 16:00-23:59": {
                             "weight": 1915910,
@@ -37,12 +37,12 @@
                 },
                 {
                     "nbr": "BODEGA 02",
-                    "manifest_goods": 0,
-                    "manifest_weight": 35200000,
+                    "manifested_goods": 0,
+                    "manifested_weight": 35200000,
                     "processed_weight": 28160000,
                     "processed_goods": 0,
-                    "processed_weight_percentage": 80,
-                    "processed_goods_percentage": 0,
+                    "percentage_weight": 80,
+                    "percentage_goods": 0,
                     "shifts": {
                         "29-01-2026 16:00-23:59": {
                             "weight": 2450000,
@@ -60,12 +60,12 @@
                 },
                 {
                     "nbr": "BODEGA 03",
-                    "manifest_goods": 0,
-                    "manifest_weight": 42000000,
+                    "manifested_goods": 0,
+                    "manifested_weight": 42000000,
                     "processed_weight": 31500000,
                     "processed_goods": 0,
-                    "processed_weight_percentage": 75,
-                    "processed_goods_percentage": 0,
+                    "percentage_weight": 75,
+                    "percentage_goods": 0,
                     "shifts": {
                         "30-01-2026 00:00-07:59": {
                             "weight": 3680000,
@@ -87,12 +87,12 @@
                 },
                 {
                     "nbr": "BODEGA 04",
-                    "manifest_goods": 0,
-                    "manifest_weight": 38500000,
+                    "manifested_goods": 0,
+                    "manifested_weight": 38500000,
                     "processed_weight": 19250000,
                     "processed_goods": 0,
-                    "processed_weight_percentage": 50,
-                    "processed_goods_percentage": 0,
+                    "percentage_weight": 50,
+                    "percentage_goods": 0,
                     "shifts": {
                         "29-01-2026 16:00-23:59": {
                             "weight": 1850000,
@@ -110,12 +110,12 @@
                 },
                 {
                     "nbr": "BODEGA 05",
-                    "manifest_goods": 0,
-                    "manifest_weight": 29800000,
+                    "manifested_goods": 0,
+                    "manifested_weight": 29800000,
                     "processed_weight": 8940000,
                     "processed_goods": 0,
-                    "processed_weight_percentage": 30,
-                    "processed_goods_percentage": 0,
+                    "percentage_weight": 30,
+                    "percentage_goods": 0,
                     "shifts": {
                         "30-01-2026 08:00-15:59": {
                             "weight": 2980000,
@@ -131,12 +131,12 @@
             "services": [
                 {
                     "nbr": "SSP20340",
-                    "manifest_goods": 0,
-                    "manifest_weight": 47480000,
+                    "manifested_goods": 0,
+                    "manifested_weight": 47480000,
                     "processed_weight": 47480000,
                     "processed_goods": 0,
-                    "processed_weight_percentage": 100,
-                    "processed_goods_percentage": 100,
+                    "percentage_weight": 100,
+                    "percentage_goods": 100,
                     "shifts": {
                         "29-01-2026 16:00-23:59": {
                             "weight": 1915910,

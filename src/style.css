@@ -30,3 +30,32 @@ body {
 .btn-error {
   @apply bg-red-500 text-white hover:bg-red-600 focus:ring-red-500;
 }
+
+.shift-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: row;
+  gap: 0.125rem;
+}
+
+.shift-night {
+  background: rgba(30, 41, 59, 0.8);
+  color: #cbd5e1;
+  border: 1px solid #475569;
+}
+
+.shift-day {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid #f59e0b;
+}
+
+.shift-evening {
+  background: rgba(139, 92, 246, 0.2);
+  color: #a78bfa;
+  border: 1px solid #8b5cf6;
+}
