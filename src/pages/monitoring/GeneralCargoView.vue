@@ -1,8 +1,18 @@
 <template>
     <div class="max-w-350 my-0 mx-auto w-full md:p-4">
-        <HeaderSection @show-add-vessel-form="show_add_vessel_form" />
+        <HeaderSection @show-add-vessel-form="addVesselFormRef?.open()" />
+        
+        <!-- Formulario modal con dialog -->
+        <AddVesselForm
+            ref="addVesselFormRef"
+            :loading="loading"
+            :error="error"
+            @submit="handleAddVessel"
+        />
+
         <EmptyState
-            v-if="monitoredVessels.length === 0 && !showAddDialog" @show-add-vessel-form="show_add_vessel_form"
+            v-if="monitoredVessels.length === 0"
+            @show-add-vessel-form="addVesselFormRef?.open()"
         />
         <VesselTabs
             v-if="monitoredVessels.length > 0"
@@ -30,31 +40,26 @@ import VesselTabs from '../../components/monitoring/VesselTabs.vue';
 import type { VesselsRequest } from '../../interfaces/monitoring/api/VesselResquest';
 import { useMonitoringDataMock } from '../../composables/monitoring/useMonitoringDataMock';
 import VesselDetail from '../../components/monitoring/VesselDetail.vue';
+import AddVesselForm from '../../components/monitoring/AddVesselForm.vue';
 
-const showAddDialog = ref(false);
+const addVesselFormRef = ref<InstanceType<typeof AddVesselForm>>();
 
 const {
   monitoredVessels,
   selectedVessel,
   selectedVesselData,
   loading,
+  error,
   loadMonitoredVessels,
   selectVessel,
-//   addVessel,
+  addVessel,
   removeVessel
 
 } = useMonitoringDataMock();
 
-const show_add_vessel_form = () => {
-    console.log('Mostrar formulario para agregar nave');
-}
-
-// const handleAddVessel = async (vessel: VesselsRequest) => {
-//   const result = await addVessel(vessel);
-//   if (result.success) {
-//     showAddDialog.value = false;
-//   }
-// };
+const handleAddVessel = async (vessel: VesselsRequest) => {
+  await addVessel(vessel);
+};
 
 const handleRemoveVessel = async (vessel: VesselsRequest) => {
   if (confirm('¿Está seguro de remover esta nave del monitoreo?')) {
