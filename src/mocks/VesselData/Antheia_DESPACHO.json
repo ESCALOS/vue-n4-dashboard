@@ -1,280 +1,250 @@
 {
-    "manifest": {
-        "id": "2026-70",
-        "cvGkey": "89450",
-        "vvdGkey": "87136",
-        "vesselName": "ANTHEIA"
-    },
-    "bodegas": [
-        {
-            "gkey": "1",
-            "nbr": "BODEGA 01",
-            "pesoManifestado": 3000000,
-            "bultosManifestados": 0
+    "success": true,
+    "data": {
+        "manifest": {
+            "id": "2026-70",
+            "cvGkey": "89450",
+            "vvdGkey": "87136",
+            "name": "ANTHEIA"
         },
-        {
-            "gkey": "4",
-            "nbr": "BODEGA 04",
-            "pesoManifestado": 1304052,
-            "bultosManifestados": 1084
-        },
-        {
-            "gkey": "5",
-            "nbr": "BODEGA 05",
-            "pesoManifestado": 2000000,
-            "bultosManifestados": 0
-        }
-    ],
-    "blItems": [
-        {
-            "gkey": "1105",
-            "nbr": "SSP203436",
-            "pesoManifestado": 5000000,
-            "bultosManifestados": 0
-        },
-        {
-            "gkey": "1106",
-            "nbr": "SSP203437",
-            "pesoManifestado": 1304052,
-            "bultosManifestados": 1084
-        }
-    ],
-    "transactions": [
-        {
-            "bodega": "BODEGA 01",
-            "blItemGkey": "1105",
-            "jornada": "07-02-2026 00:00 - 07:59",
-            "totalBultos": 0,
-            "totalPeso": 209280
-        },
-        {
-            "bodega": "BODEGA 01",
-            "blItemGkey": "1105",
-            "jornada": "07-02-2026 08:00 - 15:59",
-            "totalBultos": 0,
-            "totalPeso": 1168930
-        },
-        {
-            "bodega": "BODEGA 01",
-            "blItemGkey": "1105",
-            "jornada": "07-02-2026 16:00 - 23:59",
-            "totalBultos": 0,
-            "totalPeso": 1320260
-        },
-        {
-            "bodega": "BODEGA 01",
-            "blItemGkey": "1105",
-            "jornada": "08-02-2026 00:00 - 07:59",
-            "totalBultos": 0,
-            "totalPeso": 383110
-        },
-        {
-            "bodega": "BODEGA 01",
-            "blItemGkey": "1105",
-            "jornada": "08-02-2026 08:00 - 15:59",
-            "totalBultos": 0,
-            "totalPeso": 33200
-        },
-        {
-            "bodega": "BODEGA 04",
-            "blItemGkey": "1106",
-            "jornada": "08-02-2026 08:00 - 15:59",
-            "totalBultos": 174,
-            "totalPeso": 209190
-        },
-        {
-            "bodega": "BODEGA 04",
-            "blItemGkey": "1106",
-            "jornada": "08-02-2026 16:00 - 23:59",
-            "totalBultos": 399,
-            "totalPeso": 479280
-        },
-        {
-            "bodega": "BODEGA 04",
-            "blItemGkey": "1106",
-            "jornada": "09-02-2026 00:00 - 07:59",
-            "totalBultos": 456,
-            "totalPeso": 547470
-        },
-        {
-            "bodega": "BODEGA 04",
-            "blItemGkey": "1106",
-            "jornada": "09-02-2026 08:00 - 15:59",
-            "totalBultos": 55,
-            "totalPeso": 66140
-        },
-        {
-            "bodega": "BODEGA 05",
-            "blItemGkey": "1105",
-            "jornada": "07-02-2026 16:00 - 23:59",
-            "totalBultos": 0,
-            "totalPeso": 358180
-        },
-        {
-            "bodega": "BODEGA 05",
-            "blItemGkey": "1105",
-            "jornada": "08-02-2026 00:00 - 07:59",
-            "totalBultos": 0,
-            "totalPeso": 1443030
-        },
-        {
-            "bodega": "BODEGA 05",
-            "blItemGkey": "1105",
-            "jornada": "08-02-2026 08:00 - 15:59",
-            "totalBultos": 0,
-            "totalPeso": 86030
-        }
-    ],
-    "summary": {
-        "totalBultos": 1084,
-        "totalPeso": 6304100,
-        "blItems": [
+        "operation_type": "DESPACHO",
+        "transactions": [
             {
-                "gkey": "1105",
-                "nbr": "SSP203436",
-                "pesoManifestado": 5000000,
-                "bultosManifestados": 0,
-                "pesoDescargado": 5002020,
-                "bultosDescargados": 0,
-                "porcentajePeso": 100.04,
-                "porcentajeBultos": 0,
-                "jornadas": {
-                    "07-02-2026 00:00 - 07:59": {
-                        "peso": 209280,
-                        "bultos": 0
-                    },
-                    "07-02-2026 08:00 - 15:59": {
-                        "peso": 1168930,
-                        "bultos": 0
-                    },
-                    "07-02-2026 16:00 - 23:59": {
-                        "peso": 1678440,
-                        "bultos": 0
-                    },
-                    "08-02-2026 00:00 - 07:59": {
-                        "peso": 1826140,
-                        "bultos": 0
-                    },
-                    "08-02-2026 08:00 - 15:59": {
-                        "peso": 119230,
-                        "bultos": 0
-                    }
-                }
+                "bodega": "BODEGA 01",
+                "blItemGkey": "1105",
+                "jornada": "07-02-2026 00:00 - 07:59",
+                "totalBultos": 0,
+                "totalPeso": 209280
             },
             {
-                "gkey": "1106",
-                "nbr": "SSP203437",
-                "pesoManifestado": 1304052,
-                "bultosManifestados": 1084,
-                "pesoDescargado": 1302080,
-                "bultosDescargados": 1084,
-                "porcentajePeso": 99.85,
-                "porcentajeBultos": 100,
-                "jornadas": {
-                    "08-02-2026 08:00 - 15:59": {
-                        "peso": 209190,
-                        "bultos": 174
-                    },
-                    "08-02-2026 16:00 - 23:59": {
-                        "peso": 479280,
-                        "bultos": 399
-                    },
-                    "09-02-2026 00:00 - 07:59": {
-                        "peso": 547470,
-                        "bultos": 456
-                    },
-                    "09-02-2026 08:00 - 15:59": {
-                        "peso": 66140,
-                        "bultos": 55
-                    }
-                }
+                "bodega": "BODEGA 01",
+                "blItemGkey": "1105",
+                "jornada": "07-02-2026 08:00 - 15:59",
+                "totalBultos": 0,
+                "totalPeso": 1168930
+            },
+            {
+                "bodega": "BODEGA 01",
+                "blItemGkey": "1105",
+                "jornada": "07-02-2026 16:00 - 23:59",
+                "totalBultos": 0,
+                "totalPeso": 1320260
+            },
+            {
+                "bodega": "BODEGA 01",
+                "blItemGkey": "1105",
+                "jornada": "08-02-2026 00:00 - 07:59",
+                "totalBultos": 0,
+                "totalPeso": 383110
+            },
+            {
+                "bodega": "BODEGA 01",
+                "blItemGkey": "1105",
+                "jornada": "08-02-2026 08:00 - 15:59",
+                "totalBultos": 0,
+                "totalPeso": 33200
+            },
+            {
+                "bodega": "BODEGA 04",
+                "blItemGkey": "1106",
+                "jornada": "08-02-2026 08:00 - 15:59",
+                "totalBultos": 174,
+                "totalPeso": 209190
+            },
+            {
+                "bodega": "BODEGA 04",
+                "blItemGkey": "1106",
+                "jornada": "08-02-2026 16:00 - 23:59",
+                "totalBultos": 399,
+                "totalPeso": 479280
+            },
+            {
+                "bodega": "BODEGA 04",
+                "blItemGkey": "1106",
+                "jornada": "09-02-2026 00:00 - 07:59",
+                "totalBultos": 456,
+                "totalPeso": 547470
+            },
+            {
+                "bodega": "BODEGA 04",
+                "blItemGkey": "1106",
+                "jornada": "09-02-2026 08:00 - 15:59",
+                "totalBultos": 55,
+                "totalPeso": 66140
+            },
+            {
+                "bodega": "BODEGA 05",
+                "blItemGkey": "1105",
+                "jornada": "07-02-2026 16:00 - 23:59",
+                "totalBultos": 0,
+                "totalPeso": 358180
+            },
+            {
+                "bodega": "BODEGA 05",
+                "blItemGkey": "1105",
+                "jornada": "08-02-2026 00:00 - 07:59",
+                "totalBultos": 0,
+                "totalPeso": 1443030
+            },
+            {
+                "bodega": "BODEGA 05",
+                "blItemGkey": "1105",
+                "jornada": "08-02-2026 08:00 - 15:59",
+                "totalBultos": 0,
+                "totalPeso": 86030
             }
         ],
-        "bodegas": [
-            {
-                "gkey": "1",
-                "nbr": "BODEGA 01",
-                "pesoManifestado": 3000000,
-                "bultosManifestados": 0,
-                "pesoDescargado": 3114780,
-                "bultosDescargados": 0,
-                "porcentajePeso": 103.83,
-                "porcentajeBultos": 0,
-                "jornadas": {
-                    "07-02-2026 00:00 - 07:59": {
-                        "peso": 209280,
-                        "bultos": 0
-                    },
-                    "07-02-2026 08:00 - 15:59": {
-                        "peso": 1168930,
-                        "bultos": 0
-                    },
-                    "07-02-2026 16:00 - 23:59": {
-                        "peso": 1320260,
-                        "bultos": 0
-                    },
-                    "08-02-2026 00:00 - 07:59": {
-                        "peso": 383110,
-                        "bultos": 0
-                    },
-                    "08-02-2026 08:00 - 15:59": {
-                        "peso": 33200,
-                        "bultos": 0
+        "summary": {
+            "totalBultos": 1084,
+            "totalPeso": 6304100,
+            "blItems": [
+                {
+                    "gkey": "1105",
+                    "nbr": "SSP203436",
+                    "pesoManifestado": 5000000,
+                    "bultosManifestados": 0,
+                    "pesoDescargado": 5002020,
+                    "bultosDescargados": 0,
+                    "porcentajePeso": 100.04,
+                    "porcentajeBultos": 0,
+                    "jornadas": {
+                        "07-02-2026 00:00 - 07:59": {
+                            "peso": 209280,
+                            "bultos": 0
+                        },
+                        "07-02-2026 08:00 - 15:59": {
+                            "peso": 1168930,
+                            "bultos": 0
+                        },
+                        "07-02-2026 16:00 - 23:59": {
+                            "peso": 1678440,
+                            "bultos": 0
+                        },
+                        "08-02-2026 00:00 - 07:59": {
+                            "peso": 1826140,
+                            "bultos": 0
+                        },
+                        "08-02-2026 08:00 - 15:59": {
+                            "peso": 119230,
+                            "bultos": 0
+                        }
+                    }
+                },
+                {
+                    "gkey": "1106",
+                    "nbr": "SSP203437",
+                    "pesoManifestado": 1304052,
+                    "bultosManifestados": 1084,
+                    "pesoDescargado": 1302080,
+                    "bultosDescargados": 1084,
+                    "porcentajePeso": 99.85,
+                    "porcentajeBultos": 100,
+                    "jornadas": {
+                        "08-02-2026 08:00 - 15:59": {
+                            "peso": 209190,
+                            "bultos": 174
+                        },
+                        "08-02-2026 16:00 - 23:59": {
+                            "peso": 479280,
+                            "bultos": 399
+                        },
+                        "09-02-2026 00:00 - 07:59": {
+                            "peso": 547470,
+                            "bultos": 456
+                        },
+                        "09-02-2026 08:00 - 15:59": {
+                            "peso": 66140,
+                            "bultos": 55
+                        }
                     }
                 }
-            },
-            {
-                "gkey": "4",
-                "nbr": "BODEGA 04",
-                "pesoManifestado": 1304052,
-                "bultosManifestados": 1084,
-                "pesoDescargado": 1302080,
-                "bultosDescargados": 1084,
-                "porcentajePeso": 99.85,
-                "porcentajeBultos": 100,
-                "jornadas": {
-                    "08-02-2026 08:00 - 15:59": {
-                        "peso": 209190,
-                        "bultos": 174
-                    },
-                    "08-02-2026 16:00 - 23:59": {
-                        "peso": 479280,
-                        "bultos": 399
-                    },
-                    "09-02-2026 00:00 - 07:59": {
-                        "peso": 547470,
-                        "bultos": 456
-                    },
-                    "09-02-2026 08:00 - 15:59": {
-                        "peso": 66140,
-                        "bultos": 55
+            ],
+            "bodegas": [
+                {
+                    "gkey": "1",
+                    "nbr": "BODEGA 01",
+                    "pesoManifestado": 3000000,
+                    "bultosManifestados": 0,
+                    "pesoDescargado": 3114780,
+                    "bultosDescargados": 0,
+                    "porcentajePeso": 103.83,
+                    "porcentajeBultos": 0,
+                    "jornadas": {
+                        "07-02-2026 00:00 - 07:59": {
+                            "peso": 209280,
+                            "bultos": 0
+                        },
+                        "07-02-2026 08:00 - 15:59": {
+                            "peso": 1168930,
+                            "bultos": 0
+                        },
+                        "07-02-2026 16:00 - 23:59": {
+                            "peso": 1320260,
+                            "bultos": 0
+                        },
+                        "08-02-2026 00:00 - 07:59": {
+                            "peso": 383110,
+                            "bultos": 0
+                        },
+                        "08-02-2026 08:00 - 15:59": {
+                            "peso": 33200,
+                            "bultos": 0
+                        }
+                    }
+                },
+                {
+                    "gkey": "4",
+                    "nbr": "BODEGA 04",
+                    "pesoManifestado": 1304052,
+                    "bultosManifestados": 1084,
+                    "pesoDescargado": 1302080,
+                    "bultosDescargados": 1084,
+                    "porcentajePeso": 99.85,
+                    "porcentajeBultos": 100,
+                    "jornadas": {
+                        "08-02-2026 08:00 - 15:59": {
+                            "peso": 209190,
+                            "bultos": 174
+                        },
+                        "08-02-2026 16:00 - 23:59": {
+                            "peso": 479280,
+                            "bultos": 399
+                        },
+                        "09-02-2026 00:00 - 07:59": {
+                            "peso": 547470,
+                            "bultos": 456
+                        },
+                        "09-02-2026 08:00 - 15:59": {
+                            "peso": 66140,
+                            "bultos": 55
+                        }
+                    }
+                },
+                {
+                    "gkey": "5",
+                    "nbr": "BODEGA 05",
+                    "pesoManifestado": 2000000,
+                    "bultosManifestados": 0,
+                    "pesoDescargado": 1887240,
+                    "bultosDescargados": 0,
+                    "porcentajePeso": 94.36,
+                    "porcentajeBultos": 0,
+                    "jornadas": {
+                        "07-02-2026 16:00 - 23:59": {
+                            "peso": 358180,
+                            "bultos": 0
+                        },
+                        "08-02-2026 00:00 - 07:59": {
+                            "peso": 1443030,
+                            "bultos": 0
+                        },
+                        "08-02-2026 08:00 - 15:59": {
+                            "peso": 86030,
+                            "bultos": 0
+                        }
                     }
                 }
-            },
-            {
-                "gkey": "5",
-                "nbr": "BODEGA 05",
-                "pesoManifestado": 2000000,
-                "bultosManifestados": 0,
-                "pesoDescargado": 1887240,
-                "bultosDescargados": 0,
-                "porcentajePeso": 94.36,
-                "porcentajeBultos": 0,
-                "jornadas": {
-                    "07-02-2026 16:00 - 23:59": {
-                        "peso": 358180,
-                        "bultos": 0
-                    },
-                    "08-02-2026 00:00 - 07:59": {
-                        "peso": 1443030,
-                        "bultos": 0
-                    },
-                    "08-02-2026 08:00 - 15:59": {
-                        "peso": 86030,
-                        "bultos": 0
-                    }
-                }
-            }
-        ]
+            ]
+        }
     }
 }

@@ -1,11 +1,18 @@
 <template>
-    <div class="flex flex-row justify-between items-center mb-8 gap-4">
-        <h1 class="px-4 py-12 md:px-0 md:py-0 text-xl md:text-2xl lg:text-3xl font-bold text-white">🚢 Monitoreo de Naves</h1>
-        <button class="btn btn-primary"
-            @click="emit('show-add-vessel-form')">
-            <span class="hidden md:inline">Agregar Nave</span>
-            <span class="md:hidden font-bold text-xl">+</span>
-        </button>
+    <div class=" pt-2 md:pt-0 flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
+        <h1 class="text-center md:text-left text-2xl md:text-3xl lg:text-4xl font-bold text-white">
+            🚢 Monitoreo de Naves
+        </h1>
+
+        <div class="w-full md:w-auto">
+            <button
+                class="btn btn-primary w-full md:w-auto flex items-center justify-center md:justify-start gap-2"
+                @click="emit('show-add-vessel-form')"
+                aria-label="Agregar Nave"
+            >
+                Agregar Nave
+            </button>
+        </div>
     </div>
 </template>
 

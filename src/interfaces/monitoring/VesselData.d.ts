@@ -6,8 +6,8 @@ export interface VesselData {
     manifest: Manifest;
     operation_type: OperationType;
     summary: {
-        cargo_holds: Summary;
-        cargo_services: Summary;
+        holds: Summary[];
+        services: Summary[];
     };
     last_update: string;
     shifts_worked: string[];

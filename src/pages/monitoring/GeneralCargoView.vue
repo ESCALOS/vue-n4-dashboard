@@ -9,34 +9,61 @@
             :vessels="monitoredVessels"
             :selected-vessel="selectedVessel"
             @select="selectVessel"
-            @remove="removeVessel"
+            @remove="handleRemoveVessel"
+        />
+
+        <VesselDetail
+            v-if="selectedVesselData"
+            :vessel-data="selectedVesselData"
+            :is-connected="true"
+            :loading="loading"
         />
 
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import EmptyState from '../../components/monitoring/EmptyState.vue';
 import HeaderSection from '../../components/monitoring/HeaderSection.vue';
-import type { VesselData } from '../../interfaces/monitoring/VesselData';
 import VesselTabs from '../../components/monitoring/VesselTabs.vue';
-import type { VesselsResponse } from '../../interfaces/monitoring/responses/VesselResponse';
+import type { VesselsRequest } from '../../interfaces/monitoring/api/VesselResquest';
+import { useMonitoringDataMock } from '../../composables/monitoring/useMonitoringDataMock';
+import VesselDetail from '../../components/monitoring/VesselDetail.vue';
 
 const showAddDialog = ref(false);
+
+const {
+  monitoredVessels,
+  selectedVessel,
+  selectedVesselData,
+  loading,
+  loadMonitoredVessels,
+  selectVessel,
+//   addVessel,
+  removeVessel
+
+} = useMonitoringDataMock();
 
 const show_add_vessel_form = () => {
     console.log('Mostrar formulario para agregar nave');
 }
 
-const monitoredVessels: VesselData[] = []; // Aquí se gestionarán las naves monitoreadas
-const selectedVessel = ref<VesselData | null>(null);
-const selectVessel = (vessel: VesselsResponse) => {
-    console.log('Nave seleccionada:', vessel);
-}
+// const handleAddVessel = async (vessel: VesselsRequest) => {
+//   const result = await addVessel(vessel);
+//   if (result.success) {
+//     showAddDialog.value = false;
+//   }
+// };
 
-const removeVessel = (vessel: VesselsResponse) => {
-    console.log('Eliminar nave:', vessel);
-}
+const handleRemoveVessel = async (vessel: VesselsRequest) => {
+  if (confirm('¿Está seguro de remover esta nave del monitoreo?')) {
+    await removeVessel(vessel);
+  }
+};
+
+onMounted(() => {
+    loadMonitoredVessels();
+});
 
 </script>

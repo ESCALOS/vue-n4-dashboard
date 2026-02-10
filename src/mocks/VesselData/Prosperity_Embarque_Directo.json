@@ -1,70 +1,74 @@
 {
-    "manifest": {
-        "id": "2026-31",
-        "cvGkey": "90538",
-        "vvdGkey": "88224",
-        "vesselName": "FM PROSPERITY"
-    },
-    "bodegas": [],
-    "blItems": [
-        {
-            "gkey": "1107",
-            "nbr": "SSP20350",
-            "pesoManifestado": 3053958,
-            "bultosManifestados": 1566
+    "success": true,
+    "data": {
+        "manifest": {
+            "id": "2026-31",
+            "cvGkey": "90538",
+            "vvdGkey": "88224",
+            "name": "FM PROSPERITY"
         },
-        {
-            "gkey": "1108",
-            "nbr": "SSP20351",
-            "pesoManifestado": 432529,
-            "bultosManifestados": 486
-        },
-        {
-            "gkey": "1109",
-            "nbr": "SSP20352",
-            "pesoManifestado": 1656950,
-            "bultosManifestados": 1601
-        }
-    ],
-    "transactions": [],
-    "summary": {
-        "totalBultos": 0,
-        "totalPeso": 0,
+        "operation_type": "EMBARQUE_DIRECTO",
+        "bodegas": [],
         "blItems": [
             {
                 "gkey": "1107",
                 "nbr": "SSP20350",
                 "pesoManifestado": 3053958,
-                "bultosManifestados": 1566,
-                "pesoDescargado": 0,
-                "bultosDescargados": 0,
-                "porcentajePeso": 0,
-                "porcentajeBultos": 0,
-                "jornadas": {}
+                "bultosManifestados": 1566
             },
             {
                 "gkey": "1108",
                 "nbr": "SSP20351",
                 "pesoManifestado": 432529,
-                "bultosManifestados": 486,
-                "pesoDescargado": 0,
-                "bultosDescargados": 0,
-                "porcentajePeso": 0,
-                "porcentajeBultos": 0,
-                "jornadas": {}
+                "bultosManifestados": 486
             },
             {
                 "gkey": "1109",
                 "nbr": "SSP20352",
                 "pesoManifestado": 1656950,
-                "bultosManifestados": 1601,
-                "pesoDescargado": 0,
-                "bultosDescargados": 0,
-                "porcentajePeso": 0,
-                "porcentajeBultos": 0,
-                "jornadas": {}
+                "bultosManifestados": 1601
             }
         ],
-        "bodegas": []
+        "transactions": [],
+        "summary": {
+            "totalBultos": 0,
+            "totalPeso": 0,
+            "blItems": [
+                {
+                    "gkey": "1107",
+                    "nbr": "SSP20350",
+                    "pesoManifestado": 3053958,
+                    "bultosManifestados": 1566,
+                    "pesoDescargado": 0,
+                    "bultosDescargados": 0,
+                    "porcentajePeso": 0,
+                    "porcentajeBultos": 0,
+                    "jornadas": {}
+                },
+                {
+                    "gkey": "1108",
+                    "nbr": "SSP20351",
+                    "pesoManifestado": 432529,
+                    "bultosManifestados": 486,
+                    "pesoDescargado": 0,
+                    "bultosDescargados": 0,
+                    "porcentajePeso": 0,
+                    "porcentajeBultos": 0,
+                    "jornadas": {}
+                },
+                {
+                    "gkey": "1109",
+                    "nbr": "SSP20352",
+                    "pesoManifestado": 1656950,
+                    "bultosManifestados": 1601,
+                    "pesoDescargado": 0,
+                    "bultosDescargados": 0,
+                    "porcentajePeso": 0,
+                    "porcentajeBultos": 0,
+                    "jornadas": {}
+                }
+            ],
+            "bodegas": []
+        }
     }
 }

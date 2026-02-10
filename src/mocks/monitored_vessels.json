@@ -1,0 +1,16 @@
+[
+    {
+        "manifest": {
+            "id": "2026-21",
+            "name": "CRAMON ISLAND"
+        },
+        "operation_type": "EMBARQUE_INDIRECTO"
+    },
+    {
+        "manifest": {
+            "id": "2026-10",
+            "name": "SEA VOYAGER"
+        },
+        "operation_type": "DESPACHO"
+    }
+]
