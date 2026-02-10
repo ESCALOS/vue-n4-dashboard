@@ -1,0 +1,88 @@
+{
+    "manifest": {
+        "id": "2026-62",
+        "cvGkey": "86037",
+        "vvdGkey": "83724",
+        "vesselName": "ADASTAR"
+    },
+    "bodegas": [
+        {
+            "gkey": "5",
+            "nbr": "BODEGA 05",
+            "pesoManifestado": 4000000,
+            "bultosManifestados": 0
+        }
+    ],
+    "blItems": [
+        {
+            "gkey": "1111",
+            "nbr": "SSP20353",
+            "pesoManifestado": 4000000,
+            "bultosManifestados": 0
+        }
+    ],
+    "transactions": [
+        {
+            "bodega": "BODEGA 05",
+            "blItemGkey": "1111",
+            "jornada": "09-02-2026 16:00 - 23:59",
+            "totalBultos": 0,
+            "totalPeso": 2355230
+        },
+        {
+            "bodega": "BODEGA 05",
+            "blItemGkey": "1111",
+            "jornada": "10-02-2026 00:00 - 07:59",
+            "totalBultos": 0,
+            "totalPeso": 1666320
+        }
+    ],
+    "summary": {
+        "totalBultos": 0,
+        "totalPeso": 4021550,
+        "blItems": [
+            {
+                "gkey": "1111",
+                "nbr": "SSP20353",
+                "pesoManifestado": 4000000,
+                "bultosManifestados": 0,
+                "pesoDescargado": 4021550,
+                "bultosDescargados": 0,
+                "porcentajePeso": 100.54,
+                "porcentajeBultos": 0,
+                "jornadas": {
+                    "09-02-2026 16:00 - 23:59": {
+                        "peso": 2355230,
+                        "bultos": 0
+                    },
+                    "10-02-2026 00:00 - 07:59": {
+                        "peso": 1666320,
+                        "bultos": 0
+                    }
+                }
+            }
+        ],
+        "bodegas": [
+            {
+                "gkey": "5",
+                "nbr": "BODEGA 05",
+                "pesoManifestado": 4000000,
+                "bultosManifestados": 0,
+                "pesoDescargado": 4021550,
+                "bultosDescargados": 0,
+                "porcentajePeso": 100.54,
+                "porcentajeBultos": 0,
+                "jornadas": {
+                    "09-02-2026 16:00 - 23:59": {
+                        "peso": 2355230,
+                        "bultos": 0
+                    },
+                    "10-02-2026 00:00 - 07:59": {
+                        "peso": 1666320,
+                        "bultos": 0
+                    }
+                }
+            }
+        ]
+    }
+}
