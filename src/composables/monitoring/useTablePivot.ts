@@ -74,12 +74,16 @@ export function useTablePivot(
     const columnTotals = computed(() => {
         if (!selectedVesselData.value)
             return {
-                manifested: [],
-                processed: [],
-                difference: [],
-                manifestedGoods: [],
-                processedGoods: [],
-                differenceGoods: [],
+                weight: {
+                    manifested: [],
+                    processed: [],
+                    difference: [],
+                },
+                goods: {
+                    manifested: [],
+                    processed: [],
+                    difference: [],
+                }
             };
 
         const isBodyView = activeTab.value === 'holds';
@@ -88,20 +92,24 @@ export function useTablePivot(
             : selectedVesselData.value.summary.services;
 
         return {
-            manifested: items.map((item) => item.manifested_weight),
-            processed: items.map((item) => item.processed_weight),
-            difference: items.map((_item, idx) => {
-                const manifestado = items[idx]?.manifested_weight || 0;
-                const descargado = items[idx]?.processed_weight || 0;
-                return manifestado - descargado;
-            }),
-            manifestedGoods: items.map((item) => item.manifested_goods),
-            processedGoods: items.map((item) => item.processed_goods),
-            differenceGoods: items.map((_item, idx) => {
-                const manifestado = items[idx]?.manifested_goods || 0;
-                const descargado = items[idx]?.processed_goods || 0;
-                return manifestado - descargado;
-            }),
+            weight: {
+                manifested: items.map((item) => item.manifested_weight),
+                processed: items.map((item) => item.processed_weight),
+                difference: items.map((_item, idx) => {
+                    const manifestado = items[idx]?.manifested_weight || 0;
+                    const descargado = items[idx]?.processed_weight || 0;
+                    return manifestado - descargado;
+                }),
+            },
+            goods: {
+                manifested: items.map((item) => item.manifested_goods),
+                processed: items.map((item) => item.processed_goods),
+                difference: items.map((_item, idx) => {
+                    const manifestado = items[idx]?.manifested_goods || 0;
+                    const descargado = items[idx]?.processed_goods || 0;
+                    return manifestado - descargado;
+                }),
+            }
         };
     });
 

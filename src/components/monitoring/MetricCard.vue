@@ -1,47 +1,47 @@
 <template>
-  <div class="bg-[#1a1a2e] border border-[#2d2d44] rounded-xl overflow-hidden transition-all duration-200 hover:border-blue-500 hover:shadow-[0_4px_12px_rgba(59,130,246,0.15)] hover:-translate-y-0.5">
-    <div class="px-5 py-4 bg-blue-500/10 border-b border-[#2d2d44]">
-      <h3 class="m-0 text-base text-blue-500 font-semibold flex items-center gap-2">
+  <div class="metric-card">
+    <div class="metric-card-header">
+      <h3 class="metric-card-title">
         {{ icon }} {{ title }}
       </h3>
     </div>
     
-    <div class="p-5">
-      <div class="text-center mb-4 pb-4 border-b border-[#2d2d44]">
-        <span class="block text-4xl md:text-[2.25rem] font-bold text-blue-500 leading-none mb-1.5">
+    <div class="metric-card-content">
+      <div class="metric-card-main-stat">
+        <span class="metric-card-count">
           {{ count }}
         </span>
-        <span class="block text-sm text-slate-400 uppercase tracking-wide">
+        <span class="metric-card-subtitle">
           {{ subtitle }}
         </span>
       </div>
       
-      <div class="flex flex-col gap-3">
-        <div v-if="viewMode === 'weight'" class="flex justify-between items-center text-sm gap-2">
-          <span class="text-slate-400 shrink-0">Peso Total:</span>
-          <span class="text-slate-200 font-medium text-right">{{ formatNumber(summary.weight.manifested.value) }} kg</span>
+      <div class="metric-card-details">
+        <div v-if="viewMode === 'weight'" class="detail-row">
+          <span class="detail-label">Peso Total:</span>
+          <span class="detail-value">{{ formatNumber(summary.weight.manifested.value) }} kg</span>
         </div>
         
-        <div v-if="viewMode === 'weight'" class="flex justify-between items-center text-sm gap-2">
-          <span class="text-slate-400 shrink-0">{{ getOperationLabel(operationType) }}:</span>
-          <span class="text-blue-500 font-semibold text-right">{{ formatNumber(summary.weight.processed.value) }} kg</span>
+        <div v-if="viewMode === 'weight'" class="detail-row">
+          <span class="detail-label">{{ getOperationLabel(operationType) }}:</span>
+          <span class="detail-value detail-value-primary">{{ formatNumber(summary.weight.processed.value) }} kg</span>
         </div>
         
-        <div v-if="viewMode === 'goods'" class="flex justify-between items-center text-sm gap-2">
-          <span class="text-slate-400 shrink-0">Bultos Total:</span>
-          <span class="text-slate-200 font-medium text-right">{{ formatNumber(summary.goods.manifested.value) }}</span>
+        <div v-if="viewMode === 'goods'" class="detail-row">
+          <span class="detail-label">Bultos Total:</span>
+          <span class="detail-value">{{ formatNumber(summary.goods.manifested.value) }}</span>
         </div>
         
-        <div v-if="viewMode === 'goods'" class="flex justify-between items-center text-sm gap-2">
-          <span class="text-slate-400 shrink-0">Descargado:</span>
-          <span class="text-blue-500 font-semibold text-right">{{ formatNumber(summary.goods.processed.value) }}</span>
+        <div v-if="viewMode === 'goods'" class="detail-row">
+          <span class="detail-label">Descargado:</span>
+          <span class="detail-value detail-value-primary">{{ formatNumber(summary.goods.processed.value) }}</span>
         </div>
         
-        <div class="flex justify-between items-center text-sm gap-2">
-          <span class="text-slate-400 shrink-0">Progreso:</span>
+        <div class="detail-row">
+          <span class="detail-label">Progreso:</span>
           <span
             :class="[
-              'font-semibold text-right',
+              'progress-value',
               getProgressClass(viewMode === 'weight' ? summary.weight.percentage.value : summary.goods.percentage.value),
             ]"
           >
@@ -80,6 +80,105 @@ const getOperationLabel = (tipo: OperationType): string => {
 </script>
 
 <style scoped>
+.metric-card {
+  background: #1a1a2e;
+  border: 1px solid #2d2d44;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.metric-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  transform: translateY(-2px);
+}
+
+.metric-card-header {
+  padding: 1rem 1.25rem;
+  background: rgba(59, 130, 246, 0.1);
+  border-bottom: 1px solid #2d2d44;
+}
+
+.metric-card-title {
+  margin: 0;
+  font-size: 1rem;
+  color: #3b82f6;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.metric-card-content {
+  padding: 1.25rem;
+}
+
+.metric-card-main-stat {
+  text-align: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #2d2d44;
+}
+
+.metric-card-count {
+  display: block;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #3b82f6;
+  line-height: 1;
+  margin-bottom: 0.375rem;
+}
+
+.metric-card-subtitle {
+  display: block;
+  font-size: 0.875rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.metric-card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  gap: 0.5rem;
+}
+
+.detail-label {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.detail-value {
+  color: #e2e8f0;
+  font-weight: 500;
+  text-align: right;
+}
+
+.detail-value-primary {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.progress-value {
+  font-weight: 600;
+  text-align: right;
+}
+
+@media (max-width: 767px) {
+  .metric-card-count {
+    font-size: 2rem;
+  }
+}
+
 /* Progress Classes */
 .progress-high {
   color: #10b981 !important;

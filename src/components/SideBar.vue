@@ -4,7 +4,7 @@
     <div 
       v-if="isOpen"
       @click="closeSidebar"
-      class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+      class="sidebar-backdrop"
     ></div>
 
     <!-- Touch area for swipe gesture (mobile only) -->
@@ -12,7 +12,7 @@
       @touchstart="handleTouchStart"
       @touchmove="handleTouchMove"
       @touchend="handleTouchEnd"
-      class="lg:hidden fixed top-0 left-0 h-full w-8 z-20"
+      class="sidebar-touch-area"
     ></div>
 
     <!-- Sidebar -->
@@ -23,56 +23,50 @@
       @mouseenter="handleMouseEnter"
       @mouseleave="handleMouseLeave"
       :class="[
-        'fixed top-0 left-0 h-full bg-gray-900 text-white transition-all duration-300 ease-in-out z-40',
-        'w-64 lg:w-auto',
-        isCollapsed ? 'lg:w-20' : 'lg:w-64',
-        isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        'sidebar',
+        {
+          'is-open': isOpen,
+          'is-collapsed': isCollapsed,
+          'is-expanded': !isCollapsed
+        }
       ]"
       :style="{ transform: dragging ? `translateX(${dragOffset}px)` : '' }"
     >
-      <div class="flex flex-col h-full">
+      <div class="sidebar-inner">
         <!-- Logo/Header -->
-        <div class="flex items-center justify-center h-16 border-b border-gray-700">
-          <h1 
-            :class="[
-              'font-bold text-indigo-400 transition-all duration-300',
-              'text-xl lg:text-base',
-              !isCollapsed && 'lg:text-xl'
-            ]"
-          >
-            <span class="lg:hidden">N4 Dashboard</span>
-            <span class="hidden lg:inline">{{ isCollapsed ? 'N4' : 'N4 Dashboard' }}</span>
+        <div class="sidebar-header">
+          <h1 class="sidebar-logo-title">
+            <span class="logo-mobile">N4 Dashboard</span>
+            <span class="logo-desktop">{{ isCollapsed ? 'N4' : 'N4 Dashboard' }}</span>
           </h1>
         </div>
 
         <!-- Navigation -->
-        <nav class="flex-1 overflow-y-auto py-4">
+        <nav class="sidebar-nav">
           <!-- Monitoreo de Naves Section -->
-          <div class="px-4 lg:px-2 lg:group-hover:px-4 mb-6" :class="!isCollapsed && 'lg:px-4'">
+          <div class="nav-section" :class="{ 'is-expanded': !isCollapsed }">
             <h2 
-              class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 lg:hidden"
-              :class="!isCollapsed && 'lg:block'"
+              class="section-title"
+              :class="{ 'desktop-visible': !isCollapsed }"
             >
               Monitoreo de Naves
             </h2>
-            <div class="border-b border-gray-700 mb-2 hidden lg:block" :class="!isCollapsed && 'lg:hidden'"></div>
-            <ul class="space-y-1">
+            <div class="section-divider" :class="{ 'desktop-hidden': !isCollapsed }"></div>
+            <ul class="nav-list">
               <li>
                 <router-link
                   to="/monitoreo/carga-general"
                   @click="closeSidebarOnMobile"
                   :class="[
-                    'flex items-center rounded-lg hover:bg-gray-800 transition-colors',
-                    'px-3 py-2',
-                    'lg:justify-center lg:p-3',
-                    !isCollapsed && 'lg:px-3 lg:py-2 lg:justify-start'
+                    'nav-link',
+                    { 'is-expanded': !isCollapsed }
                   ]"
-                  active-class="bg-indigo-600 hover:bg-indigo-700"
+                  active-class="is-active"
                 >
-                  <svg class="h-5 w-5 shrink-0 mr-3 lg:mr-0" :class="!isCollapsed && 'lg:mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                   </svg>
-                  <span class="whitespace-nowrap lg:hidden" :class="!isCollapsed && 'lg:inline'">Carga General</span>
+                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">Carga General</span>
                 </router-link>
               </li>
               <li>
@@ -80,48 +74,44 @@
                   to="/monitoreo/contenedores"
                   @click="closeSidebarOnMobile"
                   :class="[
-                    'flex items-center rounded-lg hover:bg-gray-800 transition-colors',
-                    'px-3 py-2',
-                    'lg:justify-center lg:p-3',
-                    !isCollapsed && 'lg:px-3 lg:py-2 lg:justify-start'
+                    'nav-link',
+                    { 'is-expanded': !isCollapsed }
                   ]"
-                  active-class="bg-indigo-600 hover:bg-indigo-700"
+                  active-class="is-active"
                 >
-                  <svg class="h-5 w-5 shrink-0 mr-3 lg:mr-0" :class="!isCollapsed && 'lg:mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                   </svg>
-                  <span class="whitespace-nowrap lg:hidden" :class="!isCollapsed && 'lg:inline'">Contenedores</span>
+                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">Contenedores</span>
                 </router-link>
               </li>
             </ul>
           </div>
 
           <!-- Citas Section -->
-          <div class="px-4 lg:px-2" :class="!isCollapsed && 'lg:px-4'">
+          <div class="nav-section" :class="{ 'is-expanded': !isCollapsed }">
             <h2 
-              class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 lg:hidden"
-              :class="!isCollapsed && 'lg:block'"
+              class="section-title"
+              :class="{ 'desktop-visible': !isCollapsed }"
             >
               Citas
             </h2>
-            <div class="border-b border-gray-700 mb-2 hidden lg:block" :class="!isCollapsed && 'lg:hidden'"></div>
-            <ul class="space-y-1">
+            <div class="section-divider" :class="{ 'desktop-hidden': !isCollapsed }"></div>
+            <ul class="nav-list">
               <li>
                 <router-link
                   to="/citas/pendientes"
                   @click="closeSidebarOnMobile"
                   :class="[
-                    'flex items-center rounded-lg hover:bg-gray-800 transition-colors',
-                    'px-3 py-2',
-                    'lg:justify-center lg:p-3',
-                    !isCollapsed && 'lg:px-3 lg:py-2 lg:justify-start'
+                    'nav-link',
+                    { 'is-expanded': !isCollapsed }
                   ]"
-                  active-class="bg-indigo-600 hover:bg-indigo-700"
+                  active-class="is-active"
                 >
-                  <svg class="h-5 w-5 shrink-0 mr-3 lg:mr-0" :class="!isCollapsed && 'lg:mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span class="whitespace-nowrap lg:hidden" :class="!isCollapsed && 'lg:inline'">Pendientes</span>
+                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">Pendientes</span>
                 </router-link>
               </li>
               <li>
@@ -129,17 +119,15 @@
                   to="/citas/en-proceso"
                   @click="closeSidebarOnMobile"
                   :class="[
-                    'flex items-center rounded-lg hover:bg-gray-800 transition-colors',
-                    'px-3 py-2',
-                    'lg:justify-center lg:p-3',
-                    !isCollapsed && 'lg:px-3 lg:py-2 lg:justify-start'
+                    'nav-link',
+                    { 'is-expanded': !isCollapsed }
                   ]"
-                  active-class="bg-indigo-600 hover:bg-indigo-700"
+                  active-class="is-active"
                 >
-                  <svg class="h-5 w-5 shrink-0 mr-3 lg:mr-0" :class="!isCollapsed && 'lg:mr-3'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span class="whitespace-nowrap lg:hidden" :class="!isCollapsed && 'lg:inline'">En Proceso</span>
+                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">En Proceso</span>
                 </router-link>
               </li>
             </ul>
@@ -147,8 +135,8 @@
         </nav>
 
         <!-- Footer (optional) -->
-        <div class="border-t border-gray-700 p-4 lg:hidden" :class="!isCollapsed && 'lg:block'">
-          <p class="text-xs text-gray-500 text-center">© 2026 Carlos Escate</p>
+        <div class="sidebar-footer" :class="{ 'desktop-visible': !isCollapsed }">
+          <p class="sidebar-footer-text">© 2026 Carlos Escate</p>
         </div>
       </div>
     </aside>
@@ -250,4 +238,235 @@ const handleSidebarTouchEnd = () => {
 </script>
 
 <style scoped>
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 30;
+}
+
+.sidebar-touch-area {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 2rem;
+  z-index: 20;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 16rem;
+  background: #111827;
+  color: #ffffff;
+  z-index: 40;
+  transform: translateX(-100%);
+}
+
+.sidebar.is-open {
+  transform: translateX(0);
+}
+
+.sidebar-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 4rem;
+  border-bottom: 1px solid #374151;
+}
+
+.sidebar-logo-title {
+  margin: 0;
+  font-weight: 700;
+  color: #818cf8;
+  transition: font-size 0.3s ease;
+  font-size: 1.25rem;
+}
+
+.logo-mobile {
+  display: inline;
+}
+
+.logo-desktop {
+  display: none;
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 0;
+}
+
+.nav-section {
+  padding: 0 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.section-divider {
+  display: none;
+}
+
+.nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease;
+  padding: 0.5rem 0.75rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  background: #1f2937;
+}
+
+.nav-link.is-active {
+  background: #4f46e5;
+}
+
+.nav-link.is-active:hover {
+  background: #4338ca;
+}
+
+.nav-icon {
+  height: 1.25rem;
+  width: 1.25rem;
+  flex-shrink: 0;
+  margin-right: 0.75rem;
+}
+
+.nav-label {
+  white-space: nowrap;
+}
+
+.sidebar-footer {
+  border-top: 1px solid #374151;
+  padding: 1rem;
+}
+
+.sidebar-footer-text {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .sidebar-backdrop,
+  .sidebar-touch-area {
+    display: none;
+  }
+
+  .sidebar {
+    transform: translateX(0);
+    width: 5rem;
+  }
+
+  .sidebar.is-expanded {
+    width: 16rem;
+  }
+
+  .sidebar-logo-title {
+    font-size: 1rem;
+  }
+
+  .sidebar.is-expanded .sidebar-logo-title {
+    font-size: 1.25rem;
+  }
+
+  .logo-mobile {
+    display: none;
+  }
+
+  .logo-desktop {
+    display: inline;
+  }
+
+  .nav-section {
+    padding: 0 0.5rem;
+  }
+
+  .nav-section.is-expanded {
+    padding: 0 1rem;
+  }
+
+  .section-title {
+    display: none;
+  }
+
+  .section-title.desktop-visible {
+    display: block;
+  }
+
+  .section-divider {
+    display: block;
+    border-bottom: 1px solid #374151;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-divider.desktop-hidden {
+    display: none;
+  }
+
+  .nav-link {
+    justify-content: center;
+    padding: 0.75rem;
+  }
+
+  .nav-link.is-expanded {
+    justify-content: flex-start;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .nav-icon {
+    margin-right: 0;
+  }
+
+  .nav-icon.with-margin {
+    margin-right: 0.75rem;
+  }
+
+  .nav-label {
+    display: none;
+  }
+
+  .nav-label.desktop-visible {
+    display: inline;
+  }
+
+  .sidebar-footer {
+    display: none;
+  }
+
+  .sidebar-footer.desktop-visible {
+    display: block;
+  }
+}
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div class="max-w-350 my-0 mx-auto w-full md:p-4">
+  <div class="general-cargo-view">
         <HeaderSection @show-add-vessel-form="addVesselFormRef?.open()" />
         
         <!-- Formulario modal con dialog -->
@@ -33,6 +33,9 @@
             :summary="summary"
             :total-goods-current-shift="totalGoodsCurrentShift"
             :total-weight-current-shift="totalWeightCurrentShift"
+            :pivoted-shifts="pivotedData.shifts"
+            :pivoted-columns="pivotedData.columns"
+            :column-totals="columnTotals"
         />
 
     </div>
@@ -48,6 +51,7 @@ import { useMonitoringDataMock } from '../../composables/monitoring/useMonitorin
 import VesselDetail from '../../components/monitoring/VesselDetail.vue';
 import AddVesselForm from '../../components/monitoring/AddVesselForm.vue';
 import { useMonitoringCalculations } from '../../composables/monitoring/useMonitoringCalculations';
+import { useTablePivot } from '../../composables/monitoring/useTablePivot';
 
 const addVesselFormRef = ref<InstanceType<typeof AddVesselForm>>();
 const activeTab = ref<'holds' | 'services'>('holds');
@@ -79,6 +83,8 @@ const summary = computed(() => ({
   services: serviceSummary.value
 }));
 
+const { pivotedData, columnTotals } = useTablePivot(selectedVesselData, activeTab);
+
 const handleAddVessel = async (vessel: VesselsRequest) => {
   await addVessel(vessel);
 };
@@ -94,3 +100,11 @@ onMounted(() => {
 });
 
 </script>
+
+<style scoped>
+.general-cargo-view {
+  max-width: 87.5rem;
+  margin: 0 auto;
+  width: 100%;
+}
+</style>
