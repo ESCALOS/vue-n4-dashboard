@@ -7,6 +7,9 @@ interface ExportData {
     vesselData: VesselData;
 }
 
+type TableCellValue = string | number;
+type MonitoringTableData = TableCellValue[][];
+
 export class MonitoringExcelExporter {
     private workbook: XLSX.WorkBook;
     private data: ExportData;
@@ -36,28 +39,6 @@ export class MonitoringExcelExporter {
             ...style,
         };
     }
-
-    // /**
-    //  * Aplica alineación centrada a todas las celdas de un rango
-    //  */
-    // private applyAlignmentToRange(
-    //     worksheet: XLSX.WorkSheet,
-    //     startRow: number,
-    //     endRow: number,
-    //     startCol: number,
-    //     endCol: number,
-    //     horizontal: string = 'center',
-    //     vertical: string = 'center'
-    // ): void {
-    //     for (let row = startRow; row <= endRow; row++) {
-    //         for (let col = startCol; col <= endCol; col++) {
-    //             const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
-    //             this.applyCellStyle(worksheet, cellAddress, {
-    //                 alignment: { horizontal, vertical },
-    //             });
-    //         }
-    //     }
-    // }
 
     /**
      * Aplica bordes a todas las celdas de un rango
@@ -119,29 +100,48 @@ export class MonitoringExcelExporter {
      * Crea una tabla de datos (peso o bultos) usando la misma estructura que MonitoreoTable
      */
     private createTableData(
-        jornadas: any[],
-        columns: any[],
-        columnTotals: any,
+        shifts: {
+            shift: string;
+            columns: {
+                weight: number;
+                goods: number;
+            }[];
+            totalWeight: number;
+            totalGoods: number;
+        }[],
+        columns: {
+            key: string;
+            manifested_weight: number;
+            manifested_goods: number;
+        }[],
+        columnTotals: {
+            manifested: number[];
+            processed: number[];
+            difference: number[];
+            manifestedGoods: number[];
+            processedGoods: number[];
+            differenceGoods: number[];
+        },
         useBultos: boolean = false
-    ): any[][] {
-        const result: any[][] = [];
+    ): MonitoringTableData {
+        const result: MonitoringTableData = [];
 
         // Header - Títulos de columnas
         const headers = ['JORNADAS', ...columns.map(col => col.key), 'TOTAL'];
         result.push(headers);
 
         // Filas de jornadas - Usar exactamente la misma estructura que MonitoreoTable
-        jornadas.forEach(jornadaRow => {
-            const row: Array<string | number> = [jornadaRow.jornada];
+        shifts.forEach(shiftRow => {
+            const row: Array<string | number> = [shiftRow.shift];
 
             // Iterar por cada columna
-            jornadaRow.columns.forEach((col: any) => {
-                const value = useBultos ? col.bultos : col.peso;
+            shiftRow.columns.forEach((col) => {
+                const value = useBultos ? col.goods : col.weight;
                 row.push(value);
             });
 
             // Total de la fila
-            const total = useBultos ? jornadaRow.totalBultos : jornadaRow.totalPeso;
+            const total = useBultos ? shiftRow.totalGoods : shiftRow.totalWeight;
             row.push(total);
 
             result.push(row);
@@ -150,8 +150,8 @@ export class MonitoringExcelExporter {
         // Fila TOTAL (descargado)
         const totalRow: Array<string | number> = ['TOTAL'];
         const totals = useBultos
-            ? columnTotals.bultosDescargados
-            : columnTotals.descargado;
+            ? columnTotals.processedGoods
+            : columnTotals.processed;
 
         totals.forEach((value: number) => {
             totalRow.push(value);
@@ -164,8 +164,8 @@ export class MonitoringExcelExporter {
         // Fila MANIFESTADO
         const manifestadoRow: Array<string | number> = ['MANIFESTADO'];
         const manifestados = useBultos
-            ? columnTotals.bultosManifestados
-            : columnTotals.manifestado;
+            ? columnTotals.manifestedGoods
+            : columnTotals.manifested;
 
         manifestados.forEach((value: number) => {
             manifestadoRow.push(value);
@@ -178,8 +178,8 @@ export class MonitoringExcelExporter {
         // Fila DIFERENCIA
         const diferenciaRow: Array<string | number> = ['DIFERENCIA'];
         const diferencias = useBultos
-            ? columnTotals.diferenciaBultos
-            : columnTotals.diferencia;
+            ? columnTotals.differenceGoods
+            : columnTotals.difference;
 
         diferencias.forEach((value: number) => {
             diferenciaRow.push(value);
@@ -212,11 +212,6 @@ export class MonitoringExcelExporter {
                 alignment: { horizontal: 'center', vertical: 'center' },
             });
         }
-
-        // Aplicar centrado a todas las celdas de datos (filas de jornadas y números)
-        // Las filas de datos van desde startRow + 1 hasta numRows - 4 (antes de TOTAL, MANIFESTADO, DIFERENCIA)
-        // const dataRowsEnd = startRow + numRows - 4;
-        // this.applyAlignmentToRange(worksheet, startRow + 1, dataRowsEnd, 0, numCols - 1, 'center', 'center');
 
         // Aplicar centrado y formato de número a todas las celdas de datos
         const dataRowsEnd = startRow + numRows - 4;
@@ -269,7 +264,7 @@ export class MonitoringExcelExporter {
     private addReportSection(
         sheetData: any[][],
         title: string,
-        activeTab: 'holds' | 'goods'
+        activeTab: 'holds' | 'services'
     ): { data: any[][]; tableRanges: Array<{ start: number; rows: number; cols: number }> } {
         const result = [...sheetData];
         const tableRanges: Array<{ start: number; rows: number; cols: number }> = [];
@@ -351,7 +346,7 @@ export class MonitoringExcelExporter {
         sectionTitles.push({ row: 1, text: 'REPORTE DE BODEGAS' });
 
         // SECCIÓN 2: REPORTE DE BL ITEMS
-        const blsResult = this.addReportSection(sheetData, 'REPORTE DE BL ITEMS', 'goods');
+        const blsResult = this.addReportSection(sheetData, 'REPORTE DE BL ITEMS', 'services');
         sheetData = blsResult.data;
         allTableRanges.push(...blsResult.tableRanges);
         // El título de BL ITEMS está en la última posición antes de sus tablas
@@ -406,15 +401,15 @@ export class MonitoringExcelExporter {
 
         // Calcular anchos de columna dinámicamente
         const selectedVesselData = ref(vesselData);
-        const bodegasTab = ref<'holds' | 'goods'>('holds');
-        const blsTab = ref<'holds' | 'goods'>('goods');
+        const holdsTab = ref<'holds' | 'services'>('holds');
+        const servicesTab = ref<'holds' | 'services'>('services');
 
-        const { pivotedData: bodegasData } = useTablePivot(selectedVesselData, bodegasTab);
-        const { pivotedData: blsData } = useTablePivot(selectedVesselData, blsTab);
+        const { pivotedData: holdsData } = useTablePivot(selectedVesselData, holdsTab);
+        const { pivotedData: servicesData } = useTablePivot(selectedVesselData, servicesTab);
 
         const maxColumns = Math.max(
-            bodegasData.value.columns.length,
-            blsData.value.columns.length
+            holdsData.value.columns.length,
+            servicesData.value.columns.length
         );
 
         const columnWidths = [

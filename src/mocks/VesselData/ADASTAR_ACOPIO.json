@@ -3,74 +3,173 @@
     "data": {
         "manifest": {
             "id": "2026-62",
-            "cvGkey": "86037",
-            "vvdGkey": "83724",
             "name": "ADASTAR"
         },
         "operation_type": "ACOPIO",
-        "transactions": [
-            {
-                "bodega": "BODEGA 05",
-                "blItemGkey": "1111",
-                "jornada": "09-02-2026 16:00 - 23:59",
-                "totalBultos": 0,
-                "totalPeso": 2355230
-            },
-            {
-                "bodega": "BODEGA 05",
-                "blItemGkey": "1111",
-                "jornada": "10-02-2026 00:00 - 07:59",
-                "totalBultos": 0,
-                "totalPeso": 1666320
-            }
-        ],
         "summary": {
-            "totalBultos": 0,
-            "totalPeso": 4021550,
-            "blItems": [
+            "holds": [
                 {
-                    "gkey": "1111",
-                    "nbr": "SSP20353",
-                    "pesoManifestado": 4000000,
-                    "bultosManifestados": 0,
-                    "pesoDescargado": 4021550,
-                    "bultosDescargados": 0,
-                    "porcentajePeso": 100.54,
-                    "porcentajeBultos": 0,
-                    "jornadas": {
-                        "09-02-2026 16:00 - 23:59": {
-                            "peso": 2355230,
-                            "bultos": 0
+                    "nbr": "BODEGA 01",
+                    "manifested_goods": 0,
+                    "manifested_weight": 47480000,
+                    "processed_weight": 47480000,
+                    "processed_goods": 0,
+                    "percentage_weight": 34,
+                    "percentage_goods": 100,
+                    "shifts": {
+                        "29-01-2026 16:00-23:59": {
+                            "weight": 1915910,
+                            "goods": 0
                         },
-                        "10-02-2026 00:00 - 07:59": {
-                            "peso": 1666320,
-                            "bultos": 0
+                        "30-01-2026 00:00-07:59": {
+                            "weight": 2810250,
+                            "goods": 0
+                        },
+                        "30-01-2026 08:00-15:59": {
+                            "weight": 3520400,
+                            "goods": 0
+                        },
+                        "30-01-2026 16:00-23:59": {
+                            "weight": 1623400,
+                            "goods": 0
+                        }
+                    }
+                },
+                {
+                    "nbr": "BODEGA 02",
+                    "manifested_goods": 0,
+                    "manifested_weight": 35200000,
+                    "processed_weight": 28160000,
+                    "processed_goods": 0,
+                    "percentage_weight": 80,
+                    "percentage_goods": 0,
+                    "shifts": {
+                        "29-01-2026 16:00-23:59": {
+                            "weight": 2450000,
+                            "goods": 0
+                        },
+                        "30-01-2026 08:00-15:59": {
+                            "weight": 3100000,
+                            "goods": 0
+                        },
+                        "30-01-2026 16:00-23:59": {
+                            "weight": 2210000,
+                            "goods": 0
+                        }
+                    }
+                },
+                {
+                    "nbr": "BODEGA 03",
+                    "manifested_goods": 0,
+                    "manifested_weight": 42000000,
+                    "processed_weight": 31500000,
+                    "processed_goods": 0,
+                    "percentage_weight": 75,
+                    "percentage_goods": 0,
+                    "shifts": {
+                        "30-01-2026 00:00-07:59": {
+                            "weight": 3680000,
+                            "goods": 0
+                        },
+                        "30-01-2026 08:00-15:59": {
+                            "weight": 4120000,
+                            "goods": 0
+                        },
+                        "30-01-2026 16:00-23:59": {
+                            "weight": 2800000,
+                            "goods": 0
+                        },
+                        "31-01-2026 00:00-07:59": {
+                            "weight": 2900000,
+                            "goods": 0
+                        }
+                    }
+                },
+                {
+                    "nbr": "BODEGA 04",
+                    "manifested_goods": 0,
+                    "manifested_weight": 38500000,
+                    "processed_weight": 19250000,
+                    "processed_goods": 0,
+                    "percentage_weight": 50,
+                    "percentage_goods": 0,
+                    "shifts": {
+                        "29-01-2026 16:00-23:59": {
+                            "weight": 1850000,
+                            "goods": 0
+                        },
+                        "30-01-2026 00:00-07:59": {
+                            "weight": 2200000,
+                            "goods": 0
+                        },
+                        "30-01-2026 16:00-23:59": {
+                            "weight": 1950000,
+                            "goods": 0
+                        }
+                    }
+                },
+                {
+                    "nbr": "BODEGA 05",
+                    "manifested_goods": 0,
+                    "manifested_weight": 29800000,
+                    "processed_weight": 8940000,
+                    "processed_goods": 0,
+                    "percentage_weight": 30,
+                    "percentage_goods": 0,
+                    "shifts": {
+                        "30-01-2026 08:00-15:59": {
+                            "weight": 2980000,
+                            "goods": 0
+                        },
+                        "30-01-2026 16:00-23:59": {
+                            "weight": 2460000,
+                            "goods": 0
                         }
                     }
                 }
             ],
-            "bodegas": [
+            "services": [
                 {
-                    "gkey": "5",
-                    "nbr": "BODEGA 05",
-                    "pesoManifestado": 4000000,
-                    "bultosManifestados": 0,
-                    "pesoDescargado": 4021550,
-                    "bultosDescargados": 0,
-                    "porcentajePeso": 100.54,
-                    "porcentajeBultos": 0,
-                    "jornadas": {
-                        "09-02-2026 16:00 - 23:59": {
-                            "peso": 2355230,
-                            "bultos": 0
+                    "nbr": "SSP20340",
+                    "manifested_goods": 0,
+                    "manifested_weight": 47480000,
+                    "processed_weight": 47480000,
+                    "processed_goods": 0,
+                    "percentage_weight": 100,
+                    "percentage_goods": 100,
+                    "shifts": {
+                        "29-01-2026 16:00-23:59": {
+                            "weight": 1915910,
+                            "goods": 0
                         },
-                        "10-02-2026 00:00 - 07:59": {
-                            "peso": 1666320,
-                            "bultos": 0
+                        "30-01-2026 00:00-07:59": {
+                            "weight": 2810250,
+                            "goods": 0
+                        },
+                        "30-01-2026 08:00-15:59": {
+                            "weight": 3520400,
+                            "goods": 0
+                        },
+                        "30-01-2026 16:00-23:59": {
+                            "weight": 1623400,
+                            "goods": 0
                         }
                     }
                 }
             ]
-        }
+        },
+        "last_update": "2026-01-30T23:59:00Z",
+        "shifts_worked": [
+            "29-01-2026 16:00-23:59",
+            "30-01-2026 00:00-07:59",
+            "30-01-2026 08:00-15:59",
+            "30-01-2026 16:00-23:59",
+            "31-01-2026 00:00-07:59",
+            "31-01-2026 08:00-15:59",
+            "31-01-2026 16:00-23:59",
+            "01-02-2026 00:00-07:59",
+            "01-02-2026 08:00-15:59",
+            "01-02-2026 16:00-23:59"
+        ]
     }
 }

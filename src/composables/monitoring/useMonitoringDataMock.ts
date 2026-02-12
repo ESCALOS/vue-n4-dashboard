@@ -33,10 +33,9 @@ export function useMonitoringDataMock() {
                     manifest: { ...vessel.manifest },
                     operation_type: vessel.operation_type,
                 };
-                selectedVesselData.value = await getVesselMonitorData(vessel);
+                selectedVesselData.value = await getVesselMonitorData({ manifest_id: vessel.manifest.id, operation_type: vessel.operation_type });
             }
         } catch (err) {
-            console.error('Error cargando datos de nave:', err);
             error.value = 'Error al cargar datos de nave';
         } finally {
             loading.value = false;
@@ -81,9 +80,8 @@ export function useMonitoringDataMock() {
 
         try {
             loading.value = true;
-            selectedVesselData.value = await refreshVesselData(selectedVessel.value);
+            selectedVesselData.value = await refreshVesselData({ manifest_id: selectedVessel.value.manifest.id, operation_type: selectedVessel.value.operation_type });
         } catch (err) {
-            console.error('Error refrescando datos:', err);
             error.value = 'Error al refrescar datos';
         } finally {
             loading.value = false;
