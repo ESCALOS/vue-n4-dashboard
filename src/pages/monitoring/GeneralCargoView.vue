@@ -27,8 +27,8 @@
             :vessel-data="selectedVesselData"
             :is-connected="true"
             :loading="loading"
-            :active-tab="activeTab"
-            :view-mode="viewMode"
+            v-model:active-tab="activeTab"
+            v-model:view-mode="viewMode"
             :current-shift="currentShift"
             :summary="summary"
             :total-goods-current-shift="totalGoodsCurrentShift"
@@ -36,6 +36,7 @@
             :pivoted-shifts="pivotedData.shifts"
             :pivoted-columns="pivotedData.columns"
             :column-totals="columnTotals"
+            @refresh="refreshData"
         />
 
     </div>
@@ -66,7 +67,8 @@ const {
   loadMonitoredVessels,
   selectVessel,
   addVessel,
-  removeVessel
+  removeVessel,
+  refreshData
 } = useMonitoringDataMock();
 
 

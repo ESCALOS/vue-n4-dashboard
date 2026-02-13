@@ -115,12 +115,16 @@ export class MonitoringExcelExporter {
             manifested_goods: number;
         }[],
         columnTotals: {
-            manifested: number[];
-            processed: number[];
-            difference: number[];
-            manifestedGoods: number[];
-            processedGoods: number[];
-            differenceGoods: number[];
+            weight: {
+                manifested: number[];
+                processed: number[];
+                difference: number[];
+            }
+            goods: {
+                manifested: number[];
+                processed: number[];
+                difference: number[];
+            }
         },
         useBultos: boolean = false
     ): MonitoringTableData {
@@ -150,8 +154,8 @@ export class MonitoringExcelExporter {
         // Fila TOTAL (descargado)
         const totalRow: Array<string | number> = ['TOTAL'];
         const totals = useBultos
-            ? columnTotals.processedGoods
-            : columnTotals.processed;
+            ? columnTotals.goods.processed
+            : columnTotals.weight.processed;
 
         totals.forEach((value: number) => {
             totalRow.push(value);
@@ -164,8 +168,8 @@ export class MonitoringExcelExporter {
         // Fila MANIFESTADO
         const manifestadoRow: Array<string | number> = ['MANIFESTADO'];
         const manifestados = useBultos
-            ? columnTotals.manifestedGoods
-            : columnTotals.manifested;
+            ? columnTotals.goods.manifested
+            : columnTotals.weight.manifested;
 
         manifestados.forEach((value: number) => {
             manifestadoRow.push(value);
@@ -178,8 +182,8 @@ export class MonitoringExcelExporter {
         // Fila DIFERENCIA
         const diferenciaRow: Array<string | number> = ['DIFERENCIA'];
         const diferencias = useBultos
-            ? columnTotals.differenceGoods
-            : columnTotals.difference;
+            ? columnTotals.goods.difference
+            : columnTotals.weight.difference;
 
         diferencias.forEach((value: number) => {
             diferenciaRow.push(value);
@@ -279,7 +283,7 @@ export class MonitoringExcelExporter {
         const columns = computed(() => pivotedData.value.columns);
 
         // Verificar si hay bultos manifestados
-        const totalBultosManifestados = columnTotals.value.manifestedGoods.reduce(
+        const totalBultosManifestados = columnTotals.value.goods.manifested.reduce(
             (acc: number, val: number) => acc + val,
             0
         );

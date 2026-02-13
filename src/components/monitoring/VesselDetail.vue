@@ -38,6 +38,16 @@
             :summary="summary"
         />
 
+        <ToggleView
+            :active-tab="activeTab"
+            @update:activeTab="$emit('update:activeTab', $event)"
+        />
+
+        <SwitchMetric
+            :view-mode="viewMode"
+            @update:viewMode="$emit('update:viewMode', $event)"
+        />
+
         <MonitoringTable
             :shifts="pivotedShifts"
             :columns="pivotedColumns"
@@ -56,6 +66,8 @@ import type { VesselData } from '../../interfaces/monitoring/VesselData';
 import ExcelExporterButton from './ExcelExporterButton.vue';
 import MonitoringTable from './MonitoringTable.vue';
 import SummaryCards from './SummaryCards.vue';
+import SwitchMetric from './SwitchMetric.vue';
+import ToggleView from './ToggleView.vue';
 
 interface CompleteSummary {
   holds: SummaryData;
@@ -100,6 +112,11 @@ defineProps<{
     }
 }>();
 
+defineEmits<{
+  refresh: [];
+  'update:activeTab': [value: 'holds' | 'services'];
+  'update:viewMode': [value: 'weight' | 'goods'];
+}>();
 </script>
 
 <style scoped>

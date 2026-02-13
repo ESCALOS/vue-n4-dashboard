@@ -24,11 +24,11 @@
                     </span>
                 </td>
                 <td v-for="(col, idx) in shiftRow.columns" :key="idx" class="data-cell">
-                    <span v-if="viewMode === 'weight'">{{ formatNumber(col.weight) }} kg</span>
+                    <span v-if="viewMode === 'weight'">{{ formatNumber(col.weight) }}</span>
                     <span v-else>{{ formatNumber(col.goods) }}</span>
                 </td>
                 <td class="total-cell">
-                    <strong v-if="viewMode === 'weight'">{{ formatNumber(shiftRow.totalWeight) }} kg</strong>
+                    <strong v-if="viewMode === 'weight'">{{ formatNumber(shiftRow.totalWeight) }}</strong>
                     <strong v-else>{{ formatNumber(shiftRow.totalGoods) }}</strong>
                 </td>
             </tr>
@@ -37,12 +37,12 @@
         <tr class="footer-row footer-manifested">
           <td class="footer-label">📋 Manifestado</td>
           <td v-for="(col, idx) in columns" :key="`man-${idx}`" class="footer-cell">
-            <span v-if="viewMode === 'weight'">{{ formatNumber(col.manifested_weight) }} kg</span>
+            <span v-if="viewMode === 'weight'">{{ formatNumber(col.manifested_weight) }}</span>
             <span v-else>{{ formatNumber(col.manifested_goods) }}</span>
           </td>
           <td class="footer-total">
             <strong v-if="viewMode === 'weight'">
-              {{ formatNumber(columnTotals.weight.manifested.reduce((s, t) => s + t, 0)) }} kg
+              {{ formatNumber(columnTotals.weight.manifested.reduce((s, t) => s + t, 0)) }}
             </strong>
             <strong v-else>
               {{ formatNumber(columnTotals.goods.manifested.reduce((s, t) => s + t, 0)) }}
@@ -53,13 +53,13 @@
           <td class="footer-label">{{ getOperationLabel(operationType) }}</td>
           <td v-for="(_, idx) in columns" :key="`desc-${idx}`" class="footer-cell">
             <span v-if="viewMode === 'weight'"
-              >{{ formatNumber(columnTotals.weight.processed[idx] ?? 0) }} kg</span
+              >{{ formatNumber(columnTotals.weight.processed[idx] ?? 0) }}</span
             >
             <span v-else>{{ formatNumber(columnTotals.goods.processed[idx] ?? 0) }}</span>
           </td>
           <td class="footer-total">
             <strong v-if="viewMode === 'weight'">
-              {{ formatNumber(columnTotals.weight.processed.reduce((s, t) => s + t, 0)) }} kg
+              {{ formatNumber(columnTotals.weight.processed.reduce((s, t) => s + t, 0)) }}
             </strong>
             <strong v-else>
               {{ formatNumber(columnTotals.goods.processed.reduce((s, t) => s + t, 0)) }}
@@ -73,7 +73,7 @@
               v-if="viewMode === 'weight'"
               :class="(columnTotals.weight.difference[idx] ?? 0) > 0 ? 'diff-pending' : 'diff-complete'"
             >
-              {{ formatNumber(columnTotals.weight.difference[idx] ?? 0) }} kg
+              {{ formatNumber(columnTotals.weight.difference[idx] ?? 0) }}
             </span>
             <span
               v-else
@@ -93,7 +93,7 @@
                   : 'diff-complete'
               "
             >
-              {{ formatNumber(columnTotals.weight.difference.reduce((s, t) => s + t, 0)) }} kg
+              {{ formatNumber(columnTotals.weight.difference.reduce((s, t) => s + t, 0)) }}
             </strong>
             <strong
               v-else

@@ -1,22 +1,28 @@
 <template>
     <div class="view-toggle">
       <button
-        :class="['toggle-btn', { active: activeTab === 'bodegas' }]"
-        @click="$emit('update:activeTab', 'bodegas')"
+        :class="['toggle-btn', { active: activeTab === 'holds' }]"
+        @click="$emit('update:activeTab', 'holds')"
       >
         📦 Por Bodega
       </button>
       <button
-        :class="['toggle-btn', { active: activeTab === 'bls' }]"
-        @click="$emit('update:activeTab', 'bls')"
+        :class="['toggle-btn', { active: activeTab === 'services' }]"
+        @click="$emit('update:activeTab', 'services')"
       >
-        📋 Por BL
+        📋 Por BL Item
       </button>
     </div>
 </template>
 
-<script>
+<script setup lang="ts">
+defineProps<{
+  activeTab: 'holds' | 'services'
+}>();
 
+defineEmits<{
+  'update:activeTab': [tab: 'holds' | 'services']
+}>();
 </script>
 
 <style scoped>
