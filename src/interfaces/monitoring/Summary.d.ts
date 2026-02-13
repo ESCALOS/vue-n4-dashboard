@@ -1,8 +1,16 @@
 import type { OperationItem } from "./OperationItem";
 
-export interface Summary extends OperationItem {
-    processed_weight: number;
-    processed_goods: number;
+export interface Summary {
+    id: number;
+    nbr: string;
+    weight: {
+        manifested: number;
+        processed: number;
+    };
+    goods: {
+        manifested: number;
+        processed: number;
+    }
     shifts: {
         [key: string]: {
             weight: number;

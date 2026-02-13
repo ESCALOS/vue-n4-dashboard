@@ -16,6 +16,10 @@
                 </p>
             </div>
             <div class="header-actions">
+                <ExportAcopioButton
+                    :vessel-data="vesselData"
+                    :loading="loading"
+                />
                 <ExcelExporterButton
                 :vessel-data="vesselData"
                 :loading="loading"
@@ -64,6 +68,7 @@
 import type { SummaryData } from '../../composables/monitoring/useMonitoringCalculations';
 import type { VesselData } from '../../interfaces/monitoring/VesselData';
 import ExcelExporterButton from './ExcelExporterButton.vue';
+import ExportAcopioButton from './ExportAcopioButton.vue';
 import MonitoringTable from './MonitoringTable.vue';
 import SummaryCards from './SummaryCards.vue';
 import SwitchMetric from './SwitchMetric.vue';

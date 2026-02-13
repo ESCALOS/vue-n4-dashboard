@@ -24,41 +24,27 @@ export interface SummaryData {
 // ============================================
 
 /**
- * Calcula el total de una propiedad numérica de un array
- */
-function sumProperty<T>(
-    items: T[],
-    property: keyof T,
-    defaultValue: number = 0
-): number {
-    return items.reduce((sum, item) => {
-        const value = item[property];
-        return sum + (typeof value === 'number' ? value : defaultValue);
-    }, 0);
-}
-
-/**
  * Genera todos los computed para un resumen basado en la propiedad
  */
-function createSummaryComputeds<T extends Summary>(
-    items: T[]
+function createSummaryComputeds(
+    items: Summary[]
 ): SummaryData {
     return {
         weight: {
-            manifested: computed(() => sumProperty(items, 'manifested_weight')),
-            processed: computed(() => sumProperty(items, 'processed_weight')),
+            manifested: computed(() => items.reduce((sum, item) => sum + (item.weight.manifested || 0), 0)),
+            processed: computed(() => items.reduce((sum, item) => sum + (item.weight.processed || 0), 0)),
             percentage: computed(() => {
-                const totalManifested = sumProperty(items, 'manifested_weight');
-                const totalProcessed = sumProperty(items, 'processed_weight');
+                const totalManifested = items.reduce((sum, item) => sum + (item.weight.manifested || 0), 0);
+                const totalProcessed = items.reduce((sum, item) => sum + (item.weight.processed || 0), 0);
                 return totalManifested > 0 ? (totalProcessed / totalManifested) * 100 : 0;
             }),
         },
         goods: {
-            manifested: computed(() => sumProperty(items, 'manifested_goods')),
-            processed: computed(() => sumProperty(items, 'processed_goods')),
+            manifested: computed(() => items.reduce((sum, item) => sum + (item.goods.manifested || 0), 0)),
+            processed: computed(() => items.reduce((sum, item) => sum + (item.goods.processed || 0), 0)),
             percentage: computed(() => {
-                const totalManifested = sumProperty(items, 'manifested_goods');
-                const totalProcessed = sumProperty(items, 'processed_goods');
+                const totalManifested = items.reduce((sum, item) => sum + (item.goods.manifested || 0), 0);
+                const totalProcessed = items.reduce((sum, item) => sum + (item.goods.processed || 0), 0);
                 return totalManifested > 0 ? (totalProcessed / totalManifested) * 100 : 0;
             }),
         },
@@ -103,7 +89,7 @@ export function useMonitoringCalculations(selectedVesselData: { value: VesselDat
     // Resumen de Bodegas
     const holdSummary = computed<SummaryData>(() => {
         if (!selectedVesselData.value) {
-            return createSummaryComputeds<Summary>([]);
+            return createSummaryComputeds([]);
         }
         return createSummaryComputeds(selectedVesselData.value.summary.holds);
     });
@@ -111,7 +97,7 @@ export function useMonitoringCalculations(selectedVesselData: { value: VesselDat
     // Resumen de BLs
     const serviceSummary = computed<SummaryData>(() => {
         if (!selectedVesselData.value) {
-            return createSummaryComputeds<Summary>([]);
+            return createSummaryComputeds([]);
         }
         return createSummaryComputeds(selectedVesselData.value.summary.services);
     });

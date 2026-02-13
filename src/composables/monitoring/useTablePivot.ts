@@ -41,8 +41,8 @@ export function useTablePivot(
         // Obtener columnas (bodegas o BLs)
         const columns = items.map((item) => ({
             key: item.nbr,
-            manifested_weight: item.manifested_weight,
-            manifested_goods: item.manifested_goods,
+            manifested_weight: item.weight.manifested,
+            manifested_goods: item.goods.manifested,
         }));
 
         // Crear matriz de datos por jornada
@@ -93,20 +93,20 @@ export function useTablePivot(
 
         return {
             weight: {
-                manifested: items.map((item) => item.manifested_weight),
-                processed: items.map((item) => item.processed_weight),
+                manifested: items.map((item) => item.weight.manifested),
+                processed: items.map((item) => item.weight.processed),
                 difference: items.map((_item, idx) => {
-                    const manifestado = items[idx]?.manifested_weight || 0;
-                    const descargado = items[idx]?.processed_weight || 0;
+                    const manifestado = items[idx]?.weight.manifested || 0;
+                    const descargado = items[idx]?.weight.processed || 0;
                     return manifestado - descargado;
                 }),
             },
             goods: {
-                manifested: items.map((item) => item.manifested_goods),
-                processed: items.map((item) => item.processed_goods),
+                manifested: items.map((item) => item.goods.manifested),
+                processed: items.map((item) => item.goods.processed),
                 difference: items.map((_item, idx) => {
-                    const manifestado = items[idx]?.manifested_goods || 0;
-                    const descargado = items[idx]?.processed_goods || 0;
+                    const manifestado = items[idx]?.goods.manifested || 0;
+                    const descargado = items[idx]?.goods.processed || 0;
                     return manifestado - descargado;
                 }),
             }

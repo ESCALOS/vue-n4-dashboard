@@ -9,13 +9,16 @@
         "summary": {
             "holds": [
                 {
+                    "id": 1,
                     "nbr": "BODEGA 01",
-                    "manifested_goods": 0,
-                    "manifested_weight": 47480000,
-                    "processed_weight": 47480000,
-                    "processed_goods": 0,
-                    "percentage_weight": 34,
-                    "percentage_goods": 100,
+                    "weight": {
+                        "manifested": 47480000,
+                        "processed": 47480000
+                    },
+                    "goods": {
+                        "manifested": 0,
+                        "processed": 0
+                    },
                     "shifts": {
                         "29-01-2026 16:00-23:59": {
                             "weight": 1915910,
@@ -36,13 +39,16 @@
                     }
                 },
                 {
+                    "id": 2,
                     "nbr": "BODEGA 02",
-                    "manifested_goods": 0,
-                    "manifested_weight": 35200000,
-                    "processed_weight": 28160000,
-                    "processed_goods": 0,
-                    "percentage_weight": 80,
-                    "percentage_goods": 0,
+                    "weight": {
+                        "manifested": 35200000,
+                        "processed": 28316000
+                    },
+                    "goods": {
+                        "manifested": 0,
+                        "processed": 0
+                    },
                     "shifts": {
                         "29-01-2026 16:00-23:59": {
                             "weight": 2450000,
@@ -59,13 +65,16 @@
                     }
                 },
                 {
+                    "id": 3,
                     "nbr": "BODEGA 03",
-                    "manifested_goods": 0,
-                    "manifested_weight": 42000000,
-                    "processed_weight": 31500000,
-                    "processed_goods": 0,
-                    "percentage_weight": 75,
-                    "percentage_goods": 0,
+                    "weight": {
+                        "manifested": 42000000,
+                        "processed": 31500000
+                    },
+                    "goods": {
+                        "manifested": 0,
+                        "processed": 0
+                    },
                     "shifts": {
                         "30-01-2026 00:00-07:59": {
                             "weight": 3680000,
@@ -86,13 +95,16 @@
                     }
                 },
                 {
+                    "id": 4,
                     "nbr": "BODEGA 04",
-                    "manifested_goods": 0,
-                    "manifested_weight": 38500000,
-                    "processed_weight": 19250000,
-                    "processed_goods": 0,
-                    "percentage_weight": 50,
-                    "percentage_goods": 0,
+                    "weight": {
+                        "manifested": 38500000,
+                        "processed": 19250000
+                    },
+                    "goods": {
+                        "manifested": 0,
+                        "processed": 0
+                    },
                     "shifts": {
                         "29-01-2026 16:00-23:59": {
                             "weight": 1850000,
@@ -109,13 +121,16 @@
                     }
                 },
                 {
+                    "id": 5,
                     "nbr": "BODEGA 05",
-                    "manifested_goods": 0,
-                    "manifested_weight": 29800000,
-                    "processed_weight": 8940000,
-                    "processed_goods": 0,
-                    "percentage_weight": 30,
-                    "percentage_goods": 0,
+                    "weight": {
+                        "manifested": 29800000,
+                        "processed": 8940000
+                    },
+                    "goods": {
+                        "manifested": 0,
+                        "processed": 0
+                    },
                     "shifts": {
                         "30-01-2026 08:00-15:59": {
                             "weight": 2980000,
@@ -131,12 +146,14 @@
             "services": [
                 {
                     "nbr": "SSP20340",
-                    "manifested_goods": 0,
-                    "manifested_weight": 47480000,
-                    "processed_weight": 47480000,
-                    "processed_goods": 0,
-                    "percentage_weight": 100,
-                    "percentage_goods": 100,
+                    "weight": {
+                        "manifested": 47480000,
+                        "processed": 47480000
+                    },
+                    "goods": {
+                        "manifested": 0,
+                        "processed": 0
+                    },
                     "shifts": {
                         "29-01-2026 16:00-23:59": {
                             "weight": 1915910,
@@ -170,6 +187,29 @@
             "01-02-2026 00:00-07:59",
             "01-02-2026 08:00-15:59",
             "01-02-2026 16:00-23:59"
+        ],
+        "transactions": [
+            {
+                "hold": "BODEGA 01",
+                "serviceId": "1105",
+                "shift": "07-02-2026 00:00 - 07:59",
+                "goods": 0,
+                "weight": 209280
+            },
+            {
+                "hold": "BODEGA 01",
+                "serviceId": "1105",
+                "shift": "07-02-2026 08:00 - 15:59",
+                "goods": 0,
+                "weight": 1168930
+            },
+            {
+                "hold": "BODEGA 01",
+                "serviceId": "1105",
+                "shift": "07-02-2026 16:00 - 23:59",
+                "goods": 0,
+                "weight": 1320260
+            }
         ]
     }
 }
