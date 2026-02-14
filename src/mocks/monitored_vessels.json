@@ -4,13 +4,13 @@
             "id": "2026-21",
             "name": "CRAMON ISLAND"
         },
-        "operation_type": "EMBARQUE_INDIRECTO"
+        "operation_type": "INDIRECT_LOADING"
     },
     {
         "manifest": {
             "id": "2026-10",
             "name": "SEA VOYAGER"
         },
-        "operation_type": "DESPACHO"
+        "operation_type": "DISPATCHING"
     }
 ]

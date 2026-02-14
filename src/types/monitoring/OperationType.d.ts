@@ -1,1 +1,1 @@
-export type OperationType = 'DESPACHO' | 'ACOPIO' | 'EMBARQUE_DIRECTO' | 'EMBARQUE_INDIRECTO';
+export type OperationType = 'DISPATCHING' | 'STOCKPILING' | 'DIRECT_LOADING' | 'INDIRECT_LOADING';

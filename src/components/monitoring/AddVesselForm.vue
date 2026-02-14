@@ -40,10 +40,10 @@
           class="form-select"
           :disabled="loading"
         >
-          <option value="DESPACHO">📦 Despacho</option>
-          <option value="EMBARQUE_INDIRECTO">🚢 Embarque Indirecto</option>
-          <option value="ACOPIO">📥 Acopio</option>
-          <option value="EMBARQUE_DIRECTO">🚢 Embarque Directo</option>
+          <option value="DISPATCHING">📦 Despacho</option>
+          <option value="INDIRECT_LOADING">🚢 Embarque Indirecto</option>
+          <option value="STOCKPILING">📥 Acopio</option>
+          <option value="DIRECT_LOADING">🚢 Embarque Directo</option>
         </select>
       </div>
     </div>
@@ -91,7 +91,7 @@ defineProps<{
 
 const dialogRef = ref<HTMLDialogElement>();
 const manifestId = ref('');
-const operationType = ref<OperationType>('DESPACHO');
+const operationType = ref<OperationType>('DISPATCHING');
 
 const open = () => {
   dialogRef.value?.showModal();
@@ -103,7 +103,7 @@ const close = () => {
 
 const handleClose = () => {
   manifestId.value = '';
-  operationType.value = 'DESPACHO';
+  operationType.value = 'DISPATCHING';
   emit('cancel');
 };
 

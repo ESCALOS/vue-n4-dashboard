@@ -2,21 +2,23 @@
     "success": true,
     "data": {
         "manifest": {
-            "id": "2026-31",
-            "name": "FM Prosperity"
+            "id": "2026-21",
+            "name": "Cramond Island"
         },
-        "operation_type": "EMBARQUE_DIRECTO",
+        "operation_type": "INDIRECT_LOADING",
         "summary": {
             "holds": [
                 {
                     "gkey": "1105",
                     "nbr": "SSP203436",
-                    "manifested_weight": 5000000,
-                    "manifested_goods": 20,
-                    "processed_weight": 5002020,
-                    "processed_goods": 20,
-                    "percentage_weight": 100.04,
-                    "percentage_goods": 56,
+                    "weight": {
+                        "manifested": 5000000,
+                        "processed": 5002020
+                    },
+                    "goods": {
+                        "manifested": 20,
+                        "processed": 20
+                    },
                     "shifts": {
                         "07-02-2026 00:00 - 07:59": {
                             "weight": 509280,
@@ -43,12 +45,14 @@
                 {
                     "gkey": "1106",
                     "nbr": "SSP203437",
-                    "manifested_weight": 1304052,
-                    "manifested_goods": 1084,
-                    "processed_weight": 2302080,
-                    "processed_goods": 1084,
-                    "percentage_weight": 99.85,
-                    "percentage_goods": 100,
+                    "weight": {
+                        "manifested": 1304052,
+                        "processed": 2302080
+                    },
+                    "goods": {
+                        "manifested": 1084,
+                        "processed": 1084
+                    },
                     "shifts": {
                         "08-02-2026 08:00 - 15:59": {
                             "weight": 209190,
@@ -73,12 +77,14 @@
                 {
                     "gkey": "1",
                     "nbr": "BODEGA 01",
-                    "manifested_weight": 3000000,
-                    "manifested_goods": 0,
-                    "processed_weight": 3114780,
-                    "processed_goods": 0,
-                    "percentage_weight": 34.75,
-                    "percentage_goods": 33,
+                    "weight": {
+                        "manifested": 3000000,
+                        "processed": 3114780
+                    },
+                    "goods": {
+                        "manifested": 0,
+                        "processed": 0
+                    },
                     "shifts": {
                         "07-02-2026 00:00 - 07:59": {
                             "weight": 209280,
@@ -105,12 +111,14 @@
                 {
                     "gkey": "4",
                     "nbr": "BODEGA 04",
-                    "manifested_weight": 1304052,
-                    "manifested_goods": 1084,
-                    "processed_weight": 1302080,
-                    "processed_goods": 1084,
-                    "percentage_weight": 99.85,
-                    "percentage_goods": 100,
+                    "weight": {
+                        "manifested": 1304052,
+                        "processed": 1302080
+                    },
+                    "goods": {
+                        "manifested": 1084,
+                        "processed": 1084
+                    },
                     "shifts": {
                         "08-02-2026 08:00 - 15:59": {
                             "weight": 209190,
@@ -133,12 +141,14 @@
                 {
                     "gkey": "5",
                     "nbr": "BODEGA 05",
-                    "manifested_weight": 2000000,
-                    "manifested_goods": 0,
-                    "processed_weight": 1887240,
-                    "processed_goods": 0,
-                    "percentage_weight": 94.36,
-                    "percentage_goods": 0,
+                    "weight": {
+                        "manifested": 2000000,
+                        "processed": 1887240
+                    },
+                    "goods": {
+                        "manifested": 0,
+                        "processed": 0
+                    },
                     "shifts": {
                         "07-02-2026 16:00 - 23:59": {
                             "weight": 358180,

@@ -7,7 +7,7 @@
             "vvdGkey": "87136",
             "name": "ANTHEIA"
         },
-        "operation_type": "DESPACHO",
+        "operation_type": "DISPATCHING",
         "transactions": [
             {
                 "hold": "BODEGA 01",

@@ -20,24 +20,14 @@ export const getShiftClass = (shift: string): string => {
 // Obtener etiqueta de tipo de operación
 export const getOperationLabel = (tipo: OperationType): string => {
     const labels: Record<OperationType, string> = {
-        'DESPACHO': '📦 Despacho',
-        'EMBARQUE_INDIRECTO': '🚢 Embarque Ind.',
-        'ACOPIO': '📥 Acopio',
-        'EMBARQUE_DIRECTO': '🚢 Embarque Dir.'
+        'DISPATCHING': '📦 Despacho',
+        'INDIRECT_LOADING': '🚢 Embarque Ind.',
+        'STOCKPILING': '📥 Acopio',
+        'DIRECT_LOADING': '🚢 Embarque Dir.'
     };
     return labels[tipo] || tipo;
 };
 
-// Obtener clases de badge por tipo de operación
-export const getOperationBadge = (tipo: OperationType): string => {
-    const badges: Record<OperationType, string> = {
-        'DESPACHO': 'bg-blue-500/15 text-blue-500 border border-blue-500/30',
-        'EMBARQUE_INDIRECTO': 'bg-green-500/15 text-green-500 border border-green-500/30',
-        'ACOPIO': 'bg-purple-500/15 text-purple-500 border border-purple-500/30',
-        'EMBARQUE_DIRECTO': 'bg-pink-500/15 text-pink-500 border border-pink-500/30'
-    };
-    return badges[tipo] || 'bg-gray-500/15 text-gray-500 border border-gray-500/30';
-};
 
 // Formatear números
 export const formatNumber = (num: number): string => {

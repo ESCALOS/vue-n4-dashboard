@@ -5,7 +5,7 @@ import type { AddVesselResponse } from "../interfaces/monitoring/api/AddVesselRe
 
 import monitoredVessels from "../mocks/monitored_vessels.json";
 
-import adastar from "../mocks/VesselData/Adastar_Acopio.json";
+import adastar from "../mocks/VesselData/adastar_acopio.json";
 import antheia from "../mocks/VesselData/Antheia_Despacho.json";
 import cramon from "../mocks/VesselData/cramon_island_embarque_indirecto.json";
 import prosperity from "../mocks/VesselData/prosperity_embarque_directo.json";

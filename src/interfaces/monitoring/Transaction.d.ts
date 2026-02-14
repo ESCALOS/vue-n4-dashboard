@@ -1,5 +1,3 @@
-import type { ShiftType } from "../../types/monitoring/ShiftType";
-
 export interface Transaction {
     hold: string;
     serviceId: number;

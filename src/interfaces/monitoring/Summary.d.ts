@@ -1,5 +1,3 @@
-import type { OperationItem } from "./OperationItem";
-
 export interface Summary {
     id: number;
     nbr: string;

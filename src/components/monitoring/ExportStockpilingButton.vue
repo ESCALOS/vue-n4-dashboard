@@ -1,8 +1,8 @@
 <template>
   <button 
-    v-if="vesselData.operation_type === 'ACOPIO'"
+    v-if="vesselData.operation_type === 'STOCKPILING'"
     @click="handleExport" 
-    class="btn btn-export-acopio" 
+    class="btn btn-export-stockpiling" 
     :disabled="loading || exporting"
     :title="exportTooltip"
   >
@@ -258,7 +258,7 @@ const applyStylesToSheet = (ws: any) => {
 </script>
 
 <style scoped>
-.btn-export-acopio {
+.btn-export-stockpiling {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
@@ -271,16 +271,16 @@ const applyStylesToSheet = (ws: any) => {
   box-shadow: 0 4px 6px rgba(102, 126, 234, 0.25);
 }
 
-.btn-export-acopio:hover:not(:disabled) {
+.btn-export-stockpiling:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(102, 126, 234, 0.35);
 }
 
-.btn-export-acopio:active:not(:disabled) {
+.btn-export-stockpiling:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.btn-export-acopio:disabled {
+.btn-export-stockpiling:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;

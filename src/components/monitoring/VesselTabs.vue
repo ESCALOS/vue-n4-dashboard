@@ -49,10 +49,10 @@ defineEmits<{
 
 const getOperationBadgeClass = (operationType: OperationType): string => {
   const badges: Record<OperationType, string> = {
-    DESPACHO: 'badge-despacho',
-    EMBARQUE_INDIRECTO: 'badge-embarque-indirecto',
-    ACOPIO: 'badge-acopio',
-    EMBARQUE_DIRECTO: 'badge-embarque-directo'
+    DISPATCHING: 'dispatching-badge',
+    INDIRECT_LOADING: 'indirect-loading-badge',
+    STOCKPILING: 'stockpiling-badge',
+    DIRECT_LOADING: 'direct-loading-badge'
   };
 
   return badges[operationType] ?? 'badge-default';
@@ -122,25 +122,25 @@ const getOperationBadgeClass = (operationType: OperationType): string => {
   border: 1px solid transparent;
 }
 
-.badge-despacho {
+.dispatching-badge {
   background: rgba(59, 130, 246, 0.15);
   color: #3b82f6;
   border-color: rgba(59, 130, 246, 0.3);
 }
 
-.badge-embarque-indirecto {
+.indirect-loading-badge {
   background: rgba(34, 197, 94, 0.15);
   color: #22c55e;
   border-color: rgba(34, 197, 94, 0.3);
 }
 
-.badge-acopio {
+.stockpiling-badge {
   background: rgba(168, 85, 247, 0.15);
   color: #a855f7;
   border-color: rgba(168, 85, 247, 0.3);
 }
 
-.badge-embarque-directo {
+.direct-loading-badge {
   background: rgba(236, 72, 153, 0.15);
   color: #ec4899;
   border-color: rgba(236, 72, 153, 0.3);

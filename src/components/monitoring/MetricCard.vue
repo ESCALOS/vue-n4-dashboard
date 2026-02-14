@@ -70,10 +70,10 @@ defineProps<{
 
 const getOperationLabel = (tipo: OperationType): string => {
   const labels: Record<OperationType, string> = {
-    DESPACHO: 'Despachado',
-    ACOPIO: 'Acopiado',
-    EMBARQUE_DIRECTO: 'Embarcado',
-    EMBARQUE_INDIRECTO: 'Embarcado',
+    DISPATCHING: 'Despachado',
+    STOCKPILING: 'Acopiado',
+    DIRECT_LOADING: 'Embarcado',
+    INDIRECT_LOADING: 'Embarcado',
   };
   return labels[tipo] || '✅ Procesado';
 };
