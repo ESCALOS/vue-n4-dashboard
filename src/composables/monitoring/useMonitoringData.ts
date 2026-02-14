@@ -1,6 +1,6 @@
-import { ref } from "vue";
+import { ref, onUnmounted } from "vue";
 import type { VesselData } from "../../interfaces/monitoring/VesselData";
-import { addVesselToMonitor, getMonitoredVessels, getVesselMonitorData, refreshVesselData, removeVesselFromMonitor } from "../../services/monitoringService";
+import { addVesselToMonitor, getMonitoredVessels, createVesselSSEConnection, removeVesselFromMonitor } from "../../services/monitoringService";
 import type { VesselsResponse } from "../../interfaces/monitoring/api/VesselResponse";
 import type { VesselsRequest } from "../../interfaces/monitoring/api/VesselResquest";
 
@@ -13,32 +13,55 @@ export function useMonitoringData() {
     const loading = ref(false);
     const error = ref('');
 
+    // Referencia a la conexión SSE activa
+    let sseConnection: EventSource | null = null;
+
     const loadMonitoredVessels = async () => {
         try {
             const response = await getMonitoredVessels();
             monitoredVessels.value = response;
         } catch (err) {
-            error.value = (err as Error).message || 'Error al cargar las naves monitoreadas';
+            error.value = (err as Error).message || 'Error al cargar las operaciones monitoreadas';
         }
     }
 
     const selectVessel = async (vesselRequest: VesselsRequest) => {
         try {
             loading.value = true;
+
+            // Cerrar conexión SSE previa si existe
+            if (sseConnection) {
+                sseConnection.close();
+                sseConnection = null;
+            }
+
             const vessel: VesselsResponse | undefined = monitoredVessels.value.find(
                 (v) => v.manifest.id === vesselRequest.manifest_id && v.operation_type === vesselRequest.operation_type
             );
+
             if (vessel) {
                 selectedVessel.value = {
                     manifest: { ...vessel.manifest },
                     operation_type: vessel.operation_type,
                 };
-                selectedVesselData.value = await getVesselMonitorData(vessel);
+
+                // Establecer conexión SSE para recibir actualizaciones en tiempo real
+                sseConnection = createVesselSSEConnection(
+                    vesselRequest,
+                    (data: VesselData) => {
+                        selectedVesselData.value = data;
+                        loading.value = false;
+                    },
+                    (err: Error) => {
+                        console.error('Error en conexión SSE:', err);
+                        error.value = 'Error al recibir actualizaciones del servidor';
+                        loading.value = false;
+                    }
+                );
             }
         } catch (err) {
             console.error('Error cargando datos de nave:', err);
             error.value = 'Error al cargar datos de nave';
-        } finally {
             loading.value = false;
         }
     };
@@ -67,6 +90,11 @@ export function useMonitoringData() {
                 selectedVessel.value?.manifest.id === vessel.manifest_id &&
                 selectedVessel.value?.operation_type === vessel.operation_type
             ) {
+                // Cerrar conexión SSE
+                if (sseConnection) {
+                    sseConnection.close();
+                    sseConnection = null;
+                }
                 selectedVessel.value = null;
                 selectedVesselData.value = null;
             }
@@ -77,18 +105,19 @@ export function useMonitoringData() {
     };
 
     const refreshData = async () => {
-        if (!selectedVessel.value) return;
-
-        try {
-            loading.value = true;
-            selectedVesselData.value = await refreshVesselData(selectedVessel.value);
-        } catch (err) {
-            console.error('Error refrescando datos:', err);
-            error.value = 'Error al refrescar datos';
-        } finally {
-            loading.value = false;
-        }
+        // Con SSE, los datos se actualizan automáticamente
+        // Esta función ya no es necesaria pero la mantenemos por compatibilidad
+        // El servidor envía actualizaciones automáticamente a través del stream
+        console.log('Los datos se actualizan automáticamente vía SSE');
     };
+
+    // Limpiar conexión SSE al desmontar el componente
+    onUnmounted(() => {
+        if (sseConnection) {
+            sseConnection.close();
+            sseConnection = null;
+        }
+    });
 
     return {
         monitoredVessels,

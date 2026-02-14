@@ -48,11 +48,11 @@ import EmptyState from '../../components/monitoring/EmptyState.vue';
 import HeaderSection from '../../components/monitoring/HeaderSection.vue';
 import VesselTabs from '../../components/monitoring/VesselTabs.vue';
 import type { VesselsRequest } from '../../interfaces/monitoring/api/VesselResquest';
-import { useMonitoringDataMock } from '../../composables/monitoring/useMonitoringDataMock';
 import VesselDetail from '../../components/monitoring/VesselDetail.vue';
 import AddVesselForm from '../../components/monitoring/AddVesselForm.vue';
 import { useMonitoringCalculations } from '../../composables/monitoring/useMonitoringCalculations';
 import { useTablePivot } from '../../composables/monitoring/useTablePivot';
+import { useMonitoringData } from '../../composables/monitoring/useMonitoringData';
 
 const addVesselFormRef = ref<InstanceType<typeof AddVesselForm>>();
 const activeTab = ref<'holds' | 'services'>('holds');
@@ -69,7 +69,7 @@ const {
   addVessel,
   removeVessel,
   refreshData
-} = useMonitoringDataMock();
+} = useMonitoringData();
 
 
 const {
