@@ -88,7 +88,7 @@ function getCurrentShiftKey(): string {
 export function useMonitoringCalculations(selectedVesselData: { value: VesselData | null }) {
     // Resumen de Bodegas
     const holdSummary = computed<SummaryData>(() => {
-        if (!selectedVesselData.value) {
+        if (!selectedVesselData.value?.summary?.holds) {
             return createSummaryComputeds([]);
         }
         return createSummaryComputeds(selectedVesselData.value.summary.holds);
@@ -96,7 +96,7 @@ export function useMonitoringCalculations(selectedVesselData: { value: VesselDat
 
     // Resumen de BLs
     const serviceSummary = computed<SummaryData>(() => {
-        if (!selectedVesselData.value) {
+        if (!selectedVesselData.value?.summary?.services) {
             return createSummaryComputeds([]);
         }
         return createSummaryComputeds(selectedVesselData.value.summary.services);
@@ -104,14 +104,14 @@ export function useMonitoringCalculations(selectedVesselData: { value: VesselDat
 
     // Total peso en jornada actual
     const totalWeightCurrentShift = computed(() => {
-        if (!selectedVesselData.value) return 0;
+        if (!selectedVesselData.value?.summary?.services) return 0;
         const shiftKey = getCurrentShiftKey();
         return sumShiftProperty(selectedVesselData.value.summary.services, shiftKey, 'weight');
     });
 
     // Total bultos en jornada actual
     const totalGoodsCurrentShift = computed(() => {
-        if (!selectedVesselData.value) return 0;
+        if (!selectedVesselData.value?.summary?.services) return 0;
         const shiftKey = getCurrentShiftKey();
         return sumShiftProperty(selectedVesselData.value.summary.services, shiftKey, 'goods');
     });

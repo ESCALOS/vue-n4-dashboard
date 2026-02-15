@@ -7,12 +7,12 @@ export function useTablePivot(
     activeTab: Ref<'holds' | 'services'>
 ) {
     const pivotedData = computed(() => {
-        if (!selectedVesselData.value) return { shifts: [], columns: [] };
+        if (!selectedVesselData.value?.summary) return { shifts: [], columns: [] };
 
         const isBodyView = activeTab.value === 'holds';
         const items = isBodyView
-            ? selectedVesselData.value.summary.holds
-            : selectedVesselData.value.summary.services;
+            ? (selectedVesselData.value.summary.holds ?? [])
+            : (selectedVesselData.value.summary.services ?? []);
 
         // Obtener todas las jornadas únicas
         const shiftsSet = new Set<string>();
@@ -72,7 +72,7 @@ export function useTablePivot(
     });
 
     const columnTotals = computed(() => {
-        if (!selectedVesselData.value)
+        if (!selectedVesselData.value?.summary)
             return {
                 weight: {
                     manifested: [],
@@ -88,8 +88,8 @@ export function useTablePivot(
 
         const isBodyView = activeTab.value === 'holds';
         const items = isBodyView
-            ? selectedVesselData.value.summary.holds
-            : selectedVesselData.value.summary.services;
+            ? (selectedVesselData.value.summary.holds ?? [])
+            : (selectedVesselData.value.summary.services ?? []);
 
         return {
             weight: {

@@ -76,7 +76,8 @@ export const createVesselSSEConnection = (
 
     eventSource.onmessage = (event) => {
         try {
-            const data = JSON.parse(event.data);
+            const parsed = JSON.parse(event.data);
+            const data = parsed.data ?? parsed;
             console.log('Datos SSE recibidos:', data);
             onData(data);
         } catch (error) {
@@ -108,7 +109,8 @@ export const getVesselMonitorData = async (
         throw new Error(data.error || "Error al obtener datos de nave");
     }
 
-    return response.json();
+    const result = await response.json();
+    return result.data ?? result;
 };
 
 /**
