@@ -69,22 +69,6 @@
                   <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">Carga General</span>
                 </router-link>
               </li>
-              <li>
-                <router-link
-                  to="/monitoreo/contenedores"
-                  @click="closeSidebarOnMobile"
-                  :class="[
-                    'nav-link',
-                    { 'is-expanded': !isCollapsed }
-                  ]"
-                  active-class="is-active"
-                >
-                  <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                  </svg>
-                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">Contenedores</span>
-                </router-link>
-              </li>
             </ul>
           </div>
 
@@ -98,22 +82,6 @@
             </h2>
             <div class="section-divider" :class="{ 'desktop-hidden': !isCollapsed }"></div>
             <ul class="nav-list">
-              <li>
-                <router-link
-                  to="/citas/pendientes"
-                  @click="closeSidebarOnMobile"
-                  :class="[
-                    'nav-link',
-                    { 'is-expanded': !isCollapsed }
-                  ]"
-                  active-class="is-active"
-                >
-                  <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">Pendientes</span>
-                </router-link>
-              </li>
               <li>
                 <router-link
                   to="/citas/en-proceso"

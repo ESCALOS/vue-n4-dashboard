@@ -1,0 +1,45 @@
+import type { AppointmentsResponse } from '../types/appointments/AppointmentInProgress';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+/**
+ * Crear conexión SSE para recibir citas en progreso en tiempo real
+ */
+export const createAppointmentsSSEConnection = (
+    onData: (data: AppointmentsResponse) => void,
+    onError?: (error: Error) => void,
+): EventSource => {
+    const url = `${API_BASE_URL}/appointments/in-progress/stream`;
+    const eventSource = new EventSource(url);
+
+    eventSource.onmessage = (event) => {
+        try {
+            const parsed = JSON.parse(event.data);
+            onData(parsed);
+        } catch (error) {
+            console.error('Error parseando datos SSE citas:', error);
+            onError?.(new Error('Error al procesar datos de citas'));
+        }
+    };
+
+    eventSource.onerror = (error) => {
+        console.error('Error en conexión SSE citas:', error);
+        onError?.(new Error('Error en conexión de citas en progreso'));
+    };
+
+    return eventSource;
+};
+
+/**
+ * Obtener citas en progreso (llamada única REST)
+ */
+export const getAppointmentsInProgress = async (): Promise<AppointmentsResponse> => {
+    const response = await fetch(`${API_BASE_URL}/appointments/in-progress`);
+
+    if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Error al obtener citas en progreso');
+    }
+
+    return response.json();
+};

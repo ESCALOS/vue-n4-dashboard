@@ -93,7 +93,6 @@ export const createVesselSSEConnection = (
         try {
             const parsed = JSON.parse(event.data);
             const data = parsed.data ?? parsed;
-            console.log('Datos SSE recibidos:', data);
             onData(data);
         } catch (error) {
             console.error('Error parseando datos SSE:', error);
