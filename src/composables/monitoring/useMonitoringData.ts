@@ -1,6 +1,6 @@
 import { ref, onUnmounted } from "vue";
 import type { VesselData } from "../../interfaces/monitoring/VesselData";
-import { addVesselToMonitor, getMonitoredVessels, createVesselSSEConnection, removeVesselFromMonitor } from "../../services/monitoringService";
+import { addVesselToMonitor, createVesselSSEConnection, createOperationsSSEConnection, removeVesselFromMonitor } from "../../services/monitoringService";
 import type { VesselsResponse } from "../../interfaces/monitoring/api/VesselResponse";
 import type { VesselsRequest } from "../../interfaces/monitoring/api/VesselResquest";
 
@@ -12,17 +12,49 @@ export function useMonitoringData() {
     const selectedVesselData = ref<VesselData | null>(null);
     const loading = ref(false);
     const error = ref('');
+    const serverConnected = ref(true);
 
-    // Referencia a la conexión SSE activa
+    // Referencia a la conexión SSE activa (datos de nave)
     let sseConnection: EventSource | null = null;
+    // Referencia a la conexión SSE de operaciones monitoreadas
+    let operationsSseConnection: EventSource | null = null;
 
-    const loadMonitoredVessels = async () => {
-        try {
-            const response = await getMonitoredVessels();
-            monitoredVessels.value = response;
-        } catch (err) {
-            error.value = (err as Error).message || 'Error al cargar las operaciones monitoreadas';
+    /**
+     * Inicia la conexión SSE para recibir la lista de operaciones en tiempo real.
+     * Cuando otro cliente agrega o remueve una nave, todos se actualizan.
+     */
+    const startOperationsSSE = () => {
+        if (operationsSseConnection) {
+            operationsSseConnection.close();
         }
+
+        operationsSseConnection = createOperationsSSEConnection(
+            (operations) => {
+                serverConnected.value = true;
+                monitoredVessels.value = operations;
+
+                // Si la nave seleccionada ya no está en la lista, limpiar la selección
+                if (selectedVessel.value) {
+                    const stillExists = operations.some(
+                        (v) =>
+                            v.manifest.id === selectedVessel.value!.manifest.id &&
+                            v.operation_type === selectedVessel.value!.operation_type
+                    );
+                    if (!stillExists) {
+                        if (sseConnection) {
+                            sseConnection.close();
+                            sseConnection = null;
+                        }
+                        selectedVessel.value = null;
+                        selectedVesselData.value = null;
+                    }
+                }
+            },
+            (err) => {
+                serverConnected.value = false;
+                console.error('Error en SSE de operaciones:', err);
+            }
+        );
     }
 
     const selectVessel = async (vesselRequest: VesselsRequest) => {
@@ -49,12 +81,13 @@ export function useMonitoringData() {
                 sseConnection = createVesselSSEConnection(
                     vesselRequest,
                     (data: VesselData) => {
+                        serverConnected.value = true;
                         selectedVesselData.value = data;
                         loading.value = false;
                     },
                     (err: Error) => {
+                        serverConnected.value = false;
                         console.error('Error en conexión SSE:', err);
-                        error.value = 'Error al recibir actualizaciones del servidor';
                         loading.value = false;
                     }
                 );
@@ -71,7 +104,7 @@ export function useMonitoringData() {
             loading.value = true;
             error.value = '';
             await addVesselToMonitor(vessel);
-            await loadMonitoredVessels();
+            // La lista se actualiza automáticamente vía SSE de operaciones
             await selectVessel(vessel);
             return { success: true };
         } catch (err) {
@@ -85,19 +118,7 @@ export function useMonitoringData() {
     const removeVessel = async (vessel: VesselsRequest) => {
         try {
             await removeVesselFromMonitor(vessel);
-            await loadMonitoredVessels();
-            if (
-                selectedVessel.value?.manifest.id === vessel.manifest_id &&
-                selectedVessel.value?.operation_type === vessel.operation_type
-            ) {
-                // Cerrar conexión SSE
-                if (sseConnection) {
-                    sseConnection.close();
-                    sseConnection = null;
-                }
-                selectedVessel.value = null;
-                selectedVesselData.value = null;
-            }
+            // La lista y la selección se limpian automáticamente vía SSE de operaciones
         } catch (err) {
             console.error('Error removiendo nave:', err);
             error.value = 'Error al remover nave';
@@ -111,11 +132,15 @@ export function useMonitoringData() {
         console.log('Los datos se actualizan automáticamente vía SSE');
     };
 
-    // Limpiar conexión SSE al desmontar el componente
+    // Limpiar conexiones SSE al desmontar el componente
     onUnmounted(() => {
         if (sseConnection) {
             sseConnection.close();
             sseConnection = null;
+        }
+        if (operationsSseConnection) {
+            operationsSseConnection.close();
+            operationsSseConnection = null;
         }
     });
 
@@ -125,7 +150,8 @@ export function useMonitoringData() {
         selectedVesselData,
         loading,
         error,
-        loadMonitoredVessels,
+        serverConnected,
+        startOperationsSSE,
         selectVessel,
         addVessel,
         removeVessel,

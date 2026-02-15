@@ -94,6 +94,7 @@ const manifestId = ref('');
 const operationType = ref<OperationType>('DISPATCHING');
 
 const open = () => {
+  emit('cancel');
   dialogRef.value?.showModal();
 };
 
@@ -113,7 +114,6 @@ const handleSubmit = () => {
     manifest_id: manifestId.value.trim(),
     operation_type: operationType.value
   });
-  close();
 };
 
 defineExpose({

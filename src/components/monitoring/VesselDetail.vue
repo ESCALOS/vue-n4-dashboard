@@ -5,15 +5,7 @@
                 <h2 class="vessel-title">{{ vesselData.manifest.name }}</h2>
                 <p class="vessel-last-update">
                 Última actualización: {{ new Date(vesselData.last_update).toLocaleString() }}
-                <span
-                    v-if="isConnected"
-                    class="connection-badge connection-badge-live"
-                    title="Conectado en tiempo real"
-                >
-                    🟢 Live
-                </span>
-                <span v-else class="connection-badge connection-badge-offline" title="Desconectado"> 🔴 Offline </span>
-                </p>
+            </p>
             </div>
             <div class="header-actions">
                 <ExportStockpilingButton
@@ -81,7 +73,6 @@ interface CompleteSummary {
 
 defineProps<{
     vesselData: VesselData,
-    isConnected: boolean,
     loading: boolean,
     activeTab: 'holds' | 'services'
     viewMode: 'weight' | 'goods'
@@ -166,29 +157,7 @@ defineEmits<{
     gap: 0.75rem;
 }
 
-.connection-badge {
-    padding: 0.25rem 0.625rem;
-    border-radius: 0.375rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    border: 1px solid transparent;
-}
 
-.connection-badge-live {
-    background: rgba(34, 197, 94, 0.15);
-    color: #22c55e;
-    border-color: rgba(34, 197, 94, 0.3);
-    animation: pulse 1.5s ease-in-out infinite;
-}
-
-.connection-badge-offline {
-    background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
-    border-color: rgba(239, 68, 68, 0.3);
-}
 
 .header-actions {
     display: flex;
@@ -216,13 +185,4 @@ defineEmits<{
     }
 }
 
-@keyframes pulse {
-    0%,
-    100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.7;
-    }
-}
 </style>

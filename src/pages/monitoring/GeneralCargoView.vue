@@ -1,5 +1,12 @@
 <template>
   <div class="general-cargo-view">
+        <Transition name="banner">
+            <div v-if="!serverConnected" class="server-disconnected-banner">
+                <span class="banner-icon">⚠️</span>
+                <span>Sin conexión con el servidor. Reintentando automáticamente...</span>
+            </div>
+        </Transition>
+
         <HeaderSection @show-add-vessel-form="addVesselFormRef?.open()" />
         
         <!-- Formulario modal con dialog -->
@@ -8,6 +15,7 @@
             :loading="loading"
             :error="error"
             @submit="handleAddVessel"
+            @cancel="clearError"
         />
 
         <EmptyState
@@ -25,7 +33,6 @@
         <VesselDetail
             v-if="selectedVesselData"
             :vessel-data="selectedVesselData"
-            :is-connected="true"
             :loading="loading"
             v-model:active-tab="activeTab"
             v-model:view-mode="viewMode"
@@ -64,7 +71,8 @@ const {
   selectedVesselData,
   loading,
   error,
-  loadMonitoredVessels,
+  serverConnected,
+  startOperationsSSE,
   selectVessel,
   addVessel,
   removeVessel,
@@ -88,7 +96,14 @@ const summary = computed(() => ({
 const { pivotedData, columnTotals } = useTablePivot(selectedVesselData, activeTab);
 
 const handleAddVessel = async (vessel: VesselsRequest) => {
-  await addVessel(vessel);
+  const result = await addVessel(vessel);
+  if (result.success) {
+    addVesselFormRef.value?.close();
+  }
+};
+
+const clearError = () => {
+  error.value = '';
 };
 
 const handleRemoveVessel = async (vessel: VesselsRequest) => {
@@ -98,7 +113,7 @@ const handleRemoveVessel = async (vessel: VesselsRequest) => {
 };
 
 onMounted(() => {
-    loadMonitoredVessels();
+    startOperationsSSE();
 });
 
 </script>
@@ -108,5 +123,44 @@ onMounted(() => {
   max-width: 87.5rem;
   margin: 0 auto;
   width: 100%;
+}
+
+.server-disconnected-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 0.5rem;
+  color: #fca5a5;
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: pulse-banner 2s ease-in-out infinite;
+}
+
+.banner-icon {
+  font-size: 1.125rem;
+}
+
+@keyframes pulse-banner {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.banner-enter-active {
+  transition: all 0.3s ease-out;
+}
+.banner-leave-active {
+  transition: all 0.2s ease-in;
+}
+.banner-enter-from {
+  opacity: 0;
+  transform: translateY(-0.5rem);
+}
+.banner-leave-to {
+  opacity: 0;
+  transform: translateY(-0.5rem);
 }
 </style>

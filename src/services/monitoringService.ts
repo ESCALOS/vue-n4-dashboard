@@ -7,19 +7,6 @@ import type { VesselData } from "../interfaces/monitoring/VesselData";
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 /**
- * Obtener lista de operaciones monitoreadas
- */
-export const getMonitoredVessels = async (): Promise<VesselsResponse[]> => {
-    const response = await fetch(`${API_BASE_URL}/monitoring/general-cargo/operations`);
-    if (!response.ok) {
-        throw new Error('Error al obtener las operaciones monitoreadas');
-    }
-
-    const result = await response.json();
-    return result.data || [];
-}
-
-/**
  * Agregar una operación al monitoreo
  */
 export const addVesselToMonitor = async (
@@ -60,6 +47,34 @@ export const removeVesselFromMonitor = async (
         const data = await response.json();
         throw new Error(data.message || "Error al remover operación");
     }
+};
+
+/**
+ * Crear conexión SSE para recibir actualizaciones de la lista de operaciones monitoreadas
+ */
+export const createOperationsSSEConnection = (
+    onData: (operations: VesselsResponse[]) => void,
+    onError?: (error: Error) => void
+): EventSource => {
+    const url = `${API_BASE_URL}/monitoring/general-cargo/operations/stream`;
+    const eventSource = new EventSource(url);
+
+    eventSource.onmessage = (event) => {
+        try {
+            const parsed = JSON.parse(event.data);
+            onData(parsed);
+        } catch (error) {
+            console.error('Error parseando datos SSE operaciones:', error);
+            onError?.(new Error('Error al procesar lista de operaciones'));
+        }
+    };
+
+    eventSource.onerror = (error) => {
+        console.error('Error en conexión SSE operaciones:', error);
+        onError?.(new Error('Error en conexión de operaciones'));
+    };
+
+    return eventSource;
 };
 
 /**
