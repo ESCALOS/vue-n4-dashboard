@@ -8,6 +8,7 @@
       :view-mode="viewMode"
       :summary="summary.holds"
       :operation-type="operationType"
+      v-if="operationType != 'STOCKPILING'"
     />
 
     <MetricCard

@@ -34,15 +34,10 @@
             v-if="selectedVesselData"
             :vessel-data="selectedVesselData"
             :loading="loading"
-            v-model:active-tab="activeTab"
-            v-model:view-mode="viewMode"
             :current-shift="currentShift"
             :summary="summary"
             :total-goods-current-shift="totalGoodsCurrentShift"
             :total-weight-current-shift="totalWeightCurrentShift"
-            :pivoted-shifts="pivotedData.shifts"
-            :pivoted-columns="pivotedData.columns"
-            :column-totals="columnTotals"
             @refresh="refreshData"
         />
 
@@ -58,12 +53,9 @@ import type { VesselsRequest } from '../../interfaces/monitoring/api/VesselResqu
 import VesselDetail from '../../components/monitoring/VesselDetail.vue';
 import AddVesselForm from '../../components/monitoring/AddVesselForm.vue';
 import { useMonitoringCalculations } from '../../composables/monitoring/useMonitoringCalculations';
-import { useTablePivot } from '../../composables/monitoring/useTablePivot';
 import { useMonitoringData } from '../../composables/monitoring/useMonitoringData';
 
 const addVesselFormRef = ref<InstanceType<typeof AddVesselForm>>();
-const activeTab = ref<'holds' | 'services'>('holds');
-const viewMode = ref<'weight' | 'goods'>('weight');
 
 const {
   monitoredVessels,
@@ -93,7 +85,6 @@ const summary = computed(() => ({
   services: serviceSummary.value
 }));
 
-const { pivotedData, columnTotals } = useTablePivot(selectedVesselData, activeTab);
 
 const handleAddVessel = async (vessel: VesselsRequest) => {
   const result = await addVessel(vessel);

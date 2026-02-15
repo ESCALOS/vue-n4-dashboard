@@ -39,18 +39,19 @@
         />
 
         <ToggleView
+            v-if="showHoldsTab"
             :active-tab="activeTab"
-            @update:activeTab="$emit('update:activeTab', $event)"
+            @update:activeTab="activeTab = $event"
         />
 
         <SwitchMetric
             :view-mode="viewMode"
-            @update:viewMode="$emit('update:viewMode', $event)"
+            @update:viewMode="viewMode = $event"
         />
 
         <MonitoringTable
-            :shifts="pivotedShifts"
-            :columns="pivotedColumns"
+            :shifts="pivotedData.shifts"
+            :columns="pivotedData.columns"
             :column-totals="columnTotals"
             :view-mode="viewMode"
             :current-shift="currentShift"
@@ -61,6 +62,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, toRef, computed, watch } from 'vue';
 import type { SummaryData } from '../../composables/monitoring/useMonitoringCalculations';
 import type { VesselData } from '../../interfaces/monitoring/VesselData';
 import ExcelExporterButton from './ExcelExporterButton.vue';
@@ -70,54 +72,44 @@ import MonitoringTable from './MonitoringTable.vue';
 import SummaryCards from './SummaryCards.vue';
 import SwitchMetric from './SwitchMetric.vue';
 import ToggleView from './ToggleView.vue';
+import { useTablePivot } from '../../composables/monitoring/useTablePivot';
 
 interface CompleteSummary {
   holds: SummaryData;
   services: SummaryData;
 }
 
-defineProps<{
+const props = defineProps<{
     vesselData: VesselData,
     loading: boolean,
-    activeTab: 'holds' | 'services'
-    viewMode: 'weight' | 'goods'
     currentShift: string
     summary: CompleteSummary
     totalWeightCurrentShift: number
     totalGoodsCurrentShift: number
-    pivotedShifts: {
-        shift: string;
-        columns: {
-            weight: number;
-            goods: number;
-        }[];
-        totalWeight: number;
-        totalGoods: number;
-    }[],
-    pivotedColumns: {
-        key: string;
-        manifested_weight: number;
-        manifested_goods: number;
-    }[],
-    columnTotals: {
-        weight: {
-            manifested: number[];
-            processed: number[];
-            difference: number[];
-        };
-        goods: {
-            manifested: number[];
-            processed: number[];
-            difference: number[];
-        };
-    }
 }>();
 
 defineEmits<{
   refresh: [];
-  'update:activeTab': [value: 'holds' | 'services'];
-  'update:viewMode': [value: 'weight' | 'goods'];
 }>();
+
+const viewMode = ref<'weight' | 'goods'>('weight');
+
+// Determinar el tab inicial basado en el tipo de operación
+const activeTab = ref<'holds' | 'services'>(
+  props.vesselData.operation_type === 'STOCKPILING' ? 'services' : 'holds'
+);
+
+// Actualizar activeTab cuando cambie el tipo de operación del buque
+watch(() => props.vesselData.operation_type, (newOperationType) => {
+  activeTab.value = newOperationType === 'STOCKPILING' ? 'services' : 'holds';
+});
+
+// Verificar si el tab de holds debe estar disponible
+const showHoldsTab = computed(() => props.vesselData.operation_type !== 'STOCKPILING');
+const vesselDataRef = toRef(props, 'vesselData');
+
+const { pivotedData, columnTotals } = useTablePivot(vesselDataRef, activeTab);
+
 </script>
 
 <style scoped>
