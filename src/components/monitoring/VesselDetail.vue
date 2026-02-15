@@ -12,6 +12,10 @@
                     :vessel-data="vesselData"
                     :loading="loading"
                 />
+                <ExportStockpilingDetailButton
+                    :vessel-data="vesselData"
+                    :loading="loading"
+                />
                 <ExcelExporterButton
                 :vessel-data="vesselData"
                 :loading="loading"
@@ -61,6 +65,7 @@ import type { SummaryData } from '../../composables/monitoring/useMonitoringCalc
 import type { VesselData } from '../../interfaces/monitoring/VesselData';
 import ExcelExporterButton from './ExcelExporterButton.vue';
 import ExportStockpilingButton from './ExportStockpilingButton.vue';
+import ExportStockpilingDetailButton from './ExportStockpilingDetailButton.vue';
 import MonitoringTable from './MonitoringTable.vue';
 import SummaryCards from './SummaryCards.vue';
 import SwitchMetric from './SwitchMetric.vue';

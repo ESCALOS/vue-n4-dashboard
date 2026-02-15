@@ -2,6 +2,7 @@ import type { AddVesselResponse } from "../interfaces/monitoring/api/AddVesselRe
 import type { VesselsResponse } from "../interfaces/monitoring/api/VesselResponse";
 import type { VesselsRequest } from "../interfaces/monitoring/api/VesselResquest";
 import type { VesselData } from "../interfaces/monitoring/VesselData";
+import type { StockpilingTicket } from "../interfaces/monitoring/api/StockpilingTicket";
 
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -136,4 +137,28 @@ export const refreshVesselData = async (
     // Con SSE, el servidor emite automáticamente cuando hay cambios
     // Esta función podría quedar obsoleta o triggear un refresh manual en el backend
     return getVesselMonitorData(vessel);
+};
+
+/**
+ * Obtener tickets de acopio (stockpiling) por BL item gkeys
+ */
+export const getStockpilingTickets = async (
+    blItemGkeys: number[]
+): Promise<StockpilingTicket[]> => {
+    if (blItemGkeys.length === 0) {
+        return [];
+    }
+
+    const gkeysParam = blItemGkeys.join(',');
+    const url = `${API_BASE_URL}/monitoring/general-cargo/stockpiling-tickets?blItemGkeys=${gkeysParam}`;
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Error al obtener tickets de acopio");
+    }
+
+    const result = await response.json();
+    return result.data ?? [];
 };
