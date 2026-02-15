@@ -125,13 +125,6 @@ export function useMonitoringData() {
         }
     };
 
-    const refreshData = async () => {
-        // Con SSE, los datos se actualizan automáticamente
-        // Esta función ya no es necesaria pero la mantenemos por compatibilidad
-        // El servidor envía actualizaciones automáticamente a través del stream
-        console.log('Los datos se actualizan automáticamente vía SSE');
-    };
-
     // Limpiar conexiones SSE al desmontar el componente
     onUnmounted(() => {
         if (sseConnection) {
@@ -154,7 +147,6 @@ export function useMonitoringData() {
         startOperationsSSE,
         selectVessel,
         addVessel,
-        removeVessel,
-        refreshData
+        removeVessel
     };
 }

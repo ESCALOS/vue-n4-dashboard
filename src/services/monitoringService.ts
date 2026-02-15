@@ -140,6 +140,48 @@ export const refreshVesselData = async (
 };
 
 /**
+ * Forzar refresh de bodegas (holds) — invalida caché y re-consulta N4
+ */
+export const refreshHolds = async (
+    vessel: VesselsRequest
+): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/monitoring/general-cargo/refresh-holds`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            manifest_id: vessel.manifest_id,
+            operation_type: vessel.operation_type,
+        }),
+    });
+
+    if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "Error al refrescar bodegas");
+    }
+};
+
+/**
+ * Forzar refresh de servicios (BL items) — invalida caché y re-consulta N4
+ */
+export const refreshServices = async (
+    vessel: VesselsRequest
+): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/monitoring/general-cargo/refresh-services`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            manifest_id: vessel.manifest_id,
+            operation_type: vessel.operation_type,
+        }),
+    });
+
+    if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "Error al refrescar servicios");
+    }
+};
+
+/**
  * Obtener tickets de acopio (stockpiling) por BL item gkeys
  */
 export const getStockpilingTickets = async (

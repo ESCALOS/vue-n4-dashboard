@@ -38,7 +38,6 @@
             :summary="summary"
             :total-goods-current-shift="totalGoodsCurrentShift"
             :total-weight-current-shift="totalWeightCurrentShift"
-            @refresh="refreshData"
         />
 
     </div>
@@ -68,7 +67,6 @@ const {
   selectVessel,
   addVessel,
   removeVessel,
-  refreshData
 } = useMonitoringData();
 
 

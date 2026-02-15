@@ -20,8 +20,20 @@
                 :vessel-data="vesselData"
                 :loading="loading"
                 />
-                <button @click="$emit('refresh')" class="btn btn-success refresh-button" :disabled="loading">
-                🔄 Actualizar
+                <button
+                    v-if="showHoldsTab"
+                    @click="handleRefreshHolds"
+                    class="btn btn-outline-info refresh-button"
+                    :disabled="refreshingHolds || loading"
+                >
+                    {{ refreshingHolds ? '⏳' : '🔄' }} Bodegas
+                </button>
+                <button
+                    @click="handleRefreshServices"
+                    class="btn btn-outline-info refresh-button"
+                    :disabled="refreshingServices || loading"
+                >
+                    {{ refreshingServices ? '⏳' : '🔄' }} Servicios
                 </button>
             </div>
         </div>
@@ -73,6 +85,7 @@ import SummaryCards from './SummaryCards.vue';
 import SwitchMetric from './SwitchMetric.vue';
 import ToggleView from './ToggleView.vue';
 import { useTablePivot } from '../../composables/monitoring/useTablePivot';
+import { refreshHolds, refreshServices } from '../../services/monitoringService';
 
 interface CompleteSummary {
   holds: SummaryData;
@@ -88,11 +101,9 @@ const props = defineProps<{
     totalGoodsCurrentShift: number
 }>();
 
-defineEmits<{
-  refresh: [];
-}>();
-
 const viewMode = ref<'weight' | 'goods'>('weight');
+const refreshingHolds = ref(false);
+const refreshingServices = ref(false);
 
 // Determinar el tab inicial basado en el tipo de operación
 const activeTab = ref<'holds' | 'services'>(
@@ -109,6 +120,34 @@ const showHoldsTab = computed(() => props.vesselData.operation_type !== 'STOCKPI
 const vesselDataRef = toRef(props, 'vesselData');
 
 const { pivotedData, columnTotals } = useTablePivot(vesselDataRef, activeTab);
+
+async function handleRefreshHolds() {
+  refreshingHolds.value = true;
+  try {
+    await refreshHolds({
+      manifest_id: props.vesselData.manifest.id,
+      operation_type: props.vesselData.operation_type,
+    });
+  } catch (error) {
+    console.error('Error al refrescar bodegas:', error);
+  } finally {
+    refreshingHolds.value = false;
+  }
+}
+
+async function handleRefreshServices() {
+  refreshingServices.value = true;
+  try {
+    await refreshServices({
+      manifest_id: props.vesselData.manifest.id,
+      operation_type: props.vesselData.operation_type,
+    });
+  } catch (error) {
+    console.error('Error al refrescar servicios:', error);
+  } finally {
+    refreshingServices.value = false;
+  }
+}
 
 </script>
 
