@@ -5,6 +5,6 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   plugins: [vue()],
   preview: {
-    port: 4000
+    port: 8080
   }
 })

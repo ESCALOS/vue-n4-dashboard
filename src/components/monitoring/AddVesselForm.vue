@@ -16,15 +16,40 @@
         >
           Número de Manifiesto:
         </label>
-        <input
-          id="manifestId"
-          v-model="manifestId"
-          type="text"
-          placeholder="Ej: 2026-10"
-          class="form-input"
-          @keyup.enter="handleSubmit"
-          :disabled="loading"
-        />
+        <div class="input-with-suggestions">
+          <input
+            id="manifestId"
+            v-model="manifestId"
+            type="text"
+            placeholder="Ej: 2026-10"
+            class="form-input"
+            autocomplete="off"
+            @keyup.enter="handleSubmit"
+            @focus="showSuggestions = true"
+            @blur="hideSuggestionsDelayed"
+            :disabled="loading"
+          />
+          <div 
+            v-if="showSuggestions && filteredVessels.length > 0"
+            class="suggestions-dropdown"
+          >
+            <button
+              v-for="vessel in filteredVessels"
+              :key="vessel.manifest_id"
+              class="suggestion-item"
+              @mousedown.prevent="selectVessel(vessel)"
+            >
+              <span class="suggestion-id">{{ vessel.manifest_id }}</span>
+              <span class="suggestion-name">{{ vessel.vessel_name }}</span>
+            </button>
+          </div>
+          <div 
+            v-else-if="showSuggestions && loadingVessels"
+            class="suggestions-dropdown"
+          >
+            <div class="suggestion-loading">Cargando naves...</div>
+          </div>
+        </div>
       </div>
       
       <div class="form-group">
@@ -75,9 +100,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import type { OperationType } from '../../types/monitoring/OperationType';
 import type { VesselsRequest } from '../../interfaces/monitoring/api/VesselResquest';
+import { getWorkingVessels, type WorkingVessel } from '../../services/monitoringService';
 
 const emit = defineEmits<{
   submit: [vessel: VesselsRequest];
@@ -93,9 +119,43 @@ const dialogRef = ref<HTMLDialogElement>();
 const manifestId = ref('');
 const operationType = ref<OperationType>('DISPATCHING');
 
+const workingVessels = ref<WorkingVessel[]>([]);
+const loadingVessels = ref(false);
+const showSuggestions = ref(false);
+
+const filteredVessels = computed(() => {
+  const search = manifestId.value.trim().toLowerCase();
+  if (!search) return workingVessels.value;
+  return workingVessels.value.filter(
+    (v) =>
+      v.manifest_id.toLowerCase().includes(search) ||
+      v.vessel_name.toLowerCase().includes(search)
+  );
+});
+
+const fetchWorkingVessels = async () => {
+  if (workingVessels.value.length > 0) return;
+  loadingVessels.value = true;
+  workingVessels.value = await getWorkingVessels();
+  loadingVessels.value = false;
+};
+
+const selectVessel = (vessel: WorkingVessel) => {
+  manifestId.value = vessel.manifest_id;
+  showSuggestions.value = false;
+};
+
+const hideSuggestionsDelayed = () => {
+  setTimeout(() => {
+    showSuggestions.value = false;
+  }, 150);
+};
+
 const open = () => {
   emit('cancel');
   dialogRef.value?.showModal();
+  // Lazy load: fetch working vessels in background after modal opens
+  fetchWorkingVessels();
 };
 
 const close = () => {
@@ -105,11 +165,13 @@ const close = () => {
 const handleClose = () => {
   manifestId.value = '';
   operationType.value = 'DISPATCHING';
+  showSuggestions.value = false;
   emit('cancel');
 };
 
 const handleSubmit = () => {
   if (!manifestId.value.trim()) return;
+  showSuggestions.value = false;
   emit('submit', {
     manifest_id: manifestId.value.trim(),
     operation_type: operationType.value
@@ -132,6 +194,7 @@ defineExpose({
   width: 90%;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
   animation: slide-down 0.2s ease-out;
+  overflow: visible;
 }
 
 dialog {
@@ -184,6 +247,67 @@ dialog {
 
 .form-input::placeholder {
   color: #475569;
+}
+
+.input-with-suggestions {
+  position: relative;
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
+  background: #0f0f1a;
+  border: 1px solid #3b82f6;
+  border-radius: 0.5rem;
+  max-height: 9rem;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.suggestion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  background: transparent;
+  color: #e2e8f0;
+  font-size: 0.825rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  text-align: left;
+}
+
+.suggestion-item:hover {
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.suggestion-item + .suggestion-item {
+  border-top: 1px solid #1e1e38;
+}
+
+.suggestion-id {
+  font-weight: 600;
+  color: #3b82f6;
+  min-width: 5rem;
+}
+
+.suggestion-name {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  text-align: right;
+}
+
+.suggestion-loading {
+  padding: 0.75rem;
+  color: #64748b;
+  font-size: 0.825rem;
+  text-align: center;
 }
 
 .form-select {

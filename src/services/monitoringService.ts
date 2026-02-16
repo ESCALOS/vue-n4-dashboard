@@ -4,6 +4,11 @@ import type { VesselsRequest } from "../interfaces/monitoring/api/VesselResquest
 import type { VesselData } from "../interfaces/monitoring/VesselData";
 import type { StockpilingTicket } from "../interfaces/monitoring/api/StockpilingTicket";
 
+export interface WorkingVessel {
+    manifest_id: string;
+    vessel_name: string;
+}
+
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -203,4 +208,22 @@ export const getStockpilingTickets = async (
 
     const result = await response.json();
     return result.data ?? [];
+};
+
+/**
+ * Obtener naves actualmente trabajando (phase = 40WORKING)
+ */
+export const getWorkingVessels = async (): Promise<WorkingVessel[]> => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/monitoring/general-cargo/working-vessels`);
+
+        if (!response.ok) {
+            return [];
+        }
+
+        const result = await response.json();
+        return result.data ?? [];
+    } catch {
+        return [];
+    }
 };
