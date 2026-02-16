@@ -38,6 +38,8 @@
             </div>
         </div>
 
+        <HoldAlerts :vesselData="vesselData" v-if="vesselData.operation_type === 'INDIRECT_LOADING'" />
+
         <SummaryCards
             :holds-count="vesselData.summary.holds.length"
             :services-count="vesselData.summary.services.length"
@@ -86,6 +88,7 @@ import SwitchMetric from './SwitchMetric.vue';
 import ToggleView from './ToggleView.vue';
 import { useTablePivot } from '../../composables/monitoring/useTablePivot';
 import { refreshHolds, refreshServices } from '../../services/monitoringService';
+import HoldAlerts from './HoldAlerts.vue';
 
 interface CompleteSummary {
   holds: SummaryData;
