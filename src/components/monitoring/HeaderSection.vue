@@ -2,10 +2,10 @@
     <div class="header-section">
         <div class="header-title">
             <h1 class="system-name">
-                <img src="/aqua_cry.png" alt="logo" />
-                C.O.N.C.H.A.
+                <img src="/amagi.gif" alt="logo" />
+                A.M.A.G.I.
             </h1>
-            <p class="system-description">Centro Organizado de Naves, Cargas y Horas de Avance</p>
+            <p class="system-description">Aplicación de Monitoreo de Actividades de Gestión Integral</p>
         </div>
 
         <div class="header-action-wrapper">

@@ -36,8 +36,8 @@
         <!-- Logo/Header -->
         <div class="sidebar-header">
           <h1 class="sidebar-logo-title">
-            <span class="logo-mobile">C.O.N.C.H.A.</span>
-            <span class="logo-desktop">{{ isCollapsed ? 'C4' : 'C.O.N.C.H.A.' }}</span>
+            <span class="logo-mobile">A.M.A.G.I</span>
+            <span class="logo-desktop">{{ isCollapsed ? 'A4' : 'A.M.A.G.I' }}</span>
           </h1>
         </div>
 
