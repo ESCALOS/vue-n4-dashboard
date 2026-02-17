@@ -1,4 +1,4 @@
-import { ref, onUnmounted } from "vue";
+import { ref, onUnmounted, watch } from "vue";
 import type { VesselData } from "../../interfaces/monitoring/VesselData";
 import { addVesselToMonitor, createVesselSSEConnection, createOperationsSSEConnection, removeVesselFromMonitor } from "../../services/monitoringService";
 import type { VesselsResponse } from "../../interfaces/monitoring/api/VesselResponse";
@@ -99,12 +99,45 @@ export function useMonitoringData() {
         }
     };
 
+    /**
+     * Espera a que una nave aparezca en la lista de monitoreo (vía SSE).
+     * Resuelve cuando la nave está disponible o rechaza por timeout.
+     */
+    const waitForVesselInList = (vessel: VesselsRequest, timeoutMs = 10000): Promise<void> => {
+        return new Promise((resolve, reject) => {
+            const exists = monitoredVessels.value.some(
+                (v) => v.manifest.id === vessel.manifest_id && v.operation_type === vessel.operation_type
+            );
+            if (exists) {
+                resolve();
+                return;
+            }
+
+            const timeout = setTimeout(() => {
+                stopWatch();
+                reject(new Error('Tiempo de espera agotado esperando actualización del servidor'));
+            }, timeoutMs);
+
+            const stopWatch = watch(monitoredVessels, (vessels) => {
+                const found = vessels.some(
+                    (v) => v.manifest.id === vessel.manifest_id && v.operation_type === vessel.operation_type
+                );
+                if (found) {
+                    clearTimeout(timeout);
+                    stopWatch();
+                    resolve();
+                }
+            }, { deep: true });
+        });
+    };
+
     const addVessel = async (vessel: VesselsRequest) => {
         try {
             loading.value = true;
             error.value = '';
             await addVesselToMonitor(vessel);
-            // La lista se actualiza automáticamente vía SSE de operaciones
+            // Esperar a que el SSE actualice la lista con la nueva nave
+            await waitForVesselInList(vessel);
             await selectVessel(vessel);
             return { success: true };
         } catch (err) {
