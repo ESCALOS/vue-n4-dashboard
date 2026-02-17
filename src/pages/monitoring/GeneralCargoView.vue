@@ -31,6 +31,7 @@
         />
 
         <VesselDetail
+            ref="vesselDetailRef"
             v-if="selectedVesselData"
             :vessel-data="selectedVesselData"
             :loading="loading"
@@ -44,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import EmptyState from '../../components/monitoring/EmptyState.vue';
 import HeaderSection from '../../components/monitoring/HeaderSection.vue';
 import VesselTabs from '../../components/monitoring/VesselTabs.vue';
@@ -55,6 +56,8 @@ import { useMonitoringCalculations } from '../../composables/monitoring/useMonit
 import { useMonitoringData } from '../../composables/monitoring/useMonitoringData';
 
 const addVesselFormRef = ref<InstanceType<typeof AddVesselForm>>();
+const vesselDetailRef = ref<InstanceType<typeof VesselDetail>>();
+const shouldScrollToDetail = ref(false);
 
 const {
   monitoredVessels,
@@ -64,10 +67,23 @@ const {
   error,
   serverConnected,
   startOperationsSSE,
-  selectVessel,
+  selectVessel: selectVesselData,
   addVessel,
   removeVessel,
 } = useMonitoringData();
+
+const selectVessel = (vessel: VesselsRequest) => {
+  shouldScrollToDetail.value = true;
+  selectVesselData(vessel);
+};
+
+watch(selectedVesselData, async (newData) => {
+  if (newData && shouldScrollToDetail.value) {
+    shouldScrollToDetail.value = false;
+    await nextTick();
+    vesselDetailRef.value?.$el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+});
 
 
 const {
@@ -101,8 +117,18 @@ const handleRemoveVessel = async (vessel: VesselsRequest) => {
   }
 };
 
+watch(selectedVessel, (vessel) => {
+  document.title = vessel
+    ? `${vessel.manifest.name}`
+    : 'N4 Dashboard';
+});
+
 onMounted(() => {
     startOperationsSSE();
+});
+
+onUnmounted(() => {
+  document.title = 'N4 Dashboard';
 });
 
 </script>
