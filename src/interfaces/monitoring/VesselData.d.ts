@@ -3,6 +3,12 @@ import type { Manifest } from "./Manifest";
 import type { Summary } from "./Summary";
 import type { Transaction } from "./Transaction";
 
+export interface HoldAlert {
+    type: 'missing' | 'unrecognized';
+    hold: string;
+    units: string[];
+}
+
 export interface VesselData {
     manifest: Manifest;
     operation_type: OperationType;
@@ -12,5 +18,6 @@ export interface VesselData {
     };
     last_update: string;
     shifts_worked: string[];
-    transactions: Transaction[]
+    transactions: Transaction[];
+    hold_alerts: HoldAlert[];
 }

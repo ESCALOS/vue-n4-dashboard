@@ -41,6 +41,7 @@ export function useTablePivot(
         // Obtener columnas (bodegas o BLs)
         const columns = items.map((item) => ({
             key: item.nbr,
+            commodity: item.commodity,
             manifested_weight: item.weight.manifested,
             manifested_goods: item.goods.manifested,
         }));

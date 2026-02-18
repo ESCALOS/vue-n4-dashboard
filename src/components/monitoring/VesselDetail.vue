@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        <HoldAlerts :vesselData="vesselData" v-if="vesselData.operation_type === 'INDIRECT_LOADING'" />
+        <HoldAlerts :holdAlerts="vesselData.hold_alerts" v-if="vesselData.operation_type === 'INDIRECT_LOADING'" />
 
         <SummaryCards
             :holds-count="vesselData.summary.holds.length"

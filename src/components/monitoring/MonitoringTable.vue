@@ -4,7 +4,7 @@
         <thead>
             <tr>
                 <th class="shift-column">Jornada</th>
-                <th v-for="(col, idx) in columns" :key="`col-${idx}`" class="data-column">
+                <th v-for="(col, idx) in columns" :key="`col-${idx}`" class="data-column" :title="col.commodity">
                     {{ col.key }}
                 </th>
                 <th class="total-column">Total Jornada</th>
@@ -125,6 +125,7 @@ type Shift = {
 
 type Column = {
     key: string;
+    commodity?: string;
     manifested_weight: number;
     manifested_goods: number;
 }
