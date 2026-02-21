@@ -4,6 +4,7 @@ import type { VesselsRequest } from "../interfaces/monitoring/api/VesselResquest
 import type { VesselData } from "../interfaces/monitoring/VesselData";
 import type { StockpilingTicket } from "../interfaces/monitoring/api/StockpilingTicket";
 import { get, post, del, createAuthSSE } from './httpClient';
+import type { SSEConnection } from './httpClient';
 
 export interface WorkingVessel {
     manifest_id: string;
@@ -51,7 +52,7 @@ export const removeVesselFromMonitor = async (
 export const createOperationsSSEConnection = (
     onData: (operations: VesselsResponse[]) => void,
     onError?: (error: Error) => void
-): EventSource => {
+): SSEConnection => {
     const eventSource = createAuthSSE('/monitoring/general-cargo/operations/stream');
 
     eventSource.onmessage = (event) => {
@@ -79,7 +80,7 @@ export const createVesselSSEConnection = (
     vessel: VesselsRequest,
     onData: (data: VesselData) => void,
     onError?: (error: Error) => void
-): EventSource => {
+): SSEConnection => {
     const eventSource = createAuthSSE(
         `/monitoring/general-cargo/stream?manifest_id=${vessel.manifest_id}&operation_type=${vessel.operation_type}`
     );

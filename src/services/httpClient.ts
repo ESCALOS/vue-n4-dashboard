@@ -100,11 +100,65 @@ export async function del(path: string, body?: unknown): Promise<Response> {
 }
 
 /**
- * Create an authenticated EventSource connection (token via query param).
+ * Lightweight wrapper around EventSource that handles token refresh.
+ * When the connection drops due to an expired token (401 → readyState CLOSED),
+ * it automatically refreshes the token and reconnects.
  */
-export function createAuthSSE(path: string): EventSource {
+export interface SSEConnection {
+    onmessage: ((event: MessageEvent) => void) | null;
+    onerror: ((event: Event) => void) | null;
+    close(): void;
+}
+
+export function createAuthSSE(path: string): SSEConnection {
     const authStore = useAuthStore();
-    const separator = path.includes('?') ? '&' : '?';
-    const fullUrl = `${API_BASE_URL}${path}${separator}token=${authStore.accessToken}`;
-    return new EventSource(fullUrl);
+
+    let currentES: EventSource | null = null;
+    let closed = false;
+
+    const connection: SSEConnection = {
+        onmessage: null,
+        onerror: null,
+        close() {
+            closed = true;
+            currentES?.close();
+            currentES = null;
+        },
+    };
+
+    function connect() {
+        if (closed) return;
+
+        const separator = path.includes('?') ? '&' : '?';
+        const fullUrl = `${API_BASE_URL}${path}${separator}token=${authStore.accessToken}`;
+        currentES = new EventSource(fullUrl);
+
+        currentES.onmessage = (event) => {
+            connection.onmessage?.(event);
+        };
+
+        currentES.onerror = async () => {
+            // readyState CLOSED = permanent failure (HTTP 401, etc.)
+            if (currentES?.readyState === EventSource.CLOSED) {
+                currentES.close();
+                currentES = null;
+
+                if (closed) return;
+
+                // Attempt to refresh the token and reconnect
+                const refreshed = await authStore.refresh();
+                if (refreshed && !closed) {
+                    connect();
+                } else if (!closed) {
+                    connection.onerror?.(new Event('error'));
+                    router.push('/login');
+                }
+            }
+            // readyState CONNECTING = transient error, browser auto-retries
+            // (shouldn't happen with expired token since server returns 401)
+        };
+    }
+
+    connect();
+    return connection;
 }

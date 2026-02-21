@@ -1,6 +1,7 @@
 import { ref, onUnmounted, watch } from "vue";
 import type { VesselData } from "../../interfaces/monitoring/VesselData";
 import { addVesselToMonitor, createVesselSSEConnection, createOperationsSSEConnection, removeVesselFromMonitor } from "../../services/monitoringService";
+import type { SSEConnection } from "../../services/httpClient";
 import type { VesselsResponse } from "../../interfaces/monitoring/api/VesselResponse";
 import type { VesselsRequest } from "../../interfaces/monitoring/api/VesselResquest";
 
@@ -15,9 +16,9 @@ export function useMonitoringData() {
     const serverConnected = ref(true);
 
     // Referencia a la conexión SSE activa (datos de nave)
-    let sseConnection: EventSource | null = null;
+    let sseConnection: SSEConnection | null = null;
     // Referencia a la conexión SSE de operaciones monitoreadas
-    let operationsSseConnection: EventSource | null = null;
+    let operationsSseConnection: SSEConnection | null = null;
 
     /**
      * Inicia la conexión SSE para recibir la lista de operaciones en tiempo real.

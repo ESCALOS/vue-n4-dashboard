@@ -2,6 +2,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import type { AppointmentInProgress, AppointmentsResponse } from '../../types/appointments/AppointmentInProgress';
 import { STAGE_LABELS } from '../../types/appointments/AppointmentInProgress';
 import { createAppointmentsSSEConnection } from '../../services/appointmentsService';
+import type { SSEConnection } from '../../services/httpClient';
 
 export function useAppointmentsInProgress() {
     // ============================================
@@ -24,7 +25,7 @@ export function useAppointmentsInProgress() {
     const filterTipo = ref('');
     const searchQuery = ref('');
 
-    let eventSource: EventSource | null = null;
+    let eventSource: SSEConnection | null = null;
 
     // ============================================
     // COMPUTED - FILTER OPTIONS (dinámicos)

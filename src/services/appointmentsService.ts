@@ -1,5 +1,6 @@
 import type { AppointmentsResponse } from '../types/appointments/AppointmentInProgress';
 import { get, createAuthSSE } from './httpClient';
+import type { SSEConnection } from './httpClient';
 
 /**
  * Crear conexión SSE para recibir citas en progreso en tiempo real
@@ -7,7 +8,7 @@ import { get, createAuthSSE } from './httpClient';
 export const createAppointmentsSSEConnection = (
     onData: (data: AppointmentsResponse) => void,
     onError?: (error: Error) => void,
-): EventSource => {
+): SSEConnection => {
     const eventSource = createAuthSSE('/appointments/in-progress/stream');
 
     eventSource.onmessage = (event) => {
