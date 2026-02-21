@@ -1,6 +1,5 @@
 import type { AppointmentsResponse } from '../types/appointments/AppointmentInProgress';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+import { get, createAuthSSE } from './httpClient';
 
 /**
  * Crear conexión SSE para recibir citas en progreso en tiempo real
@@ -9,8 +8,7 @@ export const createAppointmentsSSEConnection = (
     onData: (data: AppointmentsResponse) => void,
     onError?: (error: Error) => void,
 ): EventSource => {
-    const url = `${API_BASE_URL}/appointments/in-progress/stream`;
-    const eventSource = new EventSource(url);
+    const eventSource = createAuthSSE('/appointments/in-progress/stream');
 
     eventSource.onmessage = (event) => {
         try {
@@ -34,7 +32,7 @@ export const createAppointmentsSSEConnection = (
  * Obtener citas en progreso (llamada única REST)
  */
 export const getAppointmentsInProgress = async (): Promise<AppointmentsResponse> => {
-    const response = await fetch(`${API_BASE_URL}/appointments/in-progress`);
+    const response = await get('/appointments/in-progress');
 
     if (!response.ok) {
         const data = await response.json();

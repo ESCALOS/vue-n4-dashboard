@@ -1,8 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useRoute } from 'vue-router';
 import SideBar from './components/SideBar.vue';
+import { useAuthStore } from './stores/auth';
 
-const isSidebarCollapsed = ref(true); // Colapsado por defecto
+const route = useRoute();
+const authStore = useAuthStore();
+
+const isSidebarCollapsed = ref(true);
+
+const showLayout = computed(() => authStore.isAuthenticated && route.name !== 'login');
 
 const handleSidebarCollapse = (collapsed: boolean) => {
   isSidebarCollapsed.value = collapsed;
@@ -10,7 +17,8 @@ const handleSidebarCollapse = (collapsed: boolean) => {
 </script>
 
 <template>
-  <div class="app-shell">
+  <!-- Authenticated layout with sidebar -->
+  <div v-if="showLayout" class="app-shell">
     <SideBar @collapse="handleSidebarCollapse" />
     
     <!-- Main content area -->
@@ -29,6 +37,9 @@ const handleSidebarCollapse = (collapsed: boolean) => {
       </main>
     </div>
   </div>
+
+  <!-- Public layout (login) -->
+  <router-view v-else />
 </template>
 
 <style scoped>

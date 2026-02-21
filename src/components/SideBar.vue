@@ -100,11 +100,50 @@
               </li>
             </ul>
           </div>
+
+          <!-- Administración Section (Admin only) -->
+          <div v-if="authStore.isAdmin" class="nav-section" :class="{ 'is-expanded': !isCollapsed }">
+            <h2 
+              class="section-title"
+              :class="{ 'desktop-visible': !isCollapsed }"
+            >
+              Administración
+            </h2>
+            <div class="section-divider" :class="{ 'desktop-hidden': !isCollapsed }"></div>
+            <ul class="nav-list">
+              <li>
+                <router-link
+                  to="/admin/usuarios"
+                  @click="closeSidebarOnMobile"
+                  :class="[
+                    'nav-link',
+                    { 'is-expanded': !isCollapsed }
+                  ]"
+                  active-class="is-active"
+                >
+                  <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">Usuarios</span>
+                </router-link>
+              </li>
+            </ul>
+          </div>
         </nav>
 
-        <!-- Footer (optional) -->
-        <div class="sidebar-footer" :class="{ 'desktop-visible': !isCollapsed }">
-          <p class="sidebar-footer-text">© 2026 Carlos Escate</p>
+        <!-- Footer -->
+        <div class="sidebar-footer">
+          <button
+            @click="handleLogout"
+            :class="['logout-btn', { 'is-expanded': !isCollapsed }]"
+            title="Cerrar sesión"
+          >
+            <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">Cerrar sesión</span>
+          </button>
+          <p class="sidebar-footer-text" :class="{ 'desktop-visible': !isCollapsed }">© 2026 Carlos Escate</p>
         </div>
       </div>
     </aside>
@@ -113,6 +152,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '../stores/auth';
+
+const router = useRouter();
+
+const authStore = useAuthStore();
 
 const isOpen = ref(false);
 const isCollapsed = ref(true); // Colapsado por defecto en desktop
@@ -154,6 +199,11 @@ const closeSidebarOnMobile = () => {
   if (window.innerWidth < 1024) {
     closeSidebar();
   }
+};
+
+const handleLogout = async () => {
+  await authStore.logout();
+  router.push({ name: 'login' });
 };
 
 // Swipe from left edge to open
@@ -346,6 +396,32 @@ const handleSidebarTouchEnd = () => {
   text-align: center;
 }
 
+.logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.625rem;
+  margin-bottom: 0.75rem;
+  background: none;
+  border: none;
+  border-radius: 0.5rem;
+  color: #9ca3af;
+  font-family: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
+}
+
+.logout-btn.is-expanded {
+  justify-content: flex-start;
+}
+
 @media (min-width: 1024px) {
   .sidebar-backdrop,
   .sidebar-touch-area {
@@ -430,10 +506,14 @@ const handleSidebarTouchEnd = () => {
   }
 
   .sidebar-footer {
+    display: block;
+  }
+
+  .sidebar-footer-text {
     display: none;
   }
 
-  .sidebar-footer.desktop-visible {
+  .sidebar-footer-text.desktop-visible {
     display: block;
   }
 }

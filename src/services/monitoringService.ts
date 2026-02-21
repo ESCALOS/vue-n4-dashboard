@@ -3,14 +3,12 @@ import type { VesselsResponse } from "../interfaces/monitoring/api/VesselRespons
 import type { VesselsRequest } from "../interfaces/monitoring/api/VesselResquest";
 import type { VesselData } from "../interfaces/monitoring/VesselData";
 import type { StockpilingTicket } from "../interfaces/monitoring/api/StockpilingTicket";
+import { get, post, del, createAuthSSE } from './httpClient';
 
 export interface WorkingVessel {
     manifest_id: string;
     vessel_name: string;
 }
-
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 /**
  * Agregar una operación al monitoreo
@@ -18,13 +16,9 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 export const addVesselToMonitor = async (
     vessel: VesselsRequest
 ): Promise<AddVesselResponse> => {
-    const response = await fetch(`${API_BASE_URL}/monitoring/general-cargo/operations`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            manifest_id: vessel.manifest_id,
-            operation_type: vessel.operation_type
-        }),
+    const response = await post('/monitoring/general-cargo/operations', {
+        manifest_id: vessel.manifest_id,
+        operation_type: vessel.operation_type,
     });
 
     const data = await response.json();
@@ -40,13 +34,9 @@ export const addVesselToMonitor = async (
 export const removeVesselFromMonitor = async (
     vessel: VesselsRequest
 ): Promise<void> => {
-    const response = await fetch(`${API_BASE_URL}/monitoring/general-cargo/operations`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            manifest_id: vessel.manifest_id,
-            operation_type: vessel.operation_type
-        }),
+    const response = await del('/monitoring/general-cargo/operations', {
+        manifest_id: vessel.manifest_id,
+        operation_type: vessel.operation_type,
     });
 
     if (!response.ok) {
@@ -62,8 +52,7 @@ export const createOperationsSSEConnection = (
     onData: (operations: VesselsResponse[]) => void,
     onError?: (error: Error) => void
 ): EventSource => {
-    const url = `${API_BASE_URL}/monitoring/general-cargo/operations/stream`;
-    const eventSource = new EventSource(url);
+    const eventSource = createAuthSSE('/monitoring/general-cargo/operations/stream');
 
     eventSource.onmessage = (event) => {
         try {
@@ -91,9 +80,9 @@ export const createVesselSSEConnection = (
     onData: (data: VesselData) => void,
     onError?: (error: Error) => void
 ): EventSource => {
-    const url = `${API_BASE_URL}/monitoring/general-cargo/stream?manifest_id=${vessel.manifest_id}&operation_type=${vessel.operation_type}`;
-
-    const eventSource = new EventSource(url);
+    const eventSource = createAuthSSE(
+        `/monitoring/general-cargo/stream?manifest_id=${vessel.manifest_id}&operation_type=${vessel.operation_type}`
+    );
 
     eventSource.onmessage = (event) => {
         try {
@@ -120,9 +109,9 @@ export const createVesselSSEConnection = (
 export const getVesselMonitorData = async (
     vessel: VesselsResponse
 ): Promise<VesselData> => {
-    const url = `${API_BASE_URL}/monitoring/general-cargo/stream?manifest_id=${vessel.manifest.id}&operation_type=${vessel.operation_type}`;
-
-    const response = await fetch(url);
+    const response = await get(
+        `/monitoring/general-cargo/stream?manifest_id=${vessel.manifest.id}&operation_type=${vessel.operation_type}`
+    );
 
     if (!response.ok) {
         const data = await response.json();
@@ -139,8 +128,6 @@ export const getVesselMonitorData = async (
 export const refreshVesselData = async (
     vessel: VesselsResponse
 ): Promise<VesselData> => {
-    // Con SSE, el servidor emite automáticamente cuando hay cambios
-    // Esta función podría quedar obsoleta o triggear un refresh manual en el backend
     return getVesselMonitorData(vessel);
 };
 
@@ -150,13 +137,9 @@ export const refreshVesselData = async (
 export const refreshHolds = async (
     vessel: VesselsRequest
 ): Promise<void> => {
-    const response = await fetch(`${API_BASE_URL}/monitoring/general-cargo/refresh-holds`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            manifest_id: vessel.manifest_id,
-            operation_type: vessel.operation_type,
-        }),
+    const response = await post('/monitoring/general-cargo/refresh-holds', {
+        manifest_id: vessel.manifest_id,
+        operation_type: vessel.operation_type,
     });
 
     if (!response.ok) {
@@ -171,13 +154,9 @@ export const refreshHolds = async (
 export const refreshServices = async (
     vessel: VesselsRequest
 ): Promise<void> => {
-    const response = await fetch(`${API_BASE_URL}/monitoring/general-cargo/refresh-services`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            manifest_id: vessel.manifest_id,
-            operation_type: vessel.operation_type,
-        }),
+    const response = await post('/monitoring/general-cargo/refresh-services', {
+        manifest_id: vessel.manifest_id,
+        operation_type: vessel.operation_type,
     });
 
     if (!response.ok) {
@@ -197,9 +176,9 @@ export const getStockpilingTickets = async (
     }
 
     const gkeysParam = blItemGkeys.join(',');
-    const url = `${API_BASE_URL}/monitoring/general-cargo/stockpiling-tickets?blItemGkeys=${gkeysParam}`;
-
-    const response = await fetch(url);
+    const response = await get(
+        `/monitoring/general-cargo/stockpiling-tickets?blItemGkeys=${gkeysParam}`
+    );
 
     if (!response.ok) {
         const data = await response.json();
@@ -215,7 +194,7 @@ export const getStockpilingTickets = async (
  */
 export const getWorkingVessels = async (): Promise<WorkingVessel[]> => {
     try {
-        const response = await fetch(`${API_BASE_URL}/monitoring/general-cargo/working-vessels`);
+        const response = await get('/monitoring/general-cargo/working-vessels');
 
         if (!response.ok) {
             return [];
