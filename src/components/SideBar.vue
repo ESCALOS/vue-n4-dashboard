@@ -134,6 +134,16 @@
         <!-- Footer -->
         <div class="sidebar-footer">
           <button
+            @click="showChangePassword = true"
+            :class="['logout-btn', { 'is-expanded': !isCollapsed }]"
+            title="Cambiar contraseña"
+          >
+            <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+            </svg>
+            <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">Cambiar contraseña</span>
+          </button>
+          <button
             @click="handleLogout"
             :class="['logout-btn', { 'is-expanded': !isCollapsed }]"
             title="Cerrar sesión"
@@ -148,12 +158,15 @@
       </div>
     </aside>
   </div>
+
+  <ChangePasswordModal v-if="showChangePassword" @close="showChangePassword = false" />
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
+import ChangePasswordModal from './ChangePasswordModal.vue';
 
 const router = useRouter();
 
@@ -164,6 +177,7 @@ const isCollapsed = ref(true); // Colapsado por defecto en desktop
 const dragging = ref(false);
 const dragOffset = ref(0);
 const touchStartX = ref(0);
+const showChangePassword = ref(false);
 
 const emit = defineEmits<{
   collapse: [collapsed: boolean]
