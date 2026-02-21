@@ -32,9 +32,8 @@ async function handleLogin() {
             <!-- Logo / Brand -->
             <div class="login-header">
                 <div class="login-logo">
-                    <img src="/amagi.gif" alt="logo" />
+                    <img src="/amagi-logo.webp" alt="logo" />
                 </div>
-                <h1 class="login-title">A.M.A.G.I</h1>
                 <p class="login-subtitle">Inicia sesión para continuar</p>
             </div>
 
@@ -114,9 +113,8 @@ async function handleLogin() {
 }
 
 .login-logo {
-    width: 3rem;
-    height: 3rem;
-    margin: 0 auto 1rem;
+    width: 12rem;
+    margin: 0 auto;
     color: #818cf8;
     display: flex;
     align-items: center;

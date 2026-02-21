@@ -36,8 +36,21 @@
         <!-- Logo/Header -->
         <div class="sidebar-header">
           <h1 class="sidebar-logo-title">
-            <span class="logo-mobile">A.M.A.G.I</span>
-            <span class="logo-desktop">{{ isCollapsed ? 'A4' : 'A.M.A.G.I' }}</span>
+            <span class="logo-mobile">
+              <img
+              src="/logo-letter.webp"
+              alt="logo"
+              style="max-height: 4rem; width: auto; margin-left: 0.5rem;"
+              />
+            </span>
+            <span class="logo-desktop">
+              <template v-if="isCollapsed">
+                <img src="/icon.png" alt="logo" class="sidebar-logo-img" />
+              </template>
+              <template v-else>
+                <img src="/logo-letter.webp" alt="logo" style="max-height: 4rem; width: auto; padding-top: 0.5rem;" />
+              </template>
+            </span>
           </h1>
         </div>
 
@@ -312,7 +325,7 @@ const handleSidebarTouchEnd = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 4rem;
+  height: 5rem;
   border-bottom: 1px solid #374151;
 }
 
@@ -332,12 +345,11 @@ const handleSidebarTouchEnd = () => {
   display: none;
 }
 
-.sidebar-nav {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem 0;
-}
-
+  .sidebar-logo-img {
+    max-height: 3.5rem;
+    width: auto;
+    display: block;
+  }
 .nav-section {
   padding: 0 1rem;
   margin-bottom: 1.5rem;
