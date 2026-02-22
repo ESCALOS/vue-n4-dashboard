@@ -97,6 +97,22 @@
             <ul class="nav-list">
               <li>
                 <router-link
+                  to="/citas/pendientes"
+                  @click="closeSidebarOnMobile"
+                  :class="[
+                    'nav-link',
+                    { 'is-expanded': !isCollapsed }
+                  ]"
+                  active-class="is-active"
+                >
+                  <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">Pendientes</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link
                   to="/citas/en-proceso"
                   @click="closeSidebarOnMobile"
                   :class="[

@@ -1,22 +1,220 @@
 <template>
-    <div class="bg-gray-900 rounded-lg shadow-lg border border-gray-800 p-6">
-        <h2 class="text-2xl font-bold text-gray-100 mb-4">Citas Pendientes</h2>
-        <p class="text-gray-400">Vista para gestionar citas pendientes de atención.</p>
-        <div class="mt-6">
-            <div class="bg-gray-800 border border-gray-700 p-8 rounded-lg text-center">
-                <svg class="mx-auto h-12 w-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-                <p class="mt-2 text-gray-400">No hay citas pendientes en este momento</p>
-            </div>
+  <div class="upcoming-view">
+    <!-- Header -->
+    <div class="view-header">
+      <div class="header-left">
+        <h2 class="view-title">Citas Próximas</h2>
+        <div class="header-meta">
+          <span class="connection-status" :class="isConnected ? 'connected' : 'disconnected'">
+            <span class="status-dot"></span>
+            {{ isConnected ? 'Conectado' : 'Desconectado' }}
+          </span>
+          <span class="count-badge">
+            {{ filteredAppointments.length }}
+            <template v-if="hasActiveFilters">/ {{ count }}</template>
+            {{ count === 1 ? 'cita' : 'citas' }}
+          </span>
+          <span v-if="lastUpdate" class="last-update">
+            Última actualización: {{ formatFecha(lastUpdate) }}
+          </span>
         </div>
+      </div>
     </div>
+
+    <!-- Filters -->
+    <UpcomingAppointmentFilters v-model:searchQuery="searchQuery" v-model:filterEstado="filterEstado"
+      v-model:filterTipo="filterTipo" v-model:filterLinea="filterLinea" v-model:filterNave="filterNave"
+      v-model:filterCliente="filterCliente" v-model:filterTecnologia="filterTecnologia"
+      v-model:filterProducto="filterProducto" v-model:hideExpired="hideExpired"
+      :hasActiveFilters="hasActiveFilters" :estadoOptions="estadoOptions" :tipoOptions="tipoOptions"
+      :lineaOptions="lineaOptions" :naveOptions="naveOptions" :clienteOptions="clienteOptions"
+      :tecnologiaOptions="tecnologiaOptions" :productoOptions="productoOptions" @clearFilters="clearFilters" />
+
+    <!-- Loading -->
+    <div v-if="isLoading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando citas próximas...</p>
+    </div>
+
+    <!-- Error -->
+    <div v-else-if="error" class="error-state">
+      <svg class="error-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+      </svg>
+      <p>{{ error }}</p>
+      <button @click="connect" class="btn btn-primary">Reintentar conexión</button>
+    </div>
+
+    <!-- Table -->
+    <UpcomingAppointmentTable v-else :appointments="filteredAppointments" :formatFecha="formatFecha"
+      :getEstadoLabel="getEstadoLabel" :getEstadoClass="getEstadoClass" :getRowClass="getRowClass" />
+  </div>
 </template>
 
 <script setup lang="ts">
+import UpcomingAppointmentFilters from '../../components/appointments/upcoming/UpcomingAppointmentFilters.vue';
+import UpcomingAppointmentTable from '../../components/appointments/upcoming/UpcomingAppointmentTable.vue';
+import { useUpcomingAppointments } from '../../composables/appointments/useUpcomingAppointments';
 
+const {
+  filteredAppointments,
+  count,
+  lastUpdate,
+  isLoading,
+  isConnected,
+  error,
+
+  // Filters
+  searchQuery,
+  filterNave,
+  filterLinea,
+  filterCliente,
+  filterTecnologia,
+  filterProducto,
+  filterTipo,
+  filterEstado,
+  hideExpired,
+  hasActiveFilters,
+
+  // Filter options
+  naveOptions,
+  lineaOptions,
+  clienteOptions,
+  tecnologiaOptions,
+  productoOptions,
+  tipoOptions,
+  estadoOptions,
+
+  // Methods
+  clearFilters,
+  connect,
+  formatFecha,
+  getEstadoLabel,
+  getEstadoClass,
+  getRowClass,
+} = useUpcomingAppointments();
 </script>
 
 <style scoped>
+.upcoming-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
+.view-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.view-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.connection-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+}
+
+.connected .status-dot {
+  background: #4ade80;
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
+}
+
+.connected {
+  color: #4ade80;
+}
+
+.disconnected .status-dot {
+  background: #f87171;
+  box-shadow: 0 0 6px rgba(248, 113, 113, 0.5);
+}
+
+.disconnected {
+  color: #f87171;
+}
+
+.count-badge {
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.last-update {
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+/* Loading */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  gap: 1rem;
+  color: #94a3b8;
+}
+
+.spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid #1e293b;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  border-radius: 0.75rem;
+}
+
+.error-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+}
 </style>
