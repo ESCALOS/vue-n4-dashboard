@@ -1,6 +1,6 @@
 export type AppointmentEstado = 'vencida' | 'activa' | 'pendiente';
 
-export interface UpcomingAppointment {
+export interface PendingAppointment {
     cita: string;
     fechaCita: string | null;
     linea: string;
@@ -16,8 +16,8 @@ export interface UpcomingAppointment {
     estado: AppointmentEstado;
 }
 
-export interface UpcomingAppointmentsResponse {
-    data: UpcomingAppointment[];
+export interface PendingAppointmentsResponse {
+    data: PendingAppointment[];
     count: number;
     timestamp: string;
 }

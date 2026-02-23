@@ -1,5 +1,5 @@
 import type { AppointmentsResponse } from '../types/appointments/AppointmentInProgress';
-import type { UpcomingAppointmentsResponse } from '../types/appointments/UpcomingAppointment';
+import type { PendingAppointmentsResponse } from '../types/appointments/PendingAppointment';
 import { get, createAuthSSE } from './httpClient';
 import type { SSEConnection } from './httpClient';
 
@@ -45,41 +45,41 @@ export const getAppointmentsInProgress = async (): Promise<AppointmentsResponse>
 };
 
 /**
- * Crear conexión SSE para recibir citas próximas en tiempo real
+ * Crear conexión SSE para recibir citas pendientes en tiempo real
  */
-export const createUpcomingAppointmentsSSEConnection = (
-    onData: (data: UpcomingAppointmentsResponse) => void,
+export const createPendingAppointmentsSSEConnection = (
+    onData: (data: PendingAppointmentsResponse) => void,
     onError?: (error: Error) => void,
 ): SSEConnection => {
-    const eventSource = createAuthSSE('/appointments/upcoming/stream');
+    const eventSource = createAuthSSE('/appointments/pending/stream');
 
     eventSource.onmessage = (event) => {
         try {
             const parsed = JSON.parse(event.data);
             onData(parsed);
         } catch (error) {
-            console.error('Error parseando datos SSE citas próximas:', error);
-            onError?.(new Error('Error al procesar datos de citas próximas'));
+            console.error('Error parseando datos SSE citas pendientes:', error);
+            onError?.(new Error('Error al procesar datos de citas pendientes'));
         }
     };
 
     eventSource.onerror = (error) => {
-        console.error('Error en conexión SSE citas próximas:', error);
-        onError?.(new Error('Error en conexión de citas próximas'));
+        console.error('Error en conexión SSE citas pendientes:', error);
+        onError?.(new Error('Error en conexión de citas pendientes'));
     };
 
     return eventSource;
 };
 
 /**
- * Obtener citas próximas (llamada única REST)
+ * Obtener citas pendientes (llamada única REST)
  */
-export const getUpcomingAppointments = async (): Promise<UpcomingAppointmentsResponse> => {
-    const response = await get('/appointments/upcoming');
+export const getPendingAppointments = async (): Promise<PendingAppointmentsResponse> => {
+    const response = await get('/appointments/pending');
 
     if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || 'Error al obtener citas próximas');
+        throw new Error(data.message || 'Error al obtener citas pendientes');
     }
 
     return response.json();

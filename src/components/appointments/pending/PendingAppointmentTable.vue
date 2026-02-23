@@ -26,7 +26,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
-              <p>No hay citas próximas</p>
+              <p>No hay citas pendientes</p>
             </div>
           </td>
         </tr>
@@ -58,10 +58,11 @@
 </template>
 
 <script setup lang="ts">
-import type { UpcomingAppointment, AppointmentEstado } from '../../../types/appointments/UpcomingAppointment';
+import type { AppointmentEstado, PendingAppointment } from '../../../types/appointments/PendingAppointment';
+
 
 defineProps<{
-  appointments: UpcomingAppointment[];
+  appointments: PendingAppointment[];
   formatFecha: (fecha: string | null) => string;
   getEstadoLabel: (estado: AppointmentEstado) => string;
   getEstadoClass: (estado: AppointmentEstado) => string;

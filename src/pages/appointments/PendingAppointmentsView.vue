@@ -1,9 +1,9 @@
 <template>
-  <div class="upcoming-view">
+  <div class="pending-view">
     <!-- Header -->
     <div class="view-header">
       <div class="header-left">
-        <h2 class="view-title">Citas Próximas</h2>
+        <h2 class="view-title">Citas Pendientes</h2>
         <div class="header-meta">
           <span class="connection-status" :class="isConnected ? 'connected' : 'disconnected'">
             <span class="status-dot"></span>
@@ -22,7 +22,7 @@
     </div>
 
     <!-- Filters -->
-    <UpcomingAppointmentFilters v-model:searchQuery="searchQuery" v-model:filterEstado="filterEstado"
+    <PendingAppointmentFilters v-model:searchQuery="searchQuery" v-model:filterEstado="filterEstado"
       v-model:filterTipo="filterTipo" v-model:filterLinea="filterLinea" v-model:filterNave="filterNave"
       v-model:filterCliente="filterCliente" v-model:filterTecnologia="filterTecnologia"
       v-model:filterProducto="filterProducto" v-model:hideExpired="hideExpired"
@@ -33,7 +33,7 @@
     <!-- Loading -->
     <div v-if="isLoading" class="loading-state">
       <div class="spinner"></div>
-      <p>Cargando citas próximas...</p>
+      <p>Cargando citas pendientes...</p>
     </div>
 
     <!-- Error -->
@@ -47,15 +47,15 @@
     </div>
 
     <!-- Table -->
-    <UpcomingAppointmentTable v-else :appointments="filteredAppointments" :formatFecha="formatFecha"
+    <PendingAppointmentTable v-else :appointments="filteredAppointments" :formatFecha="formatFecha"
       :getEstadoLabel="getEstadoLabel" :getEstadoClass="getEstadoClass" :getRowClass="getRowClass" />
   </div>
 </template>
 
 <script setup lang="ts">
-import UpcomingAppointmentFilters from '../../components/appointments/upcoming/UpcomingAppointmentFilters.vue';
-import UpcomingAppointmentTable from '../../components/appointments/upcoming/UpcomingAppointmentTable.vue';
-import { useUpcomingAppointments } from '../../composables/appointments/useUpcomingAppointments';
+import PendingAppointmentFilters from '../../components/appointments/pending/PendingAppointmentFilters.vue';
+import PendingAppointmentTable from '../../components/appointments/pending/PendingAppointmentTable.vue';
+import { usePendingAppointments } from '../../composables/appointments/usePendingAppointments';
 
 const {
   filteredAppointments,
@@ -93,11 +93,11 @@ const {
   getEstadoLabel,
   getEstadoClass,
   getRowClass,
-} = useUpcomingAppointments();
+} = usePendingAppointments();
 </script>
 
 <style scoped>
-.upcoming-view {
+.pending-view {
   display: flex;
   flex-direction: column;
   gap: 1rem;

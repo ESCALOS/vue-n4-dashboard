@@ -1,14 +1,14 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import type { UpcomingAppointment, UpcomingAppointmentsResponse, AppointmentEstado } from '../../types/appointments/UpcomingAppointment';
-import { ESTADO_LABELS } from '../../types/appointments/UpcomingAppointment';
-import { createUpcomingAppointmentsSSEConnection } from '../../services/appointmentsService';
+import type { PendingAppointment, PendingAppointmentsResponse, AppointmentEstado } from '../../types/appointments/PendingAppointment';
+import { ESTADO_LABELS } from '../../types/appointments/PendingAppointment';
+import { createPendingAppointmentsSSEConnection } from '../../services/appointmentsService';
 import type { SSEConnection } from '../../services/httpClient';
 
-export function useUpcomingAppointments() {
+export function usePendingAppointments() {
     // ============================================
     // STATE
     // ============================================
-    const appointments = ref<UpcomingAppointment[]>([]);
+    const appointments = ref<PendingAppointment[]>([]);
     const count = ref(0);
     const lastUpdate = ref<string | null>(null);
     const isLoading = ref(true);
@@ -121,7 +121,7 @@ export function useUpcomingAppointments() {
         hideExpired.value = false;
     }
 
-    function handleSSEData(response: UpcomingAppointmentsResponse) {
+    function handleSSEData(response: PendingAppointmentsResponse) {
         appointments.value = response.data;
         count.value = response.count;
         lastUpdate.value = response.timestamp;
@@ -138,7 +138,7 @@ export function useUpcomingAppointments() {
     function connect() {
         disconnect();
         isLoading.value = true;
-        eventSource = createUpcomingAppointmentsSSEConnection(handleSSEData, handleSSEError);
+        eventSource = createPendingAppointmentsSSEConnection(handleSSEData, handleSSEError);
     }
 
     function disconnect() {
