@@ -19,6 +19,7 @@
           </span>
         </div>
       </div>
+      <ExportInProgressButton :appointments="filteredAppointments" :disabled="isLoading" />
     </div>
 
     <!-- Filters -->
@@ -56,6 +57,7 @@
 <script setup lang="ts">
 import AppointmentFilters from '../../components/appointments/in-progress/AppointmentFilters.vue';
 import AppointmentTable from '../../components/appointments/in-progress/AppointmentTable.vue';
+import ExportInProgressButton from '../../components/appointments/in-progress/ExportInProgressButton.vue';
 import { useAppointmentsInProgress } from '../../composables/appointments/useAppointmentsInProgress';
 
 const {

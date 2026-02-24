@@ -19,6 +19,7 @@
           </span>
         </div>
       </div>
+      <ExportPendingButton :appointments="filteredAppointments" :disabled="isLoading" />
     </div>
 
     <!-- Filters -->
@@ -55,6 +56,7 @@
 <script setup lang="ts">
 import PendingAppointmentFilters from '../../components/appointments/pending/PendingAppointmentFilters.vue';
 import PendingAppointmentTable from '../../components/appointments/pending/PendingAppointmentTable.vue';
+import ExportPendingButton from '../../components/appointments/pending/ExportPendingButton.vue';
 import { usePendingAppointments } from '../../composables/appointments/usePendingAppointments';
 
 const {
