@@ -174,8 +174,8 @@ export function useAppointmentsInProgress() {
     /** Clase CSS según el tiempo transcurrido */
     function getTiempoClass(minutos: number | null): string {
         if (minutos === null || minutos < 0) return '';
-        if (minutos <= 30) return 'tiempo-ok';
-        if (minutos <= 60) return 'tiempo-warning';
+        if (minutos <= 60) return 'tiempo-ok';
+        if (minutos <= 90) return 'tiempo-warning';
         return 'tiempo-danger';
     }
 
