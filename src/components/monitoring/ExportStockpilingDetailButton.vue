@@ -72,6 +72,7 @@ const handleExport = async () => {
       { wch: 12 }, // Carreta
       { wch: 30 }, // Conductor
       { wch: 20 }, // Fecha Salida
+      { wch: 30 }  // Notas
     ];
 
     // Agregar al workbook
@@ -158,7 +159,8 @@ const createSheetData = (tickets: StockpilingTicket[]): any[][] => {
       'TRACTO',
       'CARRETA',
       'CONDUCTOR',
-      'FECHA SALIDA'
+      'FECHA SALIDA',
+      'NOTAS'
     ]
   ];
 
@@ -183,7 +185,8 @@ const createSheetData = (tickets: StockpilingTicket[]): any[][] => {
         day: '2-digit',
         hour: '2-digit',
         minute: '2-digit'
-      }) : ''
+      }) : '',
+      ticket.notas
     ]);
   });
 
@@ -259,7 +262,7 @@ const applyStylesToSheet = (ws: any, ticketsCount: number) => {
   }
 
   // Aplicar estilos a los encabezados (Fila 9)
-  const headerCols = ['A9', 'B9', 'C9', 'D9', 'E9', 'F9', 'G9', 'H9', 'I9', 'J9', 'K9', 'L9', 'M9'];
+  const headerCols = ['A9', 'B9', 'C9', 'D9', 'E9', 'F9', 'G9', 'H9', 'I9', 'J9', 'K9', 'L9', 'M9', 'N9'];
   headerCols.forEach(cell => {
     if (ws[cell]) ws[cell].s = headerStyle;
   });
@@ -267,7 +270,7 @@ const applyStylesToSheet = (ws: any, ticketsCount: number) => {
   // Aplicar estilos a las filas de datos (desde fila 10)
   const dataStartRow = 9; // Fila 10 en base 0
   for (let row = dataStartRow; row < dataStartRow + ticketsCount; row++) {
-    for (let col = 0; col < 11; col++) {
+    for (let col = 0; col < 13; col++) {
       const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
       if (!ws[cellAddress]) ws[cellAddress] = { t: 's', v: '' };
       ws[cellAddress].s = dataStyle;
