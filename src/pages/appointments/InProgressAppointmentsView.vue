@@ -50,7 +50,8 @@
     <!-- Table -->
     <AppointmentTable v-else :appointments="filteredAppointments" :formatFecha="formatFecha"
       :formatTiempo="formatTiempo" :getStageLabel="getStageLabel" :getStageClass="getStageClass"
-      :getTiempoClass="getTiempoClass" />
+      :getTiempoClass="getTiempoClass" :getTiempoStageEffectiveClass="getTiempoStageEffectiveClass"
+      :getTiempoAtencion="getTiempoAtencion" :getTiempoStage="getTiempoStage" :getTiempoEfectivo="getTiempoEfectivo" />
   </div>
 </template>
 
@@ -95,7 +96,12 @@ const {
   formatFecha,
   getStageLabel,
   getTiempoClass,
+  getTiempoStageEffectiveClass,
   getStageClass,
+  // New time calculation methods
+  getTiempoAtencion,
+  getTiempoStage,
+  getTiempoEfectivo,
 } = useAppointmentsInProgress();
 </script>
 

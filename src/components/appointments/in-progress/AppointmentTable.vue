@@ -7,7 +7,24 @@
           <th class="col-fecha">Fecha Cita</th>
           <th class="col-fecha">Fecha Stage</th>
           <th class="col-stage">Stage</th>
-          <th class="col-tiempo">Tiempo</th>
+          <th class="col-tiempo">
+            <div class="header-tiempo">
+              <div>Tiempo</div>
+              <div>Atención</div>
+            </div>
+          </th>
+          <th class="col-tiempo">
+            <div class="header-tiempo">
+              <div>Tiempo</div>
+              <div>Stage</div>
+            </div>
+          </th>
+          <th class="col-tiempo">
+            <div class="header-tiempo">
+              <div>Tiempo</div>
+              <div>Efectivo</div>
+            </div>
+          </th>
           <th class="col-linea">Línea</th>
           <th class="col-booking">Booking</th>
           <th class="col-placa">Placa</th>
@@ -21,7 +38,7 @@
       </thead>
       <tbody>
         <tr v-if="appointments.length === 0">
-          <td colspan="14" class="empty-row">
+          <td colspan="16" class="empty-row">
             <div class="empty-state">
               <svg class="empty-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -41,8 +58,19 @@
             </span>
           </td>
           <td class="cell-tiempo">
-            <span :class="['tiempo-badge', getTiempoClass(appt.tiempo)]">
-              {{ formatTiempo(appt.tiempo) }}
+            <span :class="['tiempo-badge', getTiempoClass(getTiempoAtencion(appt))]">
+              {{ formatTiempo(getTiempoAtencion(appt)) }}
+            </span>
+          </td>
+          <td class="cell-tiempo">
+            <span :class="['tiempo-badge', getTiempoStageEffectiveClass(getTiempoStage(appt))]">
+              {{ formatTiempo(getTiempoStage(appt)) }}
+            </span>
+          </td>
+          <td class="cell-tiempo">
+            <span :class="['tiempo-badge', getTiempoStageEffectiveClass(getTiempoEfectivo(appt))]">
+              {{ formatTiempo(getTiempoEfectivo(appt)) }}
+              <span v-if="appt.tiempo_eir" class="tiempo-eir-note" :title="`Inspección: ${appt.tiempo_eir}m`">*</span>
             </span>
           </td>
           <td>{{ appt.linea || '—' }}</td>
@@ -72,6 +100,10 @@ defineProps<{
   getStageLabel: (stage: string) => string;
   getStageClass: (stage: string) => string;
   getTiempoClass: (minutos: number | null) => string;
+  getTiempoStageEffectiveClass: (minutos: number | null) => string;
+  getTiempoAtencion: (appointment: AppointmentInProgress) => number | null;
+  getTiempoStage: (appointment: AppointmentInProgress) => number | null;
+  getTiempoEfectivo: (appointment: AppointmentInProgress) => number | null;
 }>();
 </script>
 
@@ -104,6 +136,19 @@ defineProps<{
   z-index: 1;
 }
 
+.header-tiempo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.col-tiempo {
+  width: 80px;
+  min-width: 80px;
+}
+
 .appointments-table td {
   padding: 0.5rem 0.75rem;
   border-bottom: 1px solid #1e293b;
@@ -122,6 +167,10 @@ defineProps<{
 .cell-cita {
   font-weight: 600;
   color: #e2e8f0;
+}
+
+.cell-tiempo {
+  text-align: center;
 }
 
 .cell-fecha {
@@ -187,19 +236,49 @@ defineProps<{
   font-family: 'JetBrains Mono', monospace;
 }
 
-.tiempo-ok {
+/* Tiempo de Atención colors */
+.time-atencion-ok {
   color: #4ade80;
   background: rgba(34, 197, 94, 0.1);
 }
 
-.tiempo-warning {
-  color: #fbbf24;
-  background: rgba(234, 179, 8, 0.1);
+.time-atencion-warning {
+  color: #fb923c;
+  background: rgba(251, 146, 60, 0.1);
 }
 
-.tiempo-danger {
+.time-atencion-critical {
   color: #f87171;
   background: rgba(239, 68, 68, 0.1);
+}
+
+/* Tiempo Stage and Tiempo Efectivo colors */
+.time-stage-ok {
+  color: #4ade80;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.time-stage-warning {
+  color: #fb923c;
+  background: rgba(251, 146, 60, 0.1);
+}
+
+.time-stage-critical {
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.time-neutral {
+  color: #94a3b8;
+  background: rgba(148, 163, 184, 0.1);
+}
+
+.tiempo-eir-note {
+  margin-left: 0.25rem;
+  font-size: 0.6rem;
+  font-weight: bold;
+  opacity: 0.7;
+  cursor: help;
 }
 
 /* Tipo badge */

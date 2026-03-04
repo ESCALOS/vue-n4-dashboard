@@ -2,6 +2,8 @@ export interface AppointmentInProgress {
     cita: string;
     fechaCita: string | null;
     fechaStage: string | null;
+    fechaPreGate: string | null;
+    fechaGateIn: string | null;
     stage: string;
     tiempo: number | null;
     linea: string;
@@ -14,6 +16,12 @@ export interface AppointmentInProgress {
     nave: string;
     carreta: string;
     tipo: string;
+    /**
+     * Inspection time duration in minutes from CUSTOM_INSPEIR.
+     * NULL if no inspection records exist for the container's UFV.
+     * Used to calculate effective handling time.
+     */
+    tiempo_eir?: number | null;
 }
 
 export interface AppointmentsResponse {

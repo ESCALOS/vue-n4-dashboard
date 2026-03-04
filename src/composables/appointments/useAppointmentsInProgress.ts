@@ -3,6 +3,13 @@ import type { AppointmentInProgress, AppointmentsResponse } from '../../types/ap
 import { STAGE_LABELS } from '../../types/appointments/AppointmentInProgress';
 import { createAppointmentsSSEConnection } from '../../services/appointmentsService';
 import type { SSEConnection } from '../../services/httpClient';
+import {
+    calculateTiempoAtencion,
+    calculateTiempoStage,
+    calculateTiempoEfectivo,
+    getTimeAtencionClass,
+    getTimeStageEffectiveClass
+} from '../../utils/appointments/timeCalculations';
 
 export function useAppointmentsInProgress() {
     // ============================================
@@ -152,6 +159,44 @@ export function useAppointmentsInProgress() {
         return `${h}h ${m}m`;
     }
 
+    /**
+     * Calculate Tiempo de Atención (attention time) for an appointment
+     * Time elapsed from PreGate to now
+     */
+    function getTiempoAtencion(appointment: AppointmentInProgress): number | null {
+        return calculateTiempoAtencion(appointment.fechaPreGate);
+    }
+
+    /**
+     * Calculate Tiempo Stage (stage time) for an appointment
+     * Time elapsed from current stage to now
+     */
+    function getTiempoStage(appointment: AppointmentInProgress): number | null {
+        return calculateTiempoStage(appointment.fechaStage);
+    }
+
+    /**
+     * Calculate Tiempo Efectivo (effective time) for an appointment
+     * Net time excluding inspection duration
+     */
+    function getTiempoEfectivo(appointment: AppointmentInProgress): number | null {
+        return calculateTiempoEfectivo(appointment.fechaGateIn, appointment.tiempo_eir);
+    }
+
+    /**
+     * Get CSS class for time duration indicator based on Tiempo de Atención
+     */
+    function getTiempoClass(minutos: number | null): string {
+        return getTimeAtencionClass(minutos);
+    }
+
+    /**
+     * Get CSS class for Tiempo Stage or Tiempo Efectivo
+     */
+    function getTiempoStageEffectiveClass(minutos: number | null): string {
+        return getTimeStageEffectiveClass(minutos);
+    }
+
     /** Formatear fecha */
     function formatFecha(fecha: string | null): string {
         if (!fecha) return '—';
@@ -169,14 +214,6 @@ export function useAppointmentsInProgress() {
     /** Obtener label legible del stage */
     function getStageLabel(stage: string): string {
         return STAGE_LABELS[stage] || stage;
-    }
-
-    /** Clase CSS según el tiempo transcurrido */
-    function getTiempoClass(minutos: number | null): string {
-        if (minutos === null || minutos < 0) return '';
-        if (minutos <= 60) return 'tiempo-ok';
-        if (minutos <= 90) return 'tiempo-warning';
-        return 'tiempo-danger';
     }
 
     /** Clase CSS según el stage */
@@ -245,6 +282,11 @@ export function useAppointmentsInProgress() {
         formatFecha,
         getStageLabel,
         getTiempoClass,
+        getTiempoStageEffectiveClass,
         getStageClass,
+        // New time calculation methods
+        getTiempoAtencion,
+        getTiempoStage,
+        getTiempoEfectivo,
     };
 }
