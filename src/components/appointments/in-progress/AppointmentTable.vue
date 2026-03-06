@@ -27,6 +27,12 @@
           </th>
           <th class="col-linea">Línea</th>
           <th class="col-booking">Booking</th>
+          <th class="col-puerto">
+            <div class="header-puerto">
+              <div>Puerto</div>
+              <div>Descarga</div>
+            </div>
+          </th>
           <th class="col-placa">Placa</th>
           <th class="col-cliente">Cliente</th>
           <th class="col-tecnologia">Tecnología</th>
@@ -70,11 +76,12 @@
           <td class="cell-tiempo">
             <span :class="['tiempo-badge', getTiempoStageEffectiveClass(getTiempoEfectivo(appt))]">
               {{ formatTiempo(getTiempoEfectivo(appt)) }}
-              <span v-if="appt.tiempo_eir" class="tiempo-eir-note" :title="`Inspección: ${appt.tiempo_eir}m`">*</span>
+              <span v-if="appt.tiempoEir" class="tiempo-eir-note" :title="`Inspección: ${appt.tiempoEir}m`">*</span>
             </span>
           </td>
           <td>{{ appt.linea || '—' }}</td>
           <td>{{ appt.booking || '—' }}</td>
+          <td>{{ appt.puertoDescarga || '—' }}</td>
           <td>{{ appt.placa || '—' }}</td>
           <td class="cell-cliente">{{ appt.cliente || '—' }}</td>
           <td>{{ appt.tecnologia || '—' }}</td>
@@ -145,6 +152,20 @@ defineProps<{
 }
 
 .col-tiempo {
+  width: 80px;
+  min-width: 80px;
+}
+
+.header-puerto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  line-height: 1.2;
+  text-align: center;
+}
+
+
+.col-puerto  {
   width: 80px;
   min-width: 80px;
 }

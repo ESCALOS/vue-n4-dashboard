@@ -21,7 +21,8 @@ export interface AppointmentInProgress {
      * NULL if no inspection records exist for the container's UFV.
      * Used to calculate effective handling time.
      */
-    tiempo_eir?: number | null;
+    tiempoEir?: number | null;
+    puertoDescarga: string;
 }
 
 export interface AppointmentsResponse {

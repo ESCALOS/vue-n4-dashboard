@@ -67,9 +67,9 @@ export function calculateTiempoStage(stageDate: string | null | undefined): numb
  * Calculate Tiempo Efectivo (Effective Time)
  * Net handling time excluding inspection duration
  * 
- * Formula: (Now - GateIn) - tiempo_eir
- * Only calculated when tiempo_eir is available (inspection was recorded)
- * If tiempo_eir is null/undefined, begins counting only after inspection is completed
+ * Formula: (Now - GateIn) - tiempoEir
+ * Only calculated when tiempoEir is available (inspection was recorded)
+ * If tiempoEir is null/undefined, begins counting only after inspection is completed
  * 
  * @param gateInDate - Timestamp when container entered gate
  * @param tiempoEir - Inspection duration in minutes (must exist to calculate)
@@ -112,12 +112,12 @@ export function calculateAllTimes(appointment: {
     PreGate?: string | null;
     GateIn?: string | null;
     fechaStage?: string | null;
-    tiempo_eir?: number | null;
+    tiempoEir?: number | null;
 }): TimeCalculations {
     return {
         tiempoAtencion: calculateTiempoAtencion(appointment.PreGate),
         tiempoStage: calculateTiempoStage(appointment.fechaStage),
-        tiempoEfectivo: calculateTiempoEfectivo(appointment.GateIn, appointment.tiempo_eir),
+        tiempoEfectivo: calculateTiempoEfectivo(appointment.GateIn, appointment.tiempoEir),
     };
 }
 

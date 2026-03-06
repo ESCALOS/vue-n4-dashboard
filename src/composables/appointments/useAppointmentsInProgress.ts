@@ -180,7 +180,7 @@ export function useAppointmentsInProgress() {
      * Net time excluding inspection duration
      */
     function getTiempoEfectivo(appointment: AppointmentInProgress): number | null {
-        return calculateTiempoEfectivo(appointment.fechaGateIn, appointment.tiempo_eir);
+        return calculateTiempoEfectivo(appointment.fechaGateIn, appointment.tiempoEir);
     }
 
     /**

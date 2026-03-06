@@ -21,7 +21,6 @@
                 :loading="loading"
                 />
                 <button
-                    v-if="showHoldsTab"
                     @click="handleRefreshHolds"
                     class="btn btn-outline-info refresh-button"
                     :disabled="refreshingHolds || loading"
@@ -53,7 +52,6 @@
         />
 
         <ToggleView
-            v-if="showHoldsTab"
             :active-tab="activeTab"
             @update:activeTab="activeTab = $event"
         />
@@ -76,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRef, computed, watch } from 'vue';
+import { ref, toRef, watch } from 'vue';
 import type { SummaryData } from '../../composables/monitoring/useMonitoringCalculations';
 import type { VesselData } from '../../interfaces/monitoring/VesselData';
 import ExcelExporterButton from './ExcelExporterButton.vue';
@@ -118,8 +116,7 @@ watch(() => props.vesselData.operation_type, (newOperationType) => {
   activeTab.value = newOperationType === 'STOCKPILING' ? 'services' : 'holds';
 });
 
-// Verificar si el tab de holds debe estar disponible
-const showHoldsTab = computed(() => props.vesselData.operation_type !== 'STOCKPILING');
+
 const vesselDataRef = toRef(props, 'vesselData');
 
 const { pivotedData, columnTotals } = useTablePivot(vesselDataRef, activeTab);
