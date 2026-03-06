@@ -13,7 +13,6 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import * as XLSX from 'xlsx-js-style';
 import type { VesselData } from '../../interfaces/monitoring/VesselData';
 import type { Summary } from '../../interfaces/monitoring/Summary';
 
@@ -37,13 +36,16 @@ const handleExport = async () => {
     exporting.value = true;
     await new Promise(resolve => setTimeout(resolve, 300));
 
+    // Dynamic import de XLSX - se carga solo cuando se exporta
+    const XLSX = await import('xlsx-js-style');
+
     // Crear el workbook
-    const wb = XLSX.utils.book_new();
+    const wb = XLSX.default.utils.book_new();
 
     // Crear una hoja por cada BL
     props.vesselData.summary.services.forEach((service) => {
       const sheetData = createSheetForBL(service);
-      const ws = XLSX.utils.aoa_to_sheet(sheetData);
+      const ws = XLSX.default.utils.aoa_to_sheet(sheetData);
 
       // Aplicar estilos
       applyStylesToSheet(ws);
@@ -63,12 +65,12 @@ const handleExport = async () => {
 
       // Nombre de la hoja (limitado a 31 caracteres)
       let sheetName = service.nbr.substring(0, 31);
-      XLSX.utils.book_append_sheet(wb, ws, sheetName);
+      XLSX.default.utils.book_append_sheet(wb, ws, sheetName);
     });
 
     // Generar el archivo
     const fileName = `Acopio_${props.vesselData.manifest.name}_${new Date().toISOString().split('T')[0]}.xlsx`;
-    XLSX.writeFile(wb, fileName);
+    XLSX.default.writeFile(wb, fileName);
 
   } catch (error) {
     console.error('Error al exportar:', error);

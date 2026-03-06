@@ -13,7 +13,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import type { VesselData } from '../../interfaces/monitoring/VesselData';
-import { MonitoringExcelExporter } from '../../services/excelMonitoringService';
 
 const props = defineProps<{
   vesselData: VesselData;
@@ -37,7 +36,9 @@ const handleExport = async () => {
     // Pequeño delay para mostrar el estado de carga
     await new Promise(resolve => setTimeout(resolve, 300));
 
-    MonitoringExcelExporter.export({
+    // Dynamic import de la clase - se carga solo cuando se exporta
+    const { MonitoringExcelExporter } = await import('../../services/excelMonitoringService');
+    await MonitoringExcelExporter.export({
       vesselData: props.vesselData,
     });
 

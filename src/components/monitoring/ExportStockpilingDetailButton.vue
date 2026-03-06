@@ -14,7 +14,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import type { VesselData } from '../../interfaces/monitoring/VesselData';
-import * as XLSX from 'xlsx-js-style';
 import type { StockpilingTicket } from '../../interfaces/monitoring/api/StockpilingTicket';
 import { getStockpilingTickets } from '../../services/monitoringService';
 
@@ -38,6 +37,9 @@ const handleExport = async () => {
     exporting.value = true;
     await new Promise(resolve => setTimeout(resolve, 300));
 
+    // Dynamic import de XLSX - se carga solo cuando se exporta
+    const XLSX = await import('xlsx-js-style');
+
     // Obtener los gkeys de todos los BL items
     const blItemGkeys = props.vesselData.summary.services.map(bl => bl.id);
 
@@ -50,12 +52,12 @@ const handleExport = async () => {
     }
 
     // Crear el workbook
-    const wb = XLSX.utils.book_new();
+    const wb = XLSX.default.utils.book_new();
     const sheetData = createSheetData(tickets);
-    const ws = XLSX.utils.aoa_to_sheet(sheetData);
+    const ws = XLSX.default.utils.aoa_to_sheet(sheetData);
 
     // Aplicar estilos
-    applyStylesToSheet(ws, tickets.length);
+    applyStylesToSheet(ws, tickets.length, XLSX.default);
 
     // Ajustar anchos de columna
     ws['!cols'] = [
@@ -77,11 +79,11 @@ const handleExport = async () => {
     ];
 
     // Agregar al workbook
-    XLSX.utils.book_append_sheet(wb, ws, 'Detalle Acopio');
+    XLSX.default.utils.book_append_sheet(wb, ws, 'Detalle Acopio');
 
     // Generar el archivo
     const fileName = `Detalle_Acopio_${props.vesselData.manifest.name}_${new Date().toISOString().split('T')[0]}.xlsx`;
-    XLSX.writeFile(wb, fileName);
+    XLSX.default.writeFile(wb, fileName);
 
   } catch (error) {
     console.error('Error al exportar:', error);
@@ -196,7 +198,7 @@ const createSheetData = (tickets: StockpilingTicket[]): any[][] => {
   return data;
 };
 
-const applyStylesToSheet = (ws: any, ticketsCount: number) => {
+const applyStylesToSheet = (ws: any, ticketsCount: number, XLSX: any) => {
   // Estilo para el título principal (Fila 2)
   const titleStyle = {
     font: { bold: true, sz: 14 },

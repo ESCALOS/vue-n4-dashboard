@@ -12,7 +12,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import * as XLSX from 'xlsx-js-style';
 import type { AppointmentInProgress } from '../../../types/appointments/AppointmentInProgress';
 import { STAGE_LABELS } from '../../../types/appointments/AppointmentInProgress';
 
@@ -55,13 +54,16 @@ const handleExport = async () => {
     exporting.value = true;
     await new Promise(resolve => setTimeout(resolve, 200));
 
+    // Dynamic import de XLSX - se carga solo cuando se exporta
+    const XLSX = await import('xlsx-js-style');
+
     const data = props.appointments;
     if (data.length === 0) {
       alert('No hay citas en proceso para exportar.');
       return;
     }
 
-    const wb = XLSX.utils.book_new();
+    const wb = XLSX.default.utils.book_new();
 
     // Encabezados
     const headers = [
@@ -117,14 +119,14 @@ const handleExport = async () => {
 
     // Aplicar estilo a cabeceras (fila 1)
     for (let col = 0; col < headers.length; col++) {
-      const cellRef = XLSX.utils.encode_cell({ r: 0, c: col });
+      const cellRef = XLSX.default.utils.encode_cell({ r: 0, c: col });
       if (ws[cellRef]) ws[cellRef].s = headerStyle;
     }
 
     // Aplicar estilo a datos
     for (let row = 1; row <= rows.length; row++) {
       for (let col = 0; col < headers.length; col++) {
-        const cellRef = XLSX.utils.encode_cell({ r: row, c: col });
+        const cellRef = XLSX.default.utils.encode_cell({ r: row, c: col });
         if (!ws[cellRef]) ws[cellRef] = { t: 's', v: '' };
         ws[cellRef].s = dataStyle;
       }
@@ -151,10 +153,10 @@ const handleExport = async () => {
     // Altura de cabecera
     ws['!rows'] = [{ hpt: 28 }];
 
-    XLSX.utils.book_append_sheet(wb, ws, 'Citas en Proceso');
+    XLSX.default.utils.book_append_sheet(wb, ws, 'Citas en Proceso');
 
     const fecha = new Date().toISOString().split('T')[0];
-    XLSX.writeFile(wb, `Citas_En_Proceso_${fecha}.xlsx`);
+    XLSX.default.writeFile(wb, `Citas_En_Proceso_${fecha}.xlsx`);
   } catch (error) {
     console.error('Error al exportar citas en proceso:', error);
     alert('Error al generar el archivo Excel. Por favor, intente nuevamente.');

@@ -12,7 +12,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import * as XLSX from 'xlsx-js-style';
 import type { PendingAppointment } from '../../../types/appointments/PendingAppointment';
 import { ESTADO_LABELS } from '../../../types/appointments/PendingAppointment';
 
@@ -47,13 +46,16 @@ const handleExport = async () => {
     exporting.value = true;
     await new Promise(resolve => setTimeout(resolve, 200));
 
+    // Dynamic import de XLSX - se carga solo cuando se exporta
+    const XLSX = await import('xlsx-js-style');
+
     const data = props.appointments;
     if (data.length === 0) {
       alert('No hay citas pendientes para exportar.');
       return;
     }
 
-    const wb = XLSX.utils.book_new();
+    const wb = XLSX.default.utils.book_new();
 
     // Encabezados
     const headers = [
@@ -80,7 +82,7 @@ const handleExport = async () => {
     ]);
 
     const sheetData = [headers, ...rows];
-    const ws = XLSX.utils.aoa_to_sheet(sheetData);
+    const ws = XLSX.default.utils.aoa_to_sheet(sheetData);
 
     // Estilos de cabecera
     const headerStyle = {
@@ -108,14 +110,14 @@ const handleExport = async () => {
 
     // Aplicar estilo a cabeceras (fila 1)
     for (let col = 0; col < headers.length; col++) {
-      const cellRef = XLSX.utils.encode_cell({ r: 0, c: col });
+      const cellRef = XLSX.default.utils.encode_cell({ r: 0, c: col });
       if (ws[cellRef]) ws[cellRef].s = headerStyle;
     }
 
     // Aplicar estilo a datos
     for (let row = 1; row <= rows.length; row++) {
       for (let col = 0; col < headers.length; col++) {
-        const cellRef = XLSX.utils.encode_cell({ r: row, c: col });
+        const cellRef = XLSX.default.utils.encode_cell({ r: row, c: col });
         if (!ws[cellRef]) ws[cellRef] = { t: 's', v: '' };
         ws[cellRef].s = dataStyle;
       }
@@ -141,10 +143,10 @@ const handleExport = async () => {
     // Altura de cabecera
     ws['!rows'] = [{ hpt: 28 }];
 
-    XLSX.utils.book_append_sheet(wb, ws, 'Citas Pendientes');
+    XLSX.default.utils.book_append_sheet(wb, ws, 'Citas Pendientes');
 
     const fecha = new Date().toISOString().split('T')[0];
-    XLSX.writeFile(wb, `Citas_Pendientes_${fecha}.xlsx`);
+    XLSX.default.writeFile(wb, `Citas_Pendientes_${fecha}.xlsx`);
   } catch (error) {
     console.error('Error al exportar citas pendientes:', error);
     alert('Error al generar el archivo Excel. Por favor, intente nuevamente.');

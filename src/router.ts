@@ -1,11 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from './stores/auth';
 import LoginView from './pages/auth/LoginView.vue';
-import GeneralCargoView from './pages/monitoring/GeneralCargoView.vue';
-import ContainersView from './pages/monitoring/ContainersView.vue';
-import PendingAppointmentsView from './pages/appointments/PendingAppointmentsView.vue';
-import InProgressAppointmentsView from './pages/appointments/InProgressAppointmentsView.vue';
-import UsersView from './pages/admin/UsersView.vue';
+
+// Lazy-load rutas para optimizar bundle inicial
+const GeneralCargoView = () => import('./pages/monitoring/GeneralCargoView.vue');
+const ContainersView = () => import('./pages/monitoring/ContainersView.vue');
+const PendingAppointmentsView = () => import('./pages/appointments/PendingAppointmentsView.vue');
+const InProgressAppointmentsView = () => import('./pages/appointments/InProgressAppointmentsView.vue');
+const UsersView = () => import('./pages/admin/UsersView.vue');
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,6 +49,17 @@ const router = createRouter({
             meta: { requiresAdmin: true },
         },
     ]
+});
+
+// Precarga anticipada de rutas comunes después del login para mejor UX
+router.afterEach(() => {
+    const authStore = useAuthStore();
+
+    // Si está autenticado, precarga monitoreo en background
+    if (authStore.isAuthenticated) {
+        import('./pages/monitoring/GeneralCargoView.vue').catch(() => { });
+        import('./pages/appointments/PendingAppointmentsView.vue').catch(() => { });
+    }
 });
 
 router.beforeEach((to) => {

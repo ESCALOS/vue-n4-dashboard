@@ -1,4 +1,3 @@
-import * as XLSX from 'xlsx-js-style';
 import { ref, computed } from 'vue';
 import type { VesselData } from '../interfaces/monitoring/VesselData';
 import { useTablePivot } from '../composables/monitoring/useTablePivot';
@@ -10,20 +9,36 @@ interface ExportData {
 type TableCellValue = string | number;
 type MonitoringTableData = TableCellValue[][];
 
+// Lazy-load xlsx solo cuando se necesita exportar
+let XLSX: any = null;
+const getXLSX = async () => {
+    if (!XLSX) {
+        XLSX = await import('xlsx-js-style');
+    }
+    return XLSX;
+};
+
 export class MonitoringExcelExporter {
-    private workbook: XLSX.WorkBook;
+    private workbook: any;
     private data: ExportData;
+    private XLSX: any;
 
     constructor(data: ExportData) {
-        this.workbook = XLSX.utils.book_new();
         this.data = data;
+    }
+
+    private async initialize() {
+        if (!this.XLSX) {
+            this.XLSX = await getXLSX();
+            this.workbook = this.XLSX.utils.book_new();
+        }
     }
 
     /**
      * Aplica estilos a una celda específica
      */
     private applyCellStyle(
-        worksheet: XLSX.WorkSheet,
+        worksheet: any,
         cellAddress: string,
         style: {
             fill?: { fgColor: { rgb: string } };
@@ -44,7 +59,7 @@ export class MonitoringExcelExporter {
      * Aplica bordes a todas las celdas de un rango
      */
     private applyBordersToRange(
-        worksheet: XLSX.WorkSheet,
+        worksheet: any,
         startRow: number,
         endRow: number,
         startCol: number,
@@ -59,7 +74,7 @@ export class MonitoringExcelExporter {
 
         for (let row = startRow; row <= endRow; row++) {
             for (let col = startCol; col <= endCol; col++) {
-                const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
+                const cellAddress = this.XLSX.utils.encode_cell({ r: row, c: col });
                 if (worksheet[cellAddress]) {
                     worksheet[cellAddress].s = {
                         ...worksheet[cellAddress].s,
@@ -74,14 +89,14 @@ export class MonitoringExcelExporter {
      * Aplica estilos a una fila completa
      */
     private applyRowStyle(
-        worksheet: XLSX.WorkSheet,
+        worksheet: any,
         row: number,
         numCols: number,
         backgroundColor: string,
         isBold: boolean = true
     ): void {
         for (let col = 0; col < numCols; col++) {
-            const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
+            const cellAddress = this.XLSX.utils.encode_cell({ r: row, c: col });
             this.applyCellStyle(worksheet, cellAddress, {
                 fill: { fgColor: { rgb: backgroundColor } },
                 font: { bold: isBold, sz: 11 },
@@ -200,7 +215,7 @@ export class MonitoringExcelExporter {
      * Aplica estilos a una tabla (bordes, colores de fondo, alineación)
      */
     private applyTableStyles(
-        worksheet: XLSX.WorkSheet,
+        worksheet: any,
         startRow: number,
         numRows: number,
         numCols: number
@@ -210,7 +225,7 @@ export class MonitoringExcelExporter {
 
         // Aplicar negrita, tamaño 11 y centrado al header
         for (let col = 0; col < numCols; col++) {
-            const cellAddress = XLSX.utils.encode_cell({ r: startRow, c: col });
+            const cellAddress = this.XLSX.utils.encode_cell({ r: startRow, c: col });
             this.applyCellStyle(worksheet, cellAddress, {
                 font: { bold: true, sz: 11 },
                 alignment: { horizontal: 'center', vertical: 'center' },
@@ -333,7 +348,8 @@ export class MonitoringExcelExporter {
     /**
      * Genera el archivo Excel completo con ambas secciones
      */
-    public generateExcel(): void {
+    public async generateExcel(): Promise<void> {
+        await this.initialize();
         const { vesselData } = this.data;
 
         // Título principal: ${Manifiesto} - ${Nombre de la Nave}
@@ -359,10 +375,10 @@ export class MonitoringExcelExporter {
         sectionTitles.push({ row: blTitleRow, text: 'REPORTE DE BL ITEMS' });
 
         // Crear worksheet
-        const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+        const worksheet = this.XLSX.utils.aoa_to_sheet(sheetData);
 
         // Aplicar estilos al título principal (fila 0)
-        const mainTitleAddress = XLSX.utils.encode_cell({ r: 0, c: 0 });
+        const mainTitleAddress = this.XLSX.utils.encode_cell({ r: 0, c: 0 });
         this.applyCellStyle(worksheet, mainTitleAddress, {
             font: { bold: true, sz: 12 },
             alignment: { horizontal: 'center', vertical: 'center' },
@@ -424,7 +440,7 @@ export class MonitoringExcelExporter {
         worksheet['!cols'] = columnWidths;
 
         // Agregar al workbook
-        XLSX.utils.book_append_sheet(this.workbook, worksheet, 'Monitoreo Completo');
+        this.XLSX.utils.book_append_sheet(this.workbook, worksheet, 'Monitoreo Completo');
 
         // Generar nombre del archivo con fecha de exportación (día mes año hora minuto: DDMMYYYY_HHMM)
         const now = new Date();
@@ -436,14 +452,14 @@ export class MonitoringExcelExporter {
             .replace(/[^a-zA-Z0-9_.-]/g, '');
 
         // Descargar archivo
-        XLSX.writeFile(this.workbook, fileName);
+        this.XLSX.writeFile(this.workbook, fileName);
     }
 
     /**
      * Método estático para exportar directamente
      */
-    public static export(data: ExportData): void {
+    public static async export(data: ExportData): Promise<void> {
         const exporter = new MonitoringExcelExporter(data);
-        exporter.generateExcel();
+        await exporter.generateExcel();
     }
 }
