@@ -35,7 +35,7 @@
           </th>
           <th class="col-placa">Placa</th>
           <th class="col-cliente">Cliente</th>
-          <th class="col-tecnologia">Tecnología</th>
+          <th class="col-tecnologia">Tec.</th>
           <th class="col-producto">Producto</th>
           <th class="col-contenedor">Contenedor</th>
           <th class="col-nave">Nave</th>
