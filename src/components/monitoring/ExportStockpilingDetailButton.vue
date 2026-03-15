@@ -1,13 +1,13 @@
 <template>
   <button 
-    v-if="vesselData.operation_type === 'STOCKPILING'"
+    v-if="vesselData.operation_type === 'STOCKPILING' || vesselData.operation_type === 'DISPATCHING'"
     @click="handleExport" 
     class="btn btn-export-stockpiling-detail" 
     :disabled="loading || exporting"
     :title="exportTooltip"
   >
     <span v-if="exporting">⏳ Exportando...</span>
-    <span v-else>📋 Exportar Detalle Acopio</span>
+    <span v-else>📋 Exportar Tickets</span>
   </button>
 </template>
 
@@ -16,6 +16,7 @@ import { ref, computed } from 'vue';
 import type { VesselData } from '../../interfaces/monitoring/VesselData';
 import type { StockpilingTicket } from '../../interfaces/monitoring/api/StockpilingTicket';
 import { getStockpilingTickets } from '../../services/monitoringService';
+import { getOperationLabel } from '../../utils/monitoring';
 
 const props = defineProps<{
   vesselData: VesselData;
@@ -23,6 +24,16 @@ const props = defineProps<{
 }>();
 
 const exporting = ref(false);
+
+const exportTitle = computed(() => {
+  const operationLabel = getOperationLabel(props.vesselData.operation_type).toUpperCase();
+  const commodityRaw = props.vesselData.summary.services[0]?.commodity?.trim();
+  const commodityNormalized = commodityRaw?.toUpperCase();
+  const commodity = commodityNormalized === 'HMS' || commodityNormalized === 'FRAGMENTADA'
+    ? 'PIEDRA D HIERRO'
+    : commodityRaw;
+  return commodity ? `${operationLabel} DE ${commodity}` : operationLabel;
+});
 
 const exportTooltip = computed(() => {
   if (props.loading) return 'Esperando datos...';
@@ -53,7 +64,7 @@ const handleExport = async () => {
 
     // Crear el workbook
     const wb = XLSX.default.utils.book_new();
-    const sheetData = createSheetData(tickets);
+    const sheetData = createSheetData(tickets, exportTitle.value);
     const ws = XLSX.default.utils.aoa_to_sheet(sheetData);
 
     // Aplicar estilos
@@ -75,14 +86,15 @@ const handleExport = async () => {
       { wch: 30 }, // Conductor
       { wch: 20 }, // Fecha Salida
       { wch: 30 }, // Notas
-      { wch: 20 }  // RUC Transportista
+      { wch: 20 }, // RUC Transportista
+      { wch: 20 }  // Bodega
     ];
 
     // Agregar al workbook
-    XLSX.default.utils.book_append_sheet(wb, ws, 'Detalle Acopio');
+    XLSX.default.utils.book_append_sheet(wb, ws, exportTitle.value.slice(0, 31));
 
     // Generar el archivo
-    const fileName = `Detalle_Acopio_${props.vesselData.manifest.name}_${new Date().toISOString().split('T')[0]}.xlsx`;
+    const fileName = `Lista_Tickets_${props.vesselData.manifest.name}_${new Date().toISOString().split('T')[0]}.xlsx`;
     XLSX.default.writeFile(wb, fileName);
 
   } catch (error) {
@@ -93,7 +105,7 @@ const handleExport = async () => {
   }
 };
 
-const createSheetData = (tickets: StockpilingTicket[]): any[][] => {
+const createSheetData = (tickets: StockpilingTicket[], title: string): any[][] => {
   const vesselName = props.vesselData.manifest.name;
   
   // Calcular tonelajes
@@ -110,8 +122,8 @@ const createSheetData = (tickets: StockpilingTicket[]): any[][] => {
   const data: any[][] = [
     // Fila 1: Vacía
     [''],
-    // Fila 2: "ACOPIO DE PIEDRA DE HIERRO"
-    ['ACOPIO DE PIEDRA DE HIERRO', '', '', '', '', '', '', '', '', '', ''],
+    // Fila 2: Título dinámico de operación
+    [title, '', '', '', '', '', '', '', '', '', ''],
     // Fila 3: Info de la nave
     ['NAVE', vesselName, '', '', '', '', '', '', '', '', ''],
     // Fila 4: Cliente (vacío por ahora)
@@ -164,7 +176,8 @@ const createSheetData = (tickets: StockpilingTicket[]): any[][] => {
       'CONDUCTOR',
       'FECHA SALIDA',
       'NOTAS',
-      'RUC TRANSPORTISTA'
+      'RUC TRANSPORTISTA',
+      'BODEGA'
     ]
   ];
 
@@ -191,7 +204,8 @@ const createSheetData = (tickets: StockpilingTicket[]): any[][] => {
         minute: '2-digit'
       }) : '',
       ticket.notas,
-      ticket.rucTransportista
+      ticket.rucTransportista,
+      ticket.bodega
     ]);
   });
 
@@ -267,7 +281,7 @@ const applyStylesToSheet = (ws: any, ticketsCount: number, XLSX: any) => {
   }
 
   // Aplicar estilos a los encabezados (Fila 9)
-  const headerCols = ['A9', 'B9', 'C9', 'D9', 'E9', 'F9', 'G9', 'H9', 'I9', 'J9', 'K9', 'L9', 'M9', 'N9', 'O9'];
+  const headerCols = ['A9', 'B9', 'C9', 'D9', 'E9', 'F9', 'G9', 'H9', 'I9', 'J9', 'K9', 'L9', 'M9', 'N9', 'O9', 'P9'];
   headerCols.forEach(cell => {
     if (ws[cell]) ws[cell].s = headerStyle;
   });
@@ -275,7 +289,7 @@ const applyStylesToSheet = (ws: any, ticketsCount: number, XLSX: any) => {
   // Aplicar estilos a las filas de datos (desde fila 10)
   const dataStartRow = 9; // Fila 10 en base 0
   for (let row = dataStartRow; row < dataStartRow + ticketsCount; row++) {
-    for (let col = 0; col < 15; col++) {
+    for (let col = 0; col < 16; col++) {
       const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
       if (!ws[cellAddress]) ws[cellAddress] = { t: 's', v: '' };
       ws[cellAddress].s = dataStyle;

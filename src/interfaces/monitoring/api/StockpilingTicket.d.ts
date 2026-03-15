@@ -12,4 +12,5 @@ export interface StockpilingTicket {
     fechaSalida: string;
     notas: string;
     rucTransportista: string;
+    bodega: string;
 }
