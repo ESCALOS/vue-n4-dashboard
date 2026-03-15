@@ -16,7 +16,7 @@ export interface RefreshResponse {
     refreshToken: string;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 export const authService = {
     async login(email: string, password: string): Promise<LoginResponse> {

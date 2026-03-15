@@ -1,7 +1,7 @@
 import { useAuthStore } from '../stores/auth';
 import router from '../router';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 let isRefreshing = false;
 let refreshPromise: Promise<boolean> | null = null;
