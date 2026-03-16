@@ -6,9 +6,8 @@ import type { SSEConnection } from '../../services/httpClient';
 import {
     calculateTiempoAtencion,
     calculateTiempoStage,
-    calculateTiempoEfectivo,
     getTimeAtencionClass,
-    getTimeStageEffectiveClass
+    getTimeStageClass
 } from '../../utils/appointments/timeCalculations';
 
 export function useAppointmentsInProgress() {
@@ -176,14 +175,6 @@ export function useAppointmentsInProgress() {
     }
 
     /**
-     * Calculate Tiempo Efectivo (effective time) for an appointment
-     * Net time excluding inspection duration
-     */
-    function getTiempoEfectivo(appointment: AppointmentInProgress): number | null {
-        return calculateTiempoEfectivo(appointment.fechaGateIn, appointment.tiempoEir);
-    }
-
-    /**
      * Get CSS class for time duration indicator based on Tiempo de Atención
      */
     function getTiempoClass(minutos: number | null): string {
@@ -193,8 +184,8 @@ export function useAppointmentsInProgress() {
     /**
      * Get CSS class for Tiempo Stage or Tiempo Efectivo
      */
-    function getTiempoStageEffectiveClass(minutos: number | null): string {
-        return getTimeStageEffectiveClass(minutos);
+    function getTiempoStageClass(minutos: number | null): string {
+        return getTimeStageClass(minutos);
     }
 
     /** Formatear fecha */
@@ -282,11 +273,10 @@ export function useAppointmentsInProgress() {
         formatFecha,
         getStageLabel,
         getTiempoClass,
-        getTiempoStageEffectiveClass,
+        getTiempoStageClass,
         getStageClass,
         // New time calculation methods
         getTiempoAtencion,
         getTiempoStage,
-        getTiempoEfectivo,
     };
 }

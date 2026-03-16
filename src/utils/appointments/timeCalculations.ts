@@ -4,13 +4,11 @@
  * Implements three types of time calculations for containers in progress:
  * 1. Attention Time (Tiempo de Atención)
  * 2. Stage Time (Tiempo Stage)
- * 3. Effective Time (Tiempo Efectivo)
  */
 
 export interface TimeCalculations {
     tiempoAtencion: number | null;  // Time from PreGate to now
     tiempoStage: number | null;      // Time from current stage to now
-    tiempoEfectivo: number | null;   // Effective time excluding inspection
 }
 
 /**
@@ -64,45 +62,6 @@ export function calculateTiempoStage(stageDate: string | null | undefined): numb
 }
 
 /**
- * Calculate Tiempo Efectivo (Effective Time)
- * Net handling time excluding inspection duration
- * 
- * Formula: (Now - GateIn) - tiempoEir
- * Only calculated when tiempoEir is available (inspection was recorded)
- * If tiempoEir is null/undefined, begins counting only after inspection is completed
- * 
- * @param gateInDate - Timestamp when container entered gate
- * @param tiempoEir - Inspection duration in minutes (must exist to calculate)
- * @returns Duration in minutes excluding inspection, or null if inspection data not available
- */
-export function calculateTiempoEfectivo(
-    gateInDate: string | null | undefined,
-    tiempoEir: number | null | undefined
-): number | null {
-    // Only calculate if inspection time exists
-    if (!tiempoEir || tiempoEir <= 0) {
-        return null; // No inspection data available yet
-    }
-
-    if (!gateInDate) return null;
-
-    try {
-        const gateInTime = new Date(gateInDate).getTime();
-        const now = new Date().getTime();
-        const diffMs = now - gateInTime;
-
-        if (diffMs < 0) return null; // Invalid date in future
-
-        const totalMinutes = Math.floor(diffMs / 60000);
-
-        // Calculate effective time: total time minus inspection time
-        return Math.max(0, totalMinutes - tiempoEir); // Don't go below 0
-    } catch {
-        return null;
-    }
-}
-
-/**
  * Calculate all three time metrics at once
  * 
  * @param appointment - Appointment object with timestamp fields
@@ -112,12 +71,10 @@ export function calculateAllTimes(appointment: {
     PreGate?: string | null;
     GateIn?: string | null;
     fechaStage?: string | null;
-    tiempoEir?: number | null;
 }): TimeCalculations {
     return {
         tiempoAtencion: calculateTiempoAtencion(appointment.PreGate),
         tiempoStage: calculateTiempoStage(appointment.fechaStage),
-        tiempoEfectivo: calculateTiempoEfectivo(appointment.GateIn, appointment.tiempoEir),
     };
 }
 
@@ -180,7 +137,7 @@ export function getTimeAtencionClass(minutes: number | null): string {
 }
 
 /**
- * Get CSS class for Tiempo Stage and Tiempo Efectivo
+ * Get CSS class for Tiempo Stage
  * Coloring:
  * - Green: < 10 minutes
  * - Orange: 10 to 25 minutes
@@ -189,7 +146,7 @@ export function getTimeAtencionClass(minutes: number | null): string {
  * @param minutes - Duration in minutes
  * @returns CSS class name for styling
  */
-export function getTimeStageEffectiveClass(minutes: number | null): string {
+export function getTimeStageClass(minutes: number | null): string {
     if (minutes === null) return 'time-neutral';
 
     if (minutes < 10) return 'time-stage-ok';      // < 10m: green

@@ -19,12 +19,6 @@
               <div>Stage</div>
             </div>
           </th>
-          <th class="col-tiempo">
-            <div class="header-tiempo">
-              <div>Tiempo</div>
-              <div>Efectivo</div>
-            </div>
-          </th>
           <th class="col-linea">Línea</th>
           <th class="col-booking">Booking</th>
           <th class="col-puerto">
@@ -69,14 +63,8 @@
             </span>
           </td>
           <td class="cell-tiempo">
-            <span :class="['tiempo-badge', getTiempoStageEffectiveClass(getTiempoStage(appt))]">
+            <span :class="['tiempo-badge', getTiempoStageClass(getTiempoStage(appt))]">
               {{ formatTiempo(getTiempoStage(appt)) }}
-            </span>
-          </td>
-          <td class="cell-tiempo">
-            <span :class="['tiempo-badge', getTiempoStageEffectiveClass(getTiempoEfectivo(appt))]">
-              {{ formatTiempo(getTiempoEfectivo(appt)) }}
-              <span v-if="appt.tiempoEir" class="tiempo-eir-note" :title="`Inspección: ${appt.tiempoEir}m`">*</span>
             </span>
           </td>
           <td>{{ appt.linea || '—' }}</td>
@@ -107,10 +95,9 @@ defineProps<{
   getStageLabel: (stage: string) => string;
   getStageClass: (stage: string) => string;
   getTiempoClass: (minutos: number | null) => string;
-  getTiempoStageEffectiveClass: (minutos: number | null) => string;
+  getTiempoStageClass: (minutos: number | null) => string;
   getTiempoAtencion: (appointment: AppointmentInProgress) => number | null;
   getTiempoStage: (appointment: AppointmentInProgress) => number | null;
-  getTiempoEfectivo: (appointment: AppointmentInProgress) => number | null;
 }>();
 </script>
 
@@ -273,7 +260,7 @@ defineProps<{
   background: rgba(239, 68, 68, 0.1);
 }
 
-/* Tiempo Stage and Tiempo Efectivo colors */
+/* Tiempo Stage color */
 .time-stage-ok {
   color: #4ade80;
   background: rgba(34, 197, 94, 0.1);

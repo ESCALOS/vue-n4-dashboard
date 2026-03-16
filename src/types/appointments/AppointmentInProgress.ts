@@ -16,12 +16,6 @@ export interface AppointmentInProgress {
     nave: string;
     carreta: string;
     tipo: string;
-    /**
-     * Inspection time duration in minutes from CUSTOM_INSPEIR.
-     * NULL if no inspection records exist for the container's UFV.
-     * Used to calculate effective handling time.
-     */
-    tiempoEir?: number | null;
     puertoDescarga: string;
 }
 
