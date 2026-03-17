@@ -5,6 +5,7 @@ import type { VesselData } from "../interfaces/monitoring/VesselData";
 import type { StockpilingTicket } from "../interfaces/monitoring/api/StockpilingTicket";
 import { get, post, del, createAuthSSE } from './httpClient';
 import type { SSEConnection } from './httpClient';
+import type { SSEConnectionStatus } from './httpClient';
 
 export interface WorkingVessel {
     manifest_id: string;
@@ -51,7 +52,8 @@ export const removeVesselFromMonitor = async (
  */
 export const createOperationsSSEConnection = (
     onData: (operations: VesselsResponse[]) => void,
-    onError?: (error: Error) => void
+    onError?: (error: Error) => void,
+    onStatusChange?: (status: SSEConnectionStatus) => void,
 ): SSEConnection => {
     const eventSource = createAuthSSE('/monitoring/general-cargo/operations/stream');
 
@@ -70,6 +72,10 @@ export const createOperationsSSEConnection = (
         onError?.(new Error('Error en conexión de operaciones'));
     };
 
+    eventSource.onstatuschange = (status) => {
+        onStatusChange?.(status);
+    };
+
     return eventSource;
 };
 
@@ -79,7 +85,8 @@ export const createOperationsSSEConnection = (
 export const createVesselSSEConnection = (
     vessel: VesselsRequest,
     onData: (data: VesselData) => void,
-    onError?: (error: Error) => void
+    onError?: (error: Error) => void,
+    onStatusChange?: (status: SSEConnectionStatus) => void,
 ): SSEConnection => {
     const eventSource = createAuthSSE(
         `/monitoring/general-cargo/stream?manifest_id=${vessel.manifest_id}&operation_type=${vessel.operation_type}`
@@ -99,6 +106,10 @@ export const createVesselSSEConnection = (
     eventSource.onerror = (error) => {
         console.error('Error en conexión SSE:', error);
         onError?.(new Error('Error en conexión con el servidor'));
+    };
+
+    eventSource.onstatuschange = (status) => {
+        onStatusChange?.(status);
     };
 
     return eventSource;

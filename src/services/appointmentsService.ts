@@ -2,6 +2,7 @@ import type { AppointmentsResponse } from '../types/appointments/AppointmentInPr
 import type { PendingAppointmentsResponse } from '../types/appointments/PendingAppointment';
 import { get, createAuthSSE } from './httpClient';
 import type { SSEConnection } from './httpClient';
+import type { SSEConnectionStatus } from './httpClient';
 
 /**
  * Crear conexión SSE para recibir citas en progreso en tiempo real
@@ -9,6 +10,7 @@ import type { SSEConnection } from './httpClient';
 export const createAppointmentsSSEConnection = (
     onData: (data: AppointmentsResponse) => void,
     onError?: (error: Error) => void,
+    onStatusChange?: (status: SSEConnectionStatus) => void,
 ): SSEConnection => {
     const eventSource = createAuthSSE('/appointments/in-progress/stream');
 
@@ -25,6 +27,10 @@ export const createAppointmentsSSEConnection = (
     eventSource.onerror = (error) => {
         console.error('Error en conexión SSE citas:', error);
         onError?.(new Error('Error en conexión de citas en progreso'));
+    };
+
+    eventSource.onstatuschange = (status) => {
+        onStatusChange?.(status);
     };
 
     return eventSource;
@@ -50,6 +56,7 @@ export const getAppointmentsInProgress = async (): Promise<AppointmentsResponse>
 export const createPendingAppointmentsSSEConnection = (
     onData: (data: PendingAppointmentsResponse) => void,
     onError?: (error: Error) => void,
+    onStatusChange?: (status: SSEConnectionStatus) => void,
 ): SSEConnection => {
     const eventSource = createAuthSSE('/appointments/pending/stream');
 
@@ -66,6 +73,10 @@ export const createPendingAppointmentsSSEConnection = (
     eventSource.onerror = (error) => {
         console.error('Error en conexión SSE citas pendientes:', error);
         onError?.(new Error('Error en conexión de citas pendientes'));
+    };
+
+    eventSource.onstatuschange = (status) => {
+        onStatusChange?.(status);
     };
 
     return eventSource;

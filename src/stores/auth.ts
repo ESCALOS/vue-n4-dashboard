@@ -1,20 +1,34 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { authService } from '../services/authService';
+import { AuthServiceError } from '../services/authService';
 import type { AuthUser } from '../services/authService';
 
 const TOKEN_KEY = 'n4_access_token';
 const REFRESH_KEY = 'n4_refresh_token';
 const USER_KEY = 'n4_user';
 
+function normalizeToken(value: string | null): string | null {
+    if (!value) return null;
+    const trimmed = value.trim();
+    if (!trimmed || trimmed === 'null' || trimmed === 'undefined') {
+        return null;
+    }
+    return trimmed;
+}
+
+function hasValidTokens(access: string | null, refresh: string | null): access is string {
+    return !!normalizeToken(access) && !!normalizeToken(refresh);
+}
+
 export const useAuthStore = defineStore('auth', () => {
     // State
-    const accessToken = ref<string | null>(localStorage.getItem(TOKEN_KEY));
-    const refreshToken = ref<string | null>(localStorage.getItem(REFRESH_KEY));
+    const accessToken = ref<string | null>(normalizeToken(localStorage.getItem(TOKEN_KEY)));
+    const refreshToken = ref<string | null>(normalizeToken(localStorage.getItem(REFRESH_KEY)));
     const user = ref<AuthUser | null>(loadUser());
 
     // Getters
-    const isAuthenticated = computed(() => !!accessToken.value);
+    const isAuthenticated = computed(() => hasValidTokens(accessToken.value, refreshToken.value));
     const isAdmin = computed(() => user.value?.role === 'ADMIN');
 
     // Helpers
@@ -28,10 +42,18 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     function setTokens(access: string, refresh: string) {
-        accessToken.value = access;
-        refreshToken.value = refresh;
-        localStorage.setItem(TOKEN_KEY, access);
-        localStorage.setItem(REFRESH_KEY, refresh);
+        const normalizedAccess = normalizeToken(access);
+        const normalizedRefresh = normalizeToken(refresh);
+
+        if (!normalizedAccess || !normalizedRefresh) {
+            clearAuth();
+            return;
+        }
+
+        accessToken.value = normalizedAccess;
+        refreshToken.value = normalizedRefresh;
+        localStorage.setItem(TOKEN_KEY, normalizedAccess);
+        localStorage.setItem(REFRESH_KEY, normalizedRefresh);
     }
 
     function setUser(u: AuthUser) {
@@ -51,22 +73,38 @@ export const useAuthStore = defineStore('auth', () => {
     // Actions
     async function login(email: string, password: string) {
         const response = await authService.login(email, password);
+        if (!response.accessToken || !response.refreshToken) {
+            clearAuth();
+            throw new Error('Sesión inválida. Vuelva a iniciar sesión.');
+        }
+
         setTokens(response.accessToken, response.refreshToken);
         setUser(response.user);
         return response;
     }
 
     async function refresh(): Promise<boolean> {
-        if (!refreshToken.value) {
+        const normalizedRefreshToken = normalizeToken(refreshToken.value);
+
+        if (!normalizedRefreshToken) {
             clearAuth();
             return false;
         }
 
         try {
-            const response = await authService.refresh(refreshToken.value);
+            const response = await authService.refresh(normalizedRefreshToken);
+            if (!response.accessToken || !response.refreshToken) {
+                clearAuth();
+                return false;
+            }
             setTokens(response.accessToken, response.refreshToken);
             return true;
-        } catch {
+        } catch (error) {
+            if (error instanceof AuthServiceError && error.type !== 'auth') {
+                // Backend caído o error transiente: mantener sesión en modo degradado
+                return false;
+            }
+
             clearAuth();
             return false;
         }

@@ -3,6 +3,7 @@ import type { AppointmentInProgress, AppointmentsResponse } from '../../types/ap
 import { STAGE_LABELS } from '../../types/appointments/AppointmentInProgress';
 import { createAppointmentsSSEConnection } from '../../services/appointmentsService';
 import type { SSEConnection } from '../../services/httpClient';
+import type { SSEConnectionStatus } from '../../services/httpClient';
 import {
     calculateTiempoAtencion,
     calculateTiempoStage,
@@ -19,7 +20,14 @@ export function useAppointmentsInProgress() {
     const lastUpdate = ref<string | null>(null);
     const isLoading = ref(true);
     const isConnected = ref(false);
+    const isDegraded = ref(false);
     const error = ref<string | null>(null);
+    const connectionNotice = ref<string | null>(null);
+    const connectionLabel = computed(() => {
+        if (isConnected.value) return 'Conectado';
+        if (isDegraded.value) return 'Degradado';
+        return 'Desconectado';
+    });
 
     // Filters
     const filterNave = ref('');
@@ -126,18 +134,68 @@ export function useAppointmentsInProgress() {
         lastUpdate.value = response.timestamp;
         isLoading.value = false;
         isConnected.value = true;
+        isDegraded.value = false;
+        connectionNotice.value = null;
         error.value = null;
     }
 
     function handleSSEError(err: Error) {
-        error.value = err.message;
+        if (!lastUpdate.value) {
+            error.value = err.message;
+        } else {
+            connectionNotice.value = 'Conexión inestable. Reintentando automáticamente...';
+        }
         isConnected.value = false;
+    }
+
+    function handleSSEStatus(status: SSEConnectionStatus) {
+        if (status === 'connected') {
+            isConnected.value = true;
+            isDegraded.value = false;
+            connectionNotice.value = null;
+            error.value = null;
+            return;
+        }
+
+        if (status === 'degraded') {
+            isConnected.value = false;
+            isDegraded.value = true;
+            connectionNotice.value = 'Sin eventos recientes. Activando modo degradado...';
+            return;
+        }
+
+        if (status === 'reconnecting') {
+            isConnected.value = false;
+            isDegraded.value = true;
+            connectionNotice.value = 'Reconectando stream en segundo plano...';
+            return;
+        }
+
+        if (status === 'backend-down') {
+            isConnected.value = false;
+            isDegraded.value = true;
+            connectionNotice.value = 'Backend no disponible (health falló). Mostrando últimos datos.';
+            return;
+        }
+
+        if (status === 'unauthorized') {
+            isConnected.value = false;
+            isDegraded.value = false;
+            connectionNotice.value = null;
+            error.value = 'Sesión expirada. Vuelva a iniciar sesión.';
+        }
     }
 
     function connect() {
         disconnect();
         isLoading.value = true;
-        eventSource = createAppointmentsSSEConnection(handleSSEData, handleSSEError);
+        error.value = null;
+        connectionNotice.value = 'Conectando al stream...';
+        eventSource = createAppointmentsSSEConnection(
+            handleSSEData,
+            handleSSEError,
+            handleSSEStatus,
+        );
     }
 
     function disconnect() {
@@ -145,6 +203,8 @@ export function useAppointmentsInProgress() {
             eventSource.close();
             eventSource = null;
             isConnected.value = false;
+            isDegraded.value = false;
+            connectionNotice.value = null;
         }
     }
 
@@ -243,7 +303,10 @@ export function useAppointmentsInProgress() {
         lastUpdate,
         isLoading,
         isConnected,
+        isDegraded,
         error,
+        connectionNotice,
+        connectionLabel,
 
         // Filters
         filterNave,

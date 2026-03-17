@@ -1,7 +1,8 @@
-import { ref, onUnmounted, watch } from "vue";
+import { ref, onUnmounted, watch, computed } from "vue";
 import type { VesselData } from "../../interfaces/monitoring/VesselData";
 import { addVesselToMonitor, createVesselSSEConnection, createOperationsSSEConnection, removeVesselFromMonitor } from "../../services/monitoringService";
 import type { SSEConnection } from "../../services/httpClient";
+import type { SSEConnectionStatus } from "../../services/httpClient";
 import type { VesselsResponse } from "../../interfaces/monitoring/api/VesselResponse";
 import type { VesselsRequest } from "../../interfaces/monitoring/api/VesselResquest";
 
@@ -14,6 +15,27 @@ export function useMonitoringData() {
     const loading = ref(false);
     const error = ref('');
     const serverConnected = ref(true);
+    const degradedMode = ref(false);
+    const connectionState = ref<SSEConnectionStatus | 'idle'>('idle');
+
+    const connectionMessage = computed(() => {
+        switch (connectionState.value) {
+            case 'connected':
+                return '';
+            case 'degraded':
+                return 'Sin eventos recientes. Activando modo degradado...';
+            case 'reconnecting':
+                return 'Reconectando stream con el backend...';
+            case 'backend-down':
+                return 'Backend no disponible (health falló). Mostrando última información conocida.';
+            case 'unauthorized':
+                return 'Sesión expirada. Redirigiendo al login...';
+            case 'closed':
+                return 'Conexión cerrada.';
+            default:
+                return 'Conectando al stream...';
+        }
+    });
 
     // Referencia a la conexión SSE activa (datos de nave)
     let sseConnection: SSEConnection | null = null;
@@ -32,6 +54,8 @@ export function useMonitoringData() {
         operationsSseConnection = createOperationsSSEConnection(
             (operations) => {
                 serverConnected.value = true;
+                degradedMode.value = false;
+                connectionState.value = 'connected';
                 monitoredVessels.value = operations;
 
                 // Si la nave seleccionada ya no está en la lista, limpiar la selección
@@ -54,7 +78,28 @@ export function useMonitoringData() {
             (err) => {
                 serverConnected.value = false;
                 console.error('Error en SSE de operaciones:', err);
-            }
+            },
+            (status: SSEConnectionStatus) => {
+                if (status === 'connected') {
+                    serverConnected.value = true;
+                    degradedMode.value = false;
+                    connectionState.value = 'connected';
+                    return;
+                }
+
+                if (status === 'degraded' || status === 'reconnecting' || status === 'backend-down') {
+                    serverConnected.value = false;
+                    degradedMode.value = true;
+                    connectionState.value = status;
+                    return;
+                }
+
+                if (status === 'unauthorized') {
+                    serverConnected.value = false;
+                    degradedMode.value = false;
+                    connectionState.value = status;
+                }
+            },
         );
     }
 
@@ -83,6 +128,8 @@ export function useMonitoringData() {
                     vesselRequest,
                     (data: VesselData) => {
                         serverConnected.value = true;
+                        degradedMode.value = false;
+                        connectionState.value = 'connected';
                         selectedVesselData.value = data;
                         loading.value = false;
                     },
@@ -90,7 +137,28 @@ export function useMonitoringData() {
                         serverConnected.value = false;
                         console.error('Error en conexión SSE:', err);
                         loading.value = false;
-                    }
+                    },
+                    (status: SSEConnectionStatus) => {
+                        if (status === 'connected') {
+                            serverConnected.value = true;
+                            degradedMode.value = false;
+                            connectionState.value = status;
+                            return;
+                        }
+
+                        if (status === 'degraded' || status === 'reconnecting' || status === 'backend-down') {
+                            serverConnected.value = false;
+                            degradedMode.value = true;
+                            connectionState.value = status;
+                            return;
+                        }
+
+                        if (status === 'unauthorized') {
+                            serverConnected.value = false;
+                            degradedMode.value = false;
+                            connectionState.value = status;
+                        }
+                    },
                 );
             }
         } catch (err) {
@@ -178,6 +246,9 @@ export function useMonitoringData() {
         loading,
         error,
         serverConnected,
+        degradedMode,
+        connectionState,
+        connectionMessage,
         startOperationsSSE,
         selectVessel,
         addVessel,

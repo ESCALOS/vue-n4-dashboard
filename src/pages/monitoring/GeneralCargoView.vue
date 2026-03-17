@@ -3,7 +3,9 @@
         <Transition name="banner">
             <div v-if="!serverConnected" class="server-disconnected-banner">
                 <span class="banner-icon">⚠️</span>
-                <span>Sin conexión con el servidor. Reintentando automáticamente...</span>
+                <span>{{ connectionMessage || (degradedMode
+                  ? 'Modo degradado: backend no disponible o sin eventos recientes. Reintentando automáticamente...'
+                  : 'Sin conexión con el servidor. Reintentando automáticamente...') }}</span>
             </div>
         </Transition>
 
@@ -66,6 +68,8 @@ const {
   loading,
   error,
   serverConnected,
+  degradedMode,
+  connectionMessage,
   startOperationsSSE,
   selectVessel: selectVesselData,
   addVessel,

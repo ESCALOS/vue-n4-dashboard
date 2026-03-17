@@ -5,9 +5,9 @@
       <div class="header-left">
         <h2 class="view-title">Citas en Proceso de Atención</h2>
         <div class="header-meta">
-          <span class="connection-status" :class="isConnected ? 'connected' : 'disconnected'">
+          <span class="connection-status" :class="isConnected ? 'connected' : isDegraded ? 'degraded' : 'disconnected'">
             <span class="status-dot"></span>
-            {{ isConnected ? 'Conectado' : 'Desconectado' }}
+            {{ connectionLabel }}
           </span>
           <span class="count-badge">
             {{ filteredAppointments.length }}
@@ -20,6 +20,11 @@
         </div>
       </div>
       <ExportInProgressButton :appointments="filteredAppointments" :disabled="isLoading" />
+    </div>
+
+    <!-- Notice no bloqueante -->
+    <div v-if="connectionNotice && !error" class="connection-notice">
+      {{ connectionNotice }}
     </div>
 
     <!-- Filters -->
@@ -67,6 +72,9 @@ const {
   lastUpdate,
   isLoading,
   isConnected,
+  isDegraded,
+  connectionLabel,
+  connectionNotice,
   error,
 
   // Filters
@@ -165,6 +173,24 @@ const {
 
 .disconnected {
   color: #f87171;
+}
+
+.degraded .status-dot {
+  background: #fbbf24;
+  box-shadow: 0 0 6px rgba(251, 191, 36, 0.45);
+}
+
+.degraded {
+  color: #fbbf24;
+}
+
+.connection-notice {
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.6rem;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  background: rgba(251, 191, 36, 0.08);
+  color: #facc15;
+  font-size: 0.82rem;
 }
 
 .count-badge {
