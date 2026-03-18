@@ -61,7 +61,22 @@
             @update:viewMode="viewMode = $event"
         />
 
+        <ToggleDetailMode
+          :mode="detailMode"
+          @update:mode="detailMode = $event"
+        />
+
+        <CurrentShiftSummary
+          v-if="detailMode === 'current-shift'"
+          :holds="vesselData.summary.holds"
+          :services="vesselData.summary.services"
+          :active-tab="activeTab"
+          :view-mode="viewMode"
+          :current-shift="currentShift"
+        />
+
         <MonitoringTable
+          v-else
             :shifts="pivotedData.shifts"
             :columns="pivotedData.columns"
             :column-totals="columnTotals"
@@ -80,9 +95,11 @@ import type { VesselData } from '../../interfaces/monitoring/VesselData';
 import ExcelExporterButton from './ExcelExporterButton.vue';
 import ExportStockpilingButton from './ExportStockpilingButton.vue';
 import ExportStockpilingDetailButton from './ExportStockpilingDetailButton.vue';
+import CurrentShiftSummary from './CurrentShiftSummary.vue';
 import MonitoringTable from './MonitoringTable.vue';
 import SummaryCards from './SummaryCards.vue';
 import SwitchMetric from './SwitchMetric.vue';
+import ToggleDetailMode from './ToggleDetailMode.vue';
 import ToggleView from './ToggleView.vue';
 import { useTablePivot } from '../../composables/monitoring/useTablePivot';
 import { refreshHolds, refreshServices } from '../../services/monitoringService';
@@ -105,6 +122,7 @@ const props = defineProps<{
 const viewMode = ref<'weight' | 'goods'>('weight');
 const refreshingHolds = ref(false);
 const refreshingServices = ref(false);
+const detailMode = ref<'current-shift' | 'detailed'>('current-shift');
 
 // Determinar el tab inicial basado en el tipo de operación
 const activeTab = ref<'holds' | 'services'>(
