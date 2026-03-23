@@ -82,6 +82,22 @@
                   <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">Carga General</span>
                 </router-link>
               </li>
+              <li>
+                <router-link
+                  to="/monitoreo/contenedores"
+                  @click="closeSidebarOnMobile"
+                  :class="[
+                    'nav-link',
+                    { 'is-expanded': !isCollapsed }
+                  ]"
+                  active-class="is-active"
+                >
+                  <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10m-11 9h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v11a2 2 0 002 2z" />
+                  </svg>
+                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">Contenedores</span>
+                </router-link>
+              </li>
             </ul>
           </div>
 
