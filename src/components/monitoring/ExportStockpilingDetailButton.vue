@@ -55,7 +55,7 @@ const handleExport = async () => {
     const blItemGkeys = props.vesselData.summary.services.map(bl => bl.id);
 
     // Obtener los tickets desde el backend
-    const tickets = await getStockpilingTickets(blItemGkeys);
+    const tickets = await getStockpilingTickets(props.vesselData.manifest.id, blItemGkeys);
 
     if (tickets.length === 0) {
       alert('No hay tickets disponibles para exportar.');

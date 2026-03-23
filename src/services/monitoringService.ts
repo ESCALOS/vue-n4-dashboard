@@ -3,6 +3,7 @@ import type { VesselsResponse } from "../interfaces/monitoring/api/VesselRespons
 import type { VesselsRequest } from "../interfaces/monitoring/api/VesselResquest";
 import type { VesselData } from "../interfaces/monitoring/VesselData";
 import type { StockpilingTicket } from "../interfaces/monitoring/api/StockpilingTicket";
+import type { IndirectShipmentTicket } from "../interfaces/monitoring/api/IndirectShipmentTicket";
 import type { ContainerMonitoringData, MonitoredContainerVessel } from "../interfaces/monitoring/ContainerMonitoring";
 import { get, post, del, createAuthSSE } from './httpClient';
 import type { SSEConnection } from './httpClient';
@@ -182,6 +183,7 @@ export const refreshServices = async (
  * Obtener tickets de acopio (stockpiling) por BL item gkeys
  */
 export const getStockpilingTickets = async (
+    manifestId: string,
     blItemGkeys: number[]
 ): Promise<StockpilingTicket[]> => {
     if (blItemGkeys.length === 0) {
@@ -190,12 +192,37 @@ export const getStockpilingTickets = async (
 
     const gkeysParam = blItemGkeys.join(',');
     const response = await get(
-        `/monitoring/general-cargo/stockpiling-tickets?blItemGkeys=${gkeysParam}`
+        `/monitoring/general-cargo/stockpiling-tickets?manifestId=${encodeURIComponent(manifestId)}&blItemGkeys=${gkeysParam}`
     );
 
     if (!response.ok) {
         const data = await response.json();
         throw new Error(data.error || "Error al obtener tickets de acopio");
+    }
+
+    const result = await response.json();
+    return result.data ?? [];
+};
+
+/**
+ * Obtener tickets de embarque indirecto por BL item gkeys
+ */
+export const getIndirectShipmentTickets = async (
+    manifestId: string,
+    blItemGkeys: number[]
+): Promise<IndirectShipmentTicket[]> => {
+    if (blItemGkeys.length === 0) {
+        return [];
+    }
+
+    const gkeysParam = blItemGkeys.join(',');
+    const response = await get(
+        `/monitoring/general-cargo/indirect-shipment-tickets?manifestId=${encodeURIComponent(manifestId)}&blItemGkeys=${gkeysParam}`
+    );
+
+    if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Error al obtener tickets de embarque indirecto");
     }
 
     const result = await response.json();

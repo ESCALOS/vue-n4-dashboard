@@ -20,10 +20,10 @@ export const getShiftClass = (shift: string): string => {
 // Obtener etiqueta de tipo de operación
 export const getOperationLabel = (tipo: OperationType): string => {
     const labels: Record<OperationType, string> = {
-        'DISPATCHING': '📦 Despacho',
-        'INDIRECT_LOADING': '🚢 Embarque Ind.',
-        'STOCKPILING': '📥 Acopio',
-        'DIRECT_LOADING': '🚢 Embarque Dir.'
+        'DISPATCHING': 'Despacho',
+        'INDIRECT_LOADING': 'Embarque Ind.',
+        'STOCKPILING': 'Acopio',
+        'DIRECT_LOADING': 'Embarque Dir.'
     };
     return labels[tipo] || tipo;
 };

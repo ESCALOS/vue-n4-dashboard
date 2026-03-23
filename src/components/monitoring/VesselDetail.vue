@@ -16,6 +16,10 @@
                     :vessel-data="vesselData"
                     :loading="loading"
                 />
+                <ExportIndirectShipmentButton
+                    :vessel-data="vesselData"
+                    :loading="loading"
+                />
                 <ExcelExporterButton
                 :vessel-data="vesselData"
                 :loading="loading"
@@ -95,6 +99,7 @@ import type { VesselData } from '../../interfaces/monitoring/VesselData';
 import ExcelExporterButton from './ExcelExporterButton.vue';
 import ExportStockpilingButton from './ExportStockpilingButton.vue';
 import ExportStockpilingDetailButton from './ExportStockpilingDetailButton.vue';
+import ExportIndirectShipmentButton from './ExportIndirectShipmentButton.vue';
 import CurrentShiftSummary from './CurrentShiftSummary.vue';
 import MonitoringTable from './MonitoringTable.vue';
 import SummaryCards from './SummaryCards.vue';
