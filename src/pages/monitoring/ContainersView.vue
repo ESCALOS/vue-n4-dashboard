@@ -11,6 +11,7 @@
       @add-vessel="addVessel"
       @remove-vessel="removeVessel"
       @select-vessel="selectVessel"
+      @export-report="exportReport"
     />
 
     <template v-if="vesselData">
@@ -45,6 +46,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useContainerMonitoring } from '../../composables/monitoring/useContainerMonitoring';
+import { getContainerOperationsReport } from '../../services/monitoringService';
+import { exportContainerOperationsExcel } from '../../services/containerOperationsExcelService';
 import ContainerSearchHeader from '../../components/monitoring/containers/ContainerSearchHeader.vue';
 import ContainerSummaryCards from '../../components/monitoring/containers/ContainerSummaryCards.vue';
 import ContainerPendingByBay from '../../components/monitoring/containers/ContainerPendingByBay.vue';
@@ -77,6 +80,18 @@ const {
 onMounted(() => {
   startVesselsSSE();
 });
+
+const exportReport = async () => {
+  if (!selectedVessel.value) return;
+
+  try {
+    const report = await getContainerOperationsReport(selectedVessel.value.id);
+    await exportContainerOperationsExcel(report);
+  } catch (err) {
+    console.error('Error exportando reporte de contenedores:', err);
+    error.value = err instanceof Error ? err.message : 'Error al exportar reporte';
+  }
+};
 </script>
 
 <style scoped>

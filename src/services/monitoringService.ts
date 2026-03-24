@@ -4,7 +4,11 @@ import type { VesselsRequest } from "../interfaces/monitoring/api/VesselResquest
 import type { VesselData } from "../interfaces/monitoring/VesselData";
 import type { StockpilingTicket } from "../interfaces/monitoring/api/StockpilingTicket";
 import type { IndirectShipmentTicket } from "../interfaces/monitoring/api/IndirectShipmentTicket";
-import type { ContainerMonitoringData, MonitoredContainerVessel } from "../interfaces/monitoring/ContainerMonitoring";
+import type {
+    ContainerMonitoringData,
+    MonitoredContainerVessel,
+    ContainerOperationsReport,
+} from "../interfaces/monitoring/ContainerMonitoring";
 import { get, post, del, createAuthSSE } from './httpClient';
 import type { SSEConnection } from './httpClient';
 import type { SSEConnectionStatus } from './httpClient';
@@ -353,4 +357,23 @@ export const createContainerDataSSE = (
     };
 
     return eventSource;
+};
+
+/**
+ * Obtener datos del reporte operacional de contenedores para exportación Excel
+ */
+export const getContainerOperationsReport = async (
+    manifestId: string,
+): Promise<ContainerOperationsReport> => {
+    const response = await get(
+        `/monitoring/containers/export-data?manifest_id=${encodeURIComponent(manifestId)}`,
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.message || result.error || 'Error al obtener reporte de contenedores');
+    }
+
+    return result.data as ContainerOperationsReport;
 };

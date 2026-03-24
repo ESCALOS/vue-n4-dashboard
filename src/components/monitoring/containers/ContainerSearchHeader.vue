@@ -15,6 +15,13 @@
       <button class="btn btn-primary" :disabled="loading || !newManifestId.trim()" @click="handleAdd">
         {{ loading ? 'Agregando...' : 'Agregar Nave' }}
       </button>
+      <button
+        class="btn btn-secondary"
+        :disabled="!selectedVessel"
+        @click="$emit('export-report')"
+      >
+        Exportar Excel
+      </button>
     </div>
 
     <!-- Monitored Vessels Tabs -->
@@ -66,6 +73,7 @@ const emit = defineEmits<{
   'add-vessel': [manifestId: string];
   'remove-vessel': [manifestId: string];
   'select-vessel': [vessel: MonitoredContainerVessel];
+  'export-report': [];
 }>();
 
 const newManifestId = ref('');
@@ -212,6 +220,15 @@ const handleAdd = () => {
 
 .btn-primary:hover:not(:disabled) {
   background: #4338ca;
+}
+
+.btn-secondary {
+  background: #0ea5e9;
+  color: #fff;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #0284c7;
 }
 
 .btn:disabled {
