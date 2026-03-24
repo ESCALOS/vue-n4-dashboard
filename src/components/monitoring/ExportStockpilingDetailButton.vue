@@ -29,8 +29,8 @@ const exportTitle = computed(() => {
   const operationLabel = getOperationLabel(props.vesselData.operation_type).toUpperCase();
   const commodityRaw = props.vesselData.summary.services[0]?.commodity?.trim();
   const commodityNormalized = commodityRaw?.toUpperCase();
-  const commodity = commodityNormalized === 'HMS' || commodityNormalized === 'FRAGMENTADA'
-    ? 'PIEDRA D HIERRO'
+  const commodity = commodityNormalized === 'HMS' || commodityNormalized === 'FRAG' || commodityNormalized === 'P&S' || commodityNormalized === 'BUSH'
+    ? 'CHATARRA'
     : commodityRaw;
   return commodity ? `${operationLabel} DE ${commodity}` : operationLabel;
 });
