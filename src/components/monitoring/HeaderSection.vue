@@ -2,7 +2,6 @@
     <div class="header-section">
         <div class="header-title">
             <h1 class="system-name">
-                <img src="/amagi.gif" alt="logo" />
                 A.M.A.G.I.
             </h1>
             <p class="system-description">Aplicación de Monitoreo de Actividades de Gestión Integral</p>

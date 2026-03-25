@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from './stores/auth';
 import LoginView from './pages/auth/LoginView.vue';
+import { USE_MOCK_DATA } from './config/mockMode';
 
 // Lazy-load rutas para optimizar bundle inicial
 const GeneralCargoView = () => import('./pages/monitoring/GeneralCargoView.vue');
@@ -63,6 +64,14 @@ router.afterEach(() => {
 });
 
 router.beforeEach((to) => {
+    if (USE_MOCK_DATA) {
+        if (to.name === 'login') {
+            return '/';
+        }
+
+        return true;
+    }
+
     const authStore = useAuthStore();
 
     if (to.meta.public) {

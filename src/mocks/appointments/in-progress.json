@@ -1,0 +1,46 @@
+{
+    "data": [
+        {
+            "cita": "APT-24001",
+            "fechaCita": "2026-03-24T08:00:00.000Z",
+            "fechaStage": "2026-03-24T08:15:00.000Z",
+            "fechaPreGate": "2026-03-24T08:10:00.000Z",
+            "fechaGateIn": "2026-03-24T08:20:00.000Z",
+            "stage": "pre_gate",
+            "tiempo": 15,
+            "linea": "MSC",
+            "booking": "BK-90012",
+            "placa": "A1B-123",
+            "cliente": "AGROEXPORT S.A.",
+            "tecnologia": "STD",
+            "producto": "MAIZ",
+            "contenedor": "MSCU1234567",
+            "nave": "CRAMON ISLAND",
+            "carreta": "CH-3321",
+            "tipo": "Recepción Full",
+            "puertoDescarga": "CALLAO"
+        },
+        {
+            "cita": "APT-24002",
+            "fechaCita": "2026-03-24T09:00:00.000Z",
+            "fechaStage": "2026-03-24T09:25:00.000Z",
+            "fechaPreGate": "2026-03-24T09:12:00.000Z",
+            "fechaGateIn": null,
+            "stage": "gate_in",
+            "tiempo": 13,
+            "linea": "MAERSK",
+            "booking": "BK-90013",
+            "placa": "D3F-741",
+            "cliente": "LOGÍSTICA ANDINA",
+            "tecnologia": "RF",
+            "producto": "SOYA",
+            "contenedor": "MAEU4567890",
+            "nave": "PROSPERITY",
+            "carreta": "CH-1180",
+            "tipo": "Despacho",
+            "puertoDescarga": "PAITA"
+        }
+    ],
+    "count": 2,
+    "timestamp": "2026-03-24T10:30:00.000Z"
+}

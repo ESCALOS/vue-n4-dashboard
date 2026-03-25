@@ -3,6 +3,13 @@ import type { PendingAppointmentsResponse } from '../types/appointments/PendingA
 import { get, createAuthSSE } from './httpClient';
 import type { SSEConnection } from './httpClient';
 import type { SSEConnectionStatus } from './httpClient';
+import { USE_MOCK_DATA } from '../config/mockMode';
+import { createMockSSEConnection } from './mockSSE';
+import inProgressMock from '../mocks/appointments/in-progress.json';
+import pendingMock from '../mocks/appointments/pending.json';
+
+const APPOINTMENTS_IN_PROGRESS_MOCK = inProgressMock as AppointmentsResponse;
+const APPOINTMENTS_PENDING_MOCK = pendingMock as PendingAppointmentsResponse;
 
 /**
  * Crear conexión SSE para recibir citas en progreso en tiempo real
@@ -12,6 +19,18 @@ export const createAppointmentsSSEConnection = (
     onError?: (error: Error) => void,
     onStatusChange?: (status: SSEConnectionStatus) => void,
 ): SSEConnection => {
+    if (USE_MOCK_DATA) {
+        return createMockSSEConnection(
+            () => ({
+                ...APPOINTMENTS_IN_PROGRESS_MOCK,
+                timestamp: new Date().toISOString(),
+            }),
+            onData,
+            onError,
+            onStatusChange,
+        );
+    }
+
     const eventSource = createAuthSSE('/appointments/in-progress/stream');
 
     eventSource.onmessage = (event) => {
@@ -40,6 +59,13 @@ export const createAppointmentsSSEConnection = (
  * Obtener citas en progreso (llamada única REST)
  */
 export const getAppointmentsInProgress = async (): Promise<AppointmentsResponse> => {
+    if (USE_MOCK_DATA) {
+        return {
+            ...APPOINTMENTS_IN_PROGRESS_MOCK,
+            timestamp: new Date().toISOString(),
+        };
+    }
+
     const response = await get('/appointments/in-progress');
 
     if (!response.ok) {
@@ -58,6 +84,18 @@ export const createPendingAppointmentsSSEConnection = (
     onError?: (error: Error) => void,
     onStatusChange?: (status: SSEConnectionStatus) => void,
 ): SSEConnection => {
+    if (USE_MOCK_DATA) {
+        return createMockSSEConnection(
+            () => ({
+                ...APPOINTMENTS_PENDING_MOCK,
+                timestamp: new Date().toISOString(),
+            }),
+            onData,
+            onError,
+            onStatusChange,
+        );
+    }
+
     const eventSource = createAuthSSE('/appointments/pending/stream');
 
     eventSource.onmessage = (event) => {
@@ -86,6 +124,13 @@ export const createPendingAppointmentsSSEConnection = (
  * Obtener citas pendientes (llamada única REST)
  */
 export const getPendingAppointments = async (): Promise<PendingAppointmentsResponse> => {
+    if (USE_MOCK_DATA) {
+        return {
+            ...APPOINTMENTS_PENDING_MOCK,
+            timestamp: new Date().toISOString(),
+        };
+    }
+
     const response = await get('/appointments/pending');
 
     if (!response.ok) {

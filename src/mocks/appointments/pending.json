@@ -1,0 +1,51 @@
+{
+    "data": [
+        {
+            "cita": "APT-25001",
+            "fechaCita": "2026-03-24T11:00:00.000Z",
+            "linea": "MSC",
+            "booking": "BK-91001",
+            "placa": "P2Q-532",
+            "carreta": "CH-8821",
+            "cliente": "TERMINALES DEL SUR",
+            "tecnologia": "STD",
+            "producto": "TRIGO",
+            "contenedor": "MSCU7654321",
+            "nave": "SEA VOYAGER",
+            "tipo": "Recepción Full",
+            "estado": "activa"
+        },
+        {
+            "cita": "APT-25002",
+            "fechaCita": "2026-03-24T13:30:00.000Z",
+            "linea": "HAPAG",
+            "booking": "BK-91002",
+            "placa": "L7X-004",
+            "carreta": "CH-9980",
+            "cliente": "ACOPIOS DEL PACIFICO",
+            "tecnologia": "OT",
+            "producto": "MALTA",
+            "contenedor": "HLXU1122334",
+            "nave": "ANTHEIA",
+            "tipo": "Despacho",
+            "estado": "pendiente"
+        },
+        {
+            "cita": "APT-25003",
+            "fechaCita": "2026-03-24T06:00:00.000Z",
+            "linea": "CMA",
+            "booking": "BK-91003",
+            "placa": "T8R-992",
+            "carreta": "CH-1133",
+            "cliente": "GRANELERA NORTE",
+            "tecnologia": "STD",
+            "producto": "MAIZ",
+            "contenedor": "CMAU3344556",
+            "nave": "ADASTAR",
+            "tipo": "Recepción Full",
+            "estado": "vencida"
+        }
+    ],
+    "count": 3,
+    "timestamp": "2026-03-24T10:30:00.000Z"
+}

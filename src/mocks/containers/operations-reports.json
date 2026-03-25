@@ -1,0 +1,56 @@
+[
+    {
+        "manifest_id": "2026-101",
+        "vessel_name": "CRAMON ISLAND",
+        "voyage": "VOY-101",
+        "loading": {
+            "start": "2026-03-24T06:00:00.000Z",
+            "end": "2026-03-24T12:00:00.000Z",
+            "total_movements": 30,
+            "current_movements": 18,
+            "pending_movements": 12
+        },
+        "discharge": {
+            "start": "2026-03-24T05:30:00.000Z",
+            "end": "2026-03-24T11:10:00.000Z",
+            "total_movements": 25,
+            "current_movements": 20,
+            "pending_movements": 5
+        },
+        "restow": {
+            "start": "2026-03-24T07:10:00.000Z",
+            "end": "2026-03-24T08:45:00.000Z",
+            "total_movements": 6,
+            "current_movements": 2,
+            "pending_movements": 4
+        },
+        "generated_at": "2026-03-24T10:30:00.000Z"
+    },
+    {
+        "manifest_id": "2026-102",
+        "vessel_name": "PROSPERITY",
+        "voyage": "VOY-102",
+        "loading": {
+            "start": "2026-03-24T04:00:00.000Z",
+            "end": "2026-03-24T10:00:00.000Z",
+            "total_movements": 12,
+            "current_movements": 9,
+            "pending_movements": 3
+        },
+        "discharge": {
+            "start": "2026-03-24T03:40:00.000Z",
+            "end": "2026-03-24T09:30:00.000Z",
+            "total_movements": 8,
+            "current_movements": 8,
+            "pending_movements": 0
+        },
+        "restow": {
+            "start": "",
+            "end": "",
+            "total_movements": 0,
+            "current_movements": 0,
+            "pending_movements": 0
+        },
+        "generated_at": "2026-03-24T10:30:00.000Z"
+    }
+]

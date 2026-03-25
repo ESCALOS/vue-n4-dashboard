@@ -12,6 +12,8 @@ import type {
 import { get, post, del, createAuthSSE } from './httpClient';
 import type { SSEConnection } from './httpClient';
 import type { SSEConnectionStatus } from './httpClient';
+import { USE_MOCK_DATA } from '../config/mockMode';
+import * as monitoringServiceMock from './monitoringServiceMock';
 
 export interface WorkingVessel {
     manifest_id: string;
@@ -24,6 +26,10 @@ export interface WorkingVessel {
 export const addVesselToMonitor = async (
     vessel: VesselsRequest
 ): Promise<AddVesselResponse> => {
+    if (USE_MOCK_DATA) {
+        return monitoringServiceMock.addVesselToMonitor(vessel);
+    }
+
     const response = await post('/monitoring/general-cargo/operations', {
         manifest_id: vessel.manifest_id,
         operation_type: vessel.operation_type,
@@ -42,6 +48,10 @@ export const addVesselToMonitor = async (
 export const removeVesselFromMonitor = async (
     vessel: VesselsRequest
 ): Promise<void> => {
+    if (USE_MOCK_DATA) {
+        return monitoringServiceMock.removeVesselFromMonitor(vessel);
+    }
+
     const response = await del('/monitoring/general-cargo/operations', {
         manifest_id: vessel.manifest_id,
         operation_type: vessel.operation_type,
@@ -61,6 +71,10 @@ export const createOperationsSSEConnection = (
     onError?: (error: Error) => void,
     onStatusChange?: (status: SSEConnectionStatus) => void,
 ): SSEConnection => {
+    if (USE_MOCK_DATA) {
+        return monitoringServiceMock.createOperationsSSEConnection(onData, onError, onStatusChange);
+    }
+
     const eventSource = createAuthSSE('/monitoring/general-cargo/operations/stream');
 
     eventSource.onmessage = (event) => {
@@ -94,6 +108,10 @@ export const createVesselSSEConnection = (
     onError?: (error: Error) => void,
     onStatusChange?: (status: SSEConnectionStatus) => void,
 ): SSEConnection => {
+    if (USE_MOCK_DATA) {
+        return monitoringServiceMock.createVesselSSEConnection(vessel, onData, onError, onStatusChange);
+    }
+
     const eventSource = createAuthSSE(
         `/monitoring/general-cargo/stream?manifest_id=${vessel.manifest_id}&operation_type=${vessel.operation_type}`
     );
@@ -127,6 +145,13 @@ export const createVesselSSEConnection = (
 export const getVesselMonitorData = async (
     vessel: VesselsResponse
 ): Promise<VesselData> => {
+    if (USE_MOCK_DATA) {
+        return monitoringServiceMock.getVesselMonitorData({
+            manifest_id: vessel.manifest.id,
+            operation_type: vessel.operation_type,
+        });
+    }
+
     const response = await get(
         `/monitoring/general-cargo/stream?manifest_id=${vessel.manifest.id}&operation_type=${vessel.operation_type}`
     );
@@ -146,6 +171,13 @@ export const getVesselMonitorData = async (
 export const refreshVesselData = async (
     vessel: VesselsResponse
 ): Promise<VesselData> => {
+    if (USE_MOCK_DATA) {
+        return monitoringServiceMock.refreshVesselData({
+            manifest_id: vessel.manifest.id,
+            operation_type: vessel.operation_type,
+        });
+    }
+
     return getVesselMonitorData(vessel);
 };
 
@@ -155,6 +187,10 @@ export const refreshVesselData = async (
 export const refreshHolds = async (
     vessel: VesselsRequest
 ): Promise<void> => {
+    if (USE_MOCK_DATA) {
+        return monitoringServiceMock.refreshHolds(vessel);
+    }
+
     const response = await post('/monitoring/general-cargo/refresh-holds', {
         manifest_id: vessel.manifest_id,
         operation_type: vessel.operation_type,
@@ -172,6 +208,10 @@ export const refreshHolds = async (
 export const refreshServices = async (
     vessel: VesselsRequest
 ): Promise<void> => {
+    if (USE_MOCK_DATA) {
+        return monitoringServiceMock.refreshServices(vessel);
+    }
+
     const response = await post('/monitoring/general-cargo/refresh-services', {
         manifest_id: vessel.manifest_id,
         operation_type: vessel.operation_type,
@@ -190,6 +230,10 @@ export const getStockpilingTickets = async (
     manifestId: string,
     blItemGkeys: number[]
 ): Promise<StockpilingTicket[]> => {
+    if (USE_MOCK_DATA) {
+        return monitoringServiceMock.getStockpilingTickets(manifestId, blItemGkeys);
+    }
+
     if (blItemGkeys.length === 0) {
         return [];
     }
@@ -215,6 +259,10 @@ export const getIndirectShipmentTickets = async (
     manifestId: string,
     blItemGkeys: number[]
 ): Promise<IndirectShipmentTicket[]> => {
+    if (USE_MOCK_DATA) {
+        return monitoringServiceMock.getIndirectShipmentTickets(manifestId, blItemGkeys);
+    }
+
     if (blItemGkeys.length === 0) {
         return [];
     }
@@ -237,6 +285,10 @@ export const getIndirectShipmentTickets = async (
  * Obtener naves actualmente trabajando (phase = 40WORKING)
  */
 export const getWorkingVessels = async (): Promise<WorkingVessel[]> => {
+    if (USE_MOCK_DATA) {
+        return monitoringServiceMock.getWorkingVessels();
+    }
+
     try {
         const response = await get('/monitoring/general-cargo/working-vessels');
 
@@ -255,6 +307,10 @@ export const getWorkingVessels = async (): Promise<WorkingVessel[]> => {
  * Obtener naves de contenedores actualmente trabajando (phase = 40WORKING)
  */
 export const getContainerWorkingVessels = async (): Promise<{ manifest_id: string; vessel_name: string }[]> => {
+    if (USE_MOCK_DATA) {
+        return monitoringServiceMock.getContainerWorkingVessels();
+    }
+
     try {
         const response = await get('/monitoring/containers/working-vessels');
         if (!response.ok) return [];
@@ -269,6 +325,10 @@ export const getContainerWorkingVessels = async (): Promise<{ manifest_id: strin
  * Agregar una nave al monitoreo de contenedores
  */
 export const addContainerVessel = async (manifestId: string): Promise<void> => {
+    if (USE_MOCK_DATA) {
+        return monitoringServiceMock.addContainerVessel(manifestId);
+    }
+
     const response = await post('/monitoring/containers/vessels', {
         manifest_id: manifestId,
     });
@@ -282,6 +342,10 @@ export const addContainerVessel = async (manifestId: string): Promise<void> => {
  * Remover una nave del monitoreo de contenedores
  */
 export const removeContainerVessel = async (manifestId: string): Promise<void> => {
+    if (USE_MOCK_DATA) {
+        return monitoringServiceMock.removeContainerVessel(manifestId);
+    }
+
     const response = await del('/monitoring/containers/vessels', {
         manifest_id: manifestId,
     });
@@ -299,6 +363,10 @@ export const createContainerVesselsSSE = (
     onError?: (error: Error) => void,
     onStatusChange?: (status: SSEConnectionStatus) => void,
 ): SSEConnection => {
+    if (USE_MOCK_DATA) {
+        return monitoringServiceMock.createContainerVesselsSSE(onData, onError, onStatusChange);
+    }
+
     const eventSource = createAuthSSE('/monitoring/containers/vessels/stream');
 
     eventSource.onmessage = (event) => {
@@ -332,6 +400,10 @@ export const createContainerDataSSE = (
     onError?: (error: Error) => void,
     onStatusChange?: (status: SSEConnectionStatus) => void,
 ): SSEConnection => {
+    if (USE_MOCK_DATA) {
+        return monitoringServiceMock.createContainerDataSSE(manifestId, onData, onError, onStatusChange);
+    }
+
     const eventSource = createAuthSSE(
         `/monitoring/containers/stream?manifest_id=${encodeURIComponent(manifestId)}`
     );
@@ -365,6 +437,10 @@ export const createContainerDataSSE = (
 export const getContainerOperationsReport = async (
     manifestId: string,
 ): Promise<ContainerOperationsReport> => {
+    if (USE_MOCK_DATA) {
+        return monitoringServiceMock.getContainerOperationsReport(manifestId);
+    }
+
     const response = await get(
         `/monitoring/containers/export-data?manifest_id=${encodeURIComponent(manifestId)}`,
     );

@@ -12,5 +12,12 @@
             "name": "SEA VOYAGER"
         },
         "operation_type": "DISPATCHING"
+    },
+    {
+        "manifest": {
+            "id": "2026-62",
+            "name": "ADASTAR"
+        },
+        "operation_type": "STOCKPILING"
     }
 ]

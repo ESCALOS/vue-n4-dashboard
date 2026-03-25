@@ -3,10 +3,20 @@ import { ref, computed } from 'vue';
 import { authService } from '../services/authService';
 import { AuthServiceError } from '../services/authService';
 import type { AuthUser } from '../services/authService';
+import { USE_MOCK_DATA } from '../config/mockMode';
 
 const TOKEN_KEY = 'n4_access_token';
 const REFRESH_KEY = 'n4_refresh_token';
 const USER_KEY = 'n4_user';
+const MOCK_ACCESS_TOKEN = 'mock-access-token';
+const MOCK_REFRESH_TOKEN = 'mock-refresh-token';
+
+const MOCK_USER: AuthUser = {
+    id: 'usr-admin-1',
+    email: 'admin@n4.local',
+    name: 'Administrador Demo',
+    role: 'ADMIN',
+};
 
 function normalizeToken(value: string | null): string | null {
     if (!value) return null;
@@ -27,9 +37,33 @@ export const useAuthStore = defineStore('auth', () => {
     const refreshToken = ref<string | null>(normalizeToken(localStorage.getItem(REFRESH_KEY)));
     const user = ref<AuthUser | null>(loadUser());
 
+    if (USE_MOCK_DATA) {
+        if (!accessToken.value) {
+            accessToken.value = MOCK_ACCESS_TOKEN;
+            localStorage.setItem(TOKEN_KEY, MOCK_ACCESS_TOKEN);
+        }
+
+        if (!refreshToken.value) {
+            refreshToken.value = MOCK_REFRESH_TOKEN;
+            localStorage.setItem(REFRESH_KEY, MOCK_REFRESH_TOKEN);
+        }
+
+        if (!user.value) {
+            user.value = MOCK_USER;
+            localStorage.setItem(USER_KEY, JSON.stringify(MOCK_USER));
+        }
+    }
+
     // Getters
-    const isAuthenticated = computed(() => hasValidTokens(accessToken.value, refreshToken.value));
-    const isAdmin = computed(() => user.value?.role === 'ADMIN');
+    const isAuthenticated = computed(() => {
+        if (USE_MOCK_DATA) return true;
+        return hasValidTokens(accessToken.value, refreshToken.value);
+    });
+
+    const isAdmin = computed(() => {
+        if (USE_MOCK_DATA) return true;
+        return user.value?.role === 'ADMIN';
+    });
 
     // Helpers
     function loadUser(): AuthUser | null {
