@@ -1,4 +1,5 @@
 import type { AppointmentsResponse } from '../types/appointments/AppointmentInProgress';
+import type { GeneralCargoAppointmentsResponse } from '../types/appointments/GeneralCargoAppointmentInProgress';
 import type { PendingAppointmentsResponse } from '../types/appointments/PendingAppointment';
 import { get, createAuthSSE } from './httpClient';
 import type { SSEConnection } from './httpClient';
@@ -45,6 +46,52 @@ export const getAppointmentsInProgress = async (): Promise<AppointmentsResponse>
     if (!response.ok) {
         const data = await response.json();
         throw new Error(data.message || 'Error al obtener citas en progreso');
+    }
+
+    return response.json();
+};
+
+/**
+ * Crear conexión SSE para recibir citas en progreso de carga general
+ */
+export const createGeneralCargoAppointmentsSSEConnection = (
+    onData: (data: GeneralCargoAppointmentsResponse) => void,
+    onError?: (error: Error) => void,
+    onStatusChange?: (status: SSEConnectionStatus) => void,
+): SSEConnection => {
+    const eventSource = createAuthSSE('/appointments/in-progress/general-cargo/stream');
+
+    eventSource.onmessage = (event) => {
+        try {
+            const parsed = JSON.parse(event.data);
+            onData(parsed);
+        } catch (error) {
+            console.error('Error parseando datos SSE citas carga general:', error);
+            onError?.(new Error('Error al procesar datos de citas de carga general'));
+        }
+    };
+
+    eventSource.onerror = (error) => {
+        console.error('Error en conexión SSE citas carga general:', error);
+        onError?.(new Error('Error en conexión de citas en progreso de carga general'));
+    };
+
+    eventSource.onstatuschange = (status) => {
+        onStatusChange?.(status);
+    };
+
+    return eventSource;
+};
+
+/**
+ * Obtener citas en progreso de carga general (llamada única REST)
+ */
+export const getGeneralCargoAppointmentsInProgress = async (): Promise<GeneralCargoAppointmentsResponse> => {
+    const response = await get('/appointments/in-progress/general-cargo');
+
+    if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Error al obtener citas en progreso de carga general');
     }
 
     return response.json();

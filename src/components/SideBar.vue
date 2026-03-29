@@ -143,6 +143,22 @@
                   <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">En Proceso</span>
                 </router-link>
               </li>
+              <li>
+                <router-link
+                  to="/citas/en-proceso/carga-general"
+                  @click="closeSidebarOnMobile"
+                  :class="[
+                    'nav-link',
+                    { 'is-expanded': !isCollapsed }
+                  ]"
+                  active-class="is-active"
+                >
+                  <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M6 12h12M9 17h6" />
+                  </svg>
+                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">En Proceso CG</span>
+                </router-link>
+              </li>
             </ul>
           </div>
 

@@ -7,6 +7,7 @@ const GeneralCargoView = () => import('./pages/monitoring/GeneralCargoView.vue')
 const ContainersView = () => import('./pages/monitoring/ContainersView.vue');
 const PendingAppointmentsView = () => import('./pages/appointments/PendingAppointmentsView.vue');
 const InProgressAppointmentsView = () => import('./pages/appointments/InProgressAppointmentsView.vue');
+const GeneralCargoInProgressAppointmentsView = () => import('./pages/appointments/GeneralCargoInProgressAppointmentsView.vue');
 const UsersView = () => import('./pages/admin/UsersView.vue');
 
 const router = createRouter({
@@ -43,6 +44,11 @@ const router = createRouter({
             component: InProgressAppointmentsView
         },
         {
+            path: '/citas/en-proceso/carga-general',
+            name: 'general-cargo-in-progress-appointments',
+            component: GeneralCargoInProgressAppointmentsView
+        },
+        {
             path: '/admin/usuarios',
             name: 'admin-users',
             component: UsersView,
@@ -59,6 +65,7 @@ router.afterEach(() => {
     if (authStore.isAuthenticated) {
         import('./pages/monitoring/GeneralCargoView.vue').catch(() => { });
         import('./pages/appointments/PendingAppointmentsView.vue').catch(() => { });
+        import('./pages/appointments/GeneralCargoInProgressAppointmentsView.vue').catch(() => { });
     }
 });
 
