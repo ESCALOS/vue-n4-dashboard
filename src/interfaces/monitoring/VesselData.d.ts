@@ -9,6 +9,14 @@ export interface HoldAlert {
     units: string[];
 }
 
+export interface CompletionAlert {
+    hold: string;
+    estimatedRemainingTrucks: number;
+    remainingWeight: number;
+    averageWeightPerTruck: number;
+    totalTicketsProcessed: number;
+}
+
 export interface VesselData {
     manifest: Manifest;
     operation_type: OperationType;
@@ -20,4 +28,5 @@ export interface VesselData {
     shifts_worked: string[];
     transactions: Transaction[];
     hold_alerts: HoldAlert[];
+    completion_alerts: CompletionAlert[];
 }

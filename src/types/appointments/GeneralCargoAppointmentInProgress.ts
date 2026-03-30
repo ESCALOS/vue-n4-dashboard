@@ -43,7 +43,7 @@ export const GENERAL_CARGO_STAGE_LABELS: Record<string, string> = {
     pre_gate: 'Pre-Gate',
     gate_in: 'Gate-In',
     zona_de_espera: 'Zona de Espera',
-    inicio_de_carguio: 'Inicio de Carguío',
-    yard: 'Término',
+    inicio_de_carguio: 'Inicio de Gancho',
+    yard: 'Término de Gancho',
     gate_out: 'Gate-Out',
 };

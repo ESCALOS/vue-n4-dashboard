@@ -41,7 +41,11 @@
             </div>
         </div>
 
-        <HoldAlerts :holdAlerts="vesselData.hold_alerts" v-if="vesselData.operation_type !== 'STOCKPILING'" />
+        <HoldAlerts
+          v-if="vesselData.operation_type !== 'STOCKPILING'"
+          :hold-alerts="vesselData.hold_alerts"
+          :completion-alerts="vesselData.completion_alerts"
+        />
 
         <SummaryCards
             :holds-count="vesselData.summary.holds.length"

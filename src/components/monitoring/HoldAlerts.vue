@@ -1,18 +1,15 @@
 <template>
-  <div v-if="alerts.length > 0" class="hold-alerts">
+  <div v-if="combinedAlerts.length > 0" class="hold-alerts">
     <div
-      v-for="(alert, index) in alerts"
+      v-for="(alert, index) in combinedAlerts"
       :key="index"
-      :class="['alert', `alert-${alert.type === 'missing' ? 'error' : 'warning'}`]"
+      :class="['alert', `alert-${alert.severity}`]"
     >
-      <span class="alert-icon">{{ alert.type === 'missing' ? '⚠️' : '🚨' }}</span>
+      <span class="alert-icon">{{ alert.icon }}</span>
       <div class="alert-content">
-        <strong>{{ alert.type === 'missing' ? 'Unidades sin bodega' : `Bodega no reconocida: ${alert.hold}` }}</strong>
-        <p>{{ alert.type === 'missing'
-          ? `Se encontraron ${alert.units.length} unidad(es) sin bodega asignada.`
-          : `Se encontraron ${alert.units.length} unidad(es) con bodega "${alert.hold}" no especificada.`
-        }}</p>
-        <div v-if="alert.units.length > 0" class="alert-details">
+        <strong>{{ alert.title }}</strong>
+        <p>{{ alert.message }}</p>
+        <div v-if="alert.units?.length" class="alert-details">
           <details>
             <summary>Ver unidades ({{ alert.units.length }})</summary>
             <ul>
@@ -32,13 +29,53 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { HoldAlert } from '../../interfaces/monitoring/VesselData';
+import { formatNumber } from '../../utils/monitoring';
+import type { CompletionAlert, HoldAlert } from '../../interfaces/monitoring/VesselData';
+
+interface DisplayAlert {
+  severity: 'warning' | 'error' | 'info';
+  icon: string;
+  title: string;
+  message: string;
+  units?: string[];
+}
 
 const props = defineProps<{
   holdAlerts: HoldAlert[];
+  completionAlerts: CompletionAlert[];
 }>();
 
-const alerts = computed(() => props.holdAlerts ?? []);
+const holdAlerts = computed<DisplayAlert[]>(() => (props.holdAlerts ?? []).map((alert) => {
+  if (alert.type === 'missing') {
+    return {
+      severity: 'error',
+      icon: '⚠️',
+      title: 'Unidades sin bodega',
+      message: `Se encontraron ${alert.units.length} unidad(es) sin bodega asignada.`,
+      units: alert.units,
+    };
+  }
+
+  return {
+    severity: 'warning',
+    icon: '🚨',
+    title: `Bodega no reconocida: ${alert.hold}`,
+    message: `Se encontraron ${alert.units.length} unidad(es) con bodega "${alert.hold}" no especificada.`,
+    units: alert.units,
+  };
+}));
+
+const completionAlerts = computed<DisplayAlert[]>(() => (props.completionAlerts ?? []).map((alert) => ({
+  severity: 'info',
+  icon: '🚚',
+  title: `Bodega ${alert.hold} próxima a terminar`,
+  message: `Quedan aproximadamente ${alert.estimatedRemainingTrucks} camión(es) para completar la operativa. Promedio histórico: ${formatNumber(alert.averageWeightPerTruck)} kg por viaje, basado en ${alert.totalTicketsProcessed} ticket(s).`,
+}))); 
+
+const combinedAlerts = computed(() => [
+  ...completionAlerts.value,
+  ...holdAlerts.value,
+]);
 </script>
 
 <style scoped>
@@ -79,6 +116,12 @@ const alerts = computed(() => props.holdAlerts ?? []);
   background: rgba(239, 68, 68, 0.1);
   border-color: #ef4444;
   color: #f87171;
+}
+
+.alert-info {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: #3b82f6;
+  color: #93c5fd;
 }
 
 .alert-icon {
