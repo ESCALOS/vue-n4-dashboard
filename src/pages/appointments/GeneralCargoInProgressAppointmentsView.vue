@@ -2,7 +2,7 @@
   <div class="in-progress-view">
     <div class="view-header">
       <div class="header-left">
-        <h2 class="view-title">Citas en Proceso - Carga General</h2>
+        <h2 class="view-title">Transacciones en Proceso - Carga General</h2>
         <div class="header-meta">
           <span class="connection-status" :class="isConnected ? 'connected' : isDegraded ? 'degraded' : 'disconnected'">
             <span class="status-dot"></span>
@@ -11,7 +11,7 @@
           <span class="count-badge">
             {{ filteredAppointments.length }}
             <template v-if="hasActiveFilters">/ {{ count }}</template>
-            {{ count === 1 ? 'cita' : 'citas' }}
+            {{ count === 1 ? 'transacción' : 'transacciones' }}
           </span>
           <span v-if="lastUpdate" class="last-update">
             Última actualización: {{ formatFecha(lastUpdate) }}
