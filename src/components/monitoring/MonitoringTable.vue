@@ -34,21 +34,6 @@
             </tr>
         </tbody>
          <tfoot>
-        <tr class="footer-row footer-manifested">
-          <td class="footer-label">📋 Manifestado</td>
-          <td v-for="(col, idx) in columns" :key="`man-${idx}`" class="footer-cell">
-            <span v-if="viewMode === 'weight'">{{ formatNumber(col.manifested_weight) }}</span>
-            <span v-else>{{ formatNumber(col.manifested_goods) }}</span>
-          </td>
-          <td class="footer-total">
-            <strong v-if="viewMode === 'weight'">
-              {{ formatNumber(columnTotals.weight.manifested.reduce((s, t) => s + t, 0)) }}
-            </strong>
-            <strong v-else>
-              {{ formatNumber(columnTotals.goods.manifested.reduce((s, t) => s + t, 0)) }}
-            </strong>
-          </td>
-        </tr>
         <tr class="footer-row footer-processed">
           <td class="footer-label">{{ getOperationLabel(operationType) }}</td>
           <td v-for="(_, idx) in columns" :key="`desc-${idx}`" class="footer-cell">
@@ -63,6 +48,21 @@
             </strong>
             <strong v-else>
               {{ formatNumber(columnTotals.goods.processed.reduce((s, t) => s + t, 0)) }}
+            </strong>
+          </td>
+        </tr>
+        <tr class="footer-row footer-manifested">
+          <td class="footer-label">📋 Manifestado</td>
+          <td v-for="(col, idx) in columns" :key="`man-${idx}`" class="footer-cell">
+            <span v-if="viewMode === 'weight'">{{ formatNumber(col.manifested_weight) }}</span>
+            <span v-else>{{ formatNumber(col.manifested_goods) }}</span>
+          </td>
+          <td class="footer-total">
+            <strong v-if="viewMode === 'weight'">
+              {{ formatNumber(columnTotals.weight.manifested.reduce((s, t) => s + t, 0)) }}
+            </strong>
+            <strong v-else>
+              {{ formatNumber(columnTotals.goods.manifested.reduce((s, t) => s + t, 0)) }}
             </strong>
           </td>
         </tr>
