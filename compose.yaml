@@ -1,0 +1,21 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    restart: unless-stopped
+    expose:
+      - "8080"
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: n4-frontend-proxy
+    depends_on:
+      - frontend
+    restart: unless-stopped
+    environment:
+      BACKEND_UPSTREAM: ${BACKEND_UPSTREAM:-http://10.20.13.13}
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/reverse-proxy.conf.template:/etc/nginx/templates/default.conf.template:ro
