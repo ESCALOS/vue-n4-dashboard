@@ -77,7 +77,7 @@
           </div>
           <div class="metric-row">
             <span class="metric-label">Restante</span>
-            <span :class="['metric-value', item.remaining > 0 ? 'pending' : 'complete']">
+            <span :class="['metric-value', item.remaining > 0 ? 'pending' : item.remaining < 0 ? 'overrun' : 'complete']">
               {{ formatMetricValue(item.remaining) }}
             </span>
           </div>
@@ -118,15 +118,18 @@ const items = computed(() => {
         ? (item.shifts[props.currentShift]?.weight ?? 0)
         : (item.shifts[props.currentShift]?.goods ?? 0);
 
-    const processedTotal = manifested > 0
-      ? Math.min(rawProcessedTotal, manifested)
-      : rawProcessedTotal;
-    const currentShiftProcessedClamped = Math.min(currentShiftProcessed, processedTotal);
-    const previousShiftProcessed = Math.max(processedTotal - currentShiftProcessedClamped, 0);
-    const remaining = Math.max(manifested - processedTotal, 0);
-    const percentage = manifested > 0 ? (processedTotal / manifested) * 100 : 0;
-    const previousShiftPercentage = manifested > 0 ? (previousShiftProcessed / manifested) * 100 : 0;
-    const currentShiftPercentage = manifested > 0 ? (currentShiftProcessedClamped / manifested) * 100 : 0;
+    const chartProcessedTotal = manifested > 0
+      ? Math.min(Math.max(rawProcessedTotal, 0), manifested)
+      : Math.max(rawProcessedTotal, 0);
+    const chartCurrentShiftProcessed = Math.min(Math.max(currentShiftProcessed, 0), chartProcessedTotal);
+    const chartPreviousShiftProcessed = Math.max(chartProcessedTotal - chartCurrentShiftProcessed, 0);
+
+    const processedTotal = rawProcessedTotal;
+    const previousShiftProcessed = processedTotal - currentShiftProcessed;
+    const remaining = manifested - processedTotal;
+    const percentage = manifested > 0 ? (chartProcessedTotal / manifested) * 100 : 0;
+    const previousShiftPercentage = manifested > 0 ? (chartPreviousShiftProcessed / manifested) * 100 : 0;
+    const currentShiftPercentage = manifested > 0 ? (chartCurrentShiftProcessed / manifested) * 100 : 0;
     const totalProcessedPercentage = previousShiftPercentage + currentShiftPercentage;
     const previousShiftSegmentPercentage = totalProcessedPercentage > 0
       ? (previousShiftPercentage / totalProcessedPercentage) * 100
@@ -142,7 +145,7 @@ const items = computed(() => {
       manifested,
       processedTotal,
       previousShiftProcessed,
-      currentShiftProcessed: currentShiftProcessedClamped,
+      currentShiftProcessed,
       remaining,
       percentage,
       previousShiftPercentage,
@@ -322,6 +325,10 @@ const formatMetricValue = (value: number): string => {
 
 .pending {
   color: #f59e0b;
+}
+
+.overrun {
+  color: #f97316;
 }
 
 .complete {
