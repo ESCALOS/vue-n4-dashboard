@@ -26,20 +26,26 @@
 
     <!-- Monitored Vessels Tabs -->
     <div v-if="monitoredVessels.length" class="vessel-tabs">
-      <button
+      <div
         v-for="vessel in monitoredVessels"
         :key="vessel.id"
         :class="['vessel-tab', { 'vessel-tab--active': selectedVessel?.id === vessel.id }]"
-        @click="$emit('select-vessel', vessel)"
       >
-        <span class="vessel-tab-name">{{ vessel.vessel_name }}</span>
-        <span class="vessel-tab-id">{{ vessel.id }}</span>
         <button
+          type="button"
+          class="vessel-tab-select"
+          @click="$emit('select-vessel', vessel)"
+        >
+          <span class="vessel-tab-name">{{ vessel.vessel_name }}</span>
+          <span class="vessel-tab-id">{{ vessel.id }}</span>
+        </button>
+        <button
+          type="button"
           class="vessel-tab-remove"
           title="Remover nave"
-          @click.stop="$emit('remove-vessel', vessel.id)"
+          @click="$emit('remove-vessel', vessel.id)"
         >✕</button>
-      </button>
+      </div>
     </div>
 
     <!-- Info line -->
@@ -144,15 +150,13 @@ const handleAdd = () => {
 .vessel-tab {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
+  gap: 0.25rem;
+  padding: 0.25rem;
   border: 1px solid #2d2d44;
   border-radius: 0.5rem;
   background: #0f0f1a;
   color: #94a3b8;
-  cursor: pointer;
   font-size: 0.8125rem;
-  font-family: inherit;
   transition: all 0.15s ease;
 }
 
@@ -165,6 +169,25 @@ const handleAdd = () => {
   border-color: #4f46e5;
   background: rgba(79, 70, 229, 0.15);
   color: #e2e8f0;
+}
+
+.vessel-tab-select {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.vessel-tab-select:focus-visible,
+.vessel-tab-remove:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 0.375rem;
 }
 
 .vessel-tab-name {
