@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { usersService } from '../../services/usersService';
 import type { User, CreateUserPayload, UpdateUserPayload } from '../../services/usersService';
 import { useAuthStore } from '../../stores/auth';
@@ -10,6 +10,9 @@ const authStore = useAuthStore();
 const users = ref<User[]>([]);
 const isLoading = ref(false);
 const error = ref('');
+const searchQuery = ref('');
+const currentPage = ref(1);
+const pageSize = ref(10);
 
 // Modal state
 const showModal = ref(false);
@@ -33,6 +36,40 @@ const deletingUser = ref<User | null>(null);
 const isDeleting = ref(false);
 
 const currentUserId = computed(() => authStore.user?.id);
+const filteredUsers = computed(() => {
+    const query = searchQuery.value.trim().toLowerCase();
+
+    if (!query) return users.value;
+
+    return users.value.filter((user) => {
+        const searchableFields = [
+            user.name || '',
+            user.email,
+            user.role,
+            user.isActive ? 'activo' : 'inactivo',
+        ];
+
+        return searchableFields.some((field) => field.toLowerCase().includes(query));
+    });
+});
+
+const totalPages = computed(() => Math.max(1, Math.ceil(filteredUsers.value.length / pageSize.value)));
+const paginatedUsers = computed(() => {
+    const start = (currentPage.value - 1) * pageSize.value;
+    return filteredUsers.value.slice(start, start + pageSize.value);
+});
+const paginationStart = computed(() => (filteredUsers.value.length === 0 ? 0 : (currentPage.value - 1) * pageSize.value + 1));
+const paginationEnd = computed(() => Math.min(currentPage.value * pageSize.value, filteredUsers.value.length));
+
+watch([searchQuery, pageSize], () => {
+    currentPage.value = 1;
+});
+
+watch(filteredUsers, () => {
+    if (currentPage.value > totalPages.value) {
+        currentPage.value = totalPages.value;
+    }
+});
 
 // Load users
 async function loadUsers() {
@@ -168,67 +205,110 @@ onMounted(loadUsers);
             <span>Cargando usuarios...</span>
         </div>
 
-        <!-- Table -->
-        <div v-else class="users-table-wrapper">
-            <table class="users-table">
-                <thead>
-                    <tr>
-                        <th>Usuario</th>
-                        <th>Rol</th>
-                        <th>Estado</th>
-                        <th>Creado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="user in users" :key="user.id">
-                        <td>
-                            <div class="user-cell">
-                                <div class="user-avatar" :class="user.role === 'ADMIN' ? 'avatar-admin' : 'avatar-user'">
-                                    {{ (user.name || user.email).charAt(0).toUpperCase() }}
-                                </div>
-                                <div>
-                                    <div class="user-name">{{ user.name || '—' }}</div>
-                                    <div class="user-email">{{ user.email }}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="role-badge" :class="user.role === 'ADMIN' ? 'role-admin' : 'role-user'">
-                                {{ user.role }}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="status-badge" :class="user.isActive ? 'status-active' : 'status-inactive'">
-                                {{ user.isActive ? 'Activo' : 'Inactivo' }}
-                            </span>
-                        </td>
-                        <td class="date-cell">{{ formatDate(user.createdAt) }}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-action btn-edit" @click="openEdit(user)" title="Editar">
-                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                    </svg>
-                                </button>
-                                <button 
-                                    class="btn-action btn-delete" 
-                                    @click="confirmDelete(user)" 
-                                    title="Eliminar"
-                                    :disabled="user.id === currentUserId"
-                                >
-                                    <svg viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- Filters + Table -->
+        <div v-else>
+            <div class="users-toolbar">
+                <div class="search-box">
+                    <svg viewBox="0 0 20 20" fill="currentColor" class="search-icon">
+                        <path fill-rule="evenodd" d="M8.5 3a5.5 5.5 0 014.473 8.698l3.664 3.665a1 1 0 01-1.414 1.414l-3.665-3.664A5.5 5.5 0 118.5 3zm0 2a3.5 3.5 0 100 7 3.5 3.5 0 000-7z" clip-rule="evenodd" />
+                    </svg>
+                    <input
+                        v-model="searchQuery"
+                        type="text"
+                        class="search-input"
+                        placeholder="Buscar por nombre, correo, rol o estado"
+                    />
+                </div>
 
-            <div v-if="users.length === 0 && !isLoading" class="users-empty">
-                No hay usuarios registrados.
+                <div class="toolbar-meta">
+                    <label class="page-size-control">
+                        <span>Filas</span>
+                        <select v-model.number="pageSize" class="form-input page-size-select">
+                            <option :value="5">5</option>
+                            <option :value="10">10</option>
+                            <option :value="20">20</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <div class="users-table-wrapper">
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th>Creado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="user in paginatedUsers" :key="user.id">
+                            <td>
+                                <div class="user-cell">
+                                    <div class="user-avatar" :class="user.role === 'ADMIN' ? 'avatar-admin' : 'avatar-user'">
+                                        {{ (user.name || user.email).charAt(0).toUpperCase() }}
+                                    </div>
+                                    <div>
+                                        <div class="user-name">{{ user.name || '—' }}</div>
+                                        <div class="user-email">{{ user.email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="role-badge" :class="user.role === 'ADMIN' ? 'role-admin' : 'role-user'">
+                                    {{ user.role }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge" :class="user.isActive ? 'status-active' : 'status-inactive'">
+                                    {{ user.isActive ? 'Activo' : 'Inactivo' }}
+                                </span>
+                            </td>
+                            <td class="date-cell">{{ formatDate(user.createdAt) }}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-edit" @click="openEdit(user)" title="Editar">
+                                        <svg viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                        </svg>
+                                    </button>
+                                    <button 
+                                        class="btn-action btn-delete" 
+                                        @click="confirmDelete(user)" 
+                                        title="Eliminar"
+                                        :disabled="user.id === currentUserId"
+                                    >
+                                        <svg viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div v-if="filteredUsers.length === 0 && !isLoading" class="users-empty">
+                    {{ searchQuery ? 'No se encontraron usuarios con ese criterio.' : 'No hay usuarios registrados.' }}
+                </div>
+            </div>
+
+            <div class="pagination-bar">
+                <span class="pagination-summary">
+                    Mostrando {{ paginationStart }}-{{ paginationEnd }} de {{ filteredUsers.length }} usuarios
+                </span>
+
+                <div class="pagination-controls">
+                    <button class="btn btn-secondary" @click="currentPage--" :disabled="currentPage === 1">
+                        Anterior
+                    </button>
+                    <span class="pagination-page">Página {{ currentPage }} de {{ totalPages }}</span>
+                    <button class="btn btn-secondary" @click="currentPage++" :disabled="currentPage === totalPages">
+                        Siguiente
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -367,6 +447,66 @@ onMounted(loadUsers);
     margin: 0.25rem 0 0;
     font-size: 0.875rem;
     color: #9ca3af;
+}
+
+.users-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    position: relative;
+    flex: 1;
+    min-width: 16rem;
+}
+
+.search-icon {
+    position: absolute;
+    top: 50%;
+    left: 0.875rem;
+    width: 1rem;
+    height: 1rem;
+    color: #6b7280;
+    transform: translateY(-50%);
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.625rem 0.875rem 0.625rem 2.5rem;
+    background: #111827;
+    border: 1px solid #374151;
+    border-radius: 0.5rem;
+    color: #f9fafb;
+    font-size: 0.875rem;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.search-input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.toolbar-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.page-size-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #d1d5db;
+    font-size: 0.875rem;
+}
+
+.page-size-select {
+    min-width: 4.5rem;
 }
 
 /* Buttons */
@@ -630,6 +770,32 @@ onMounted(loadUsers);
     color: #6b7280;
 }
 
+.pagination-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.pagination-summary {
+    color: #9ca3af;
+    font-size: 0.875rem;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.pagination-page {
+    color: #d1d5db;
+    font-size: 0.875rem;
+}
+
 /* Modal */
 .modal-backdrop {
     position: fixed;
@@ -784,8 +950,16 @@ onMounted(loadUsers);
         display: none;
     }
 
-    .users-header {
+    .users-header,
+    .users-toolbar,
+    .pagination-bar {
         flex-direction: column;
+        align-items: stretch;
+    }
+
+    .toolbar-meta,
+    .pagination-controls {
+        justify-content: space-between;
     }
 }
 
@@ -797,6 +971,11 @@ onMounted(loadUsers);
 
     .form-row {
         flex-direction: column;
+    }
+
+    .pagination-controls {
+        flex-direction: column;
+        align-items: stretch;
     }
 }
 </style>
