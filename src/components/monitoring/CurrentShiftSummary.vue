@@ -27,12 +27,12 @@
       <div class="progress-item" v-for="item in items" :key="item.id">
         <div class="bar-area">
           <span :class="['bar-percentage', getProgressClass(item.percentage)]">
-            {{ item.percentage.toFixed(1) }}%
+            {{ formatPercentage(item.percentage) }}%
           </span>
           <div class="bar-track">
             <div
               class="bar-stack"
-              :style="{ height: `${Math.min(item.percentage, 100)}%` }"
+              :style="{ height: `${Math.min(item.percentageChart, 100)}%` }"
             >
               <div
                 v-if="item.currentShiftPercentage > 0"
@@ -127,7 +127,8 @@ const items = computed(() => {
     const processedTotal = rawProcessedTotal;
     const previousShiftProcessed = processedTotal - currentShiftProcessed;
     const remaining = manifested - processedTotal;
-    const percentage = manifested > 0 ? (chartProcessedTotal / manifested) * 100 : 0;
+    const percentage = manifested > 0 ? (processedTotal / manifested) * 100 : 0;
+    const percentageChart = manifested > 0 ? (chartProcessedTotal / manifested) * 100 : 0;
     const previousShiftPercentage = manifested > 0 ? (chartPreviousShiftProcessed / manifested) * 100 : 0;
     const currentShiftPercentage = manifested > 0 ? (chartCurrentShiftProcessed / manifested) * 100 : 0;
     const totalProcessedPercentage = previousShiftPercentage + currentShiftPercentage;
@@ -148,6 +149,7 @@ const items = computed(() => {
       currentShiftProcessed,
       remaining,
       percentage,
+      percentageChart,
       previousShiftPercentage,
       currentShiftPercentage,
       previousShiftSegmentPercentage,
@@ -158,6 +160,12 @@ const items = computed(() => {
 
 const formatMetricValue = (value: number): string => {
   return props.viewMode === 'weight' ? `${formatNumber(value)} kg` : formatNumber(value);
+};
+
+const formatPercentage = (value: number): string => {
+  const flooredPercentage = Math.floor(Math.max(value, 0) * 10) / 10;
+
+  return flooredPercentage.toFixed(1);
 };
 </script>
 
@@ -333,6 +341,10 @@ const formatMetricValue = (value: number): string => {
 
 .complete {
   color: #10b981;
+}
+
+.bar-percentage.progress-over {
+  color: #f97316;
 }
 
 .bar-percentage.progress-high {

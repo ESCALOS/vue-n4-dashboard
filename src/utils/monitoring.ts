@@ -2,6 +2,7 @@ import type { OperationType } from "../types/monitoring/OperationType";
 
 // Clase para progreso
 export const getProgressClass = (percentage: number): string => {
+    if (percentage > 100) return "progress-over";
     if (percentage >= 90) return "progress-high";
     if (percentage >= 50) return "progress-medium";
     return "progress-low";
