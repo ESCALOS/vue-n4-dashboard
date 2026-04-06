@@ -8,14 +8,20 @@ services:
       - "8080"
 
   nginx:
-    image: nginx:1.27-alpine
+    image: owasp/modsecurity-crs:nginx-alpine
     container_name: n4-frontend-proxy
     depends_on:
       - frontend
     restart: unless-stopped
     environment:
-      BACKEND_UPSTREAM: ${BACKEND_UPSTREAM:-http://10.20.13.13}
+      BACKEND_UPSTREAM: ${BACKEND_UPSTREAM:-https://10.20.13.13:3443}
+      MODSEC_RULE_ENGINE: ${MODSEC_RULE_ENGINE:-DetectionOnly}
+      PARANOIA: ${PARANOIA:-1}
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx/reverse-proxy.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./certs/wildcard.crt:/etc/nginx/ssl/server.crt:ro
+      - ./certs/wildcard.key:/etc/nginx/ssl/server.key:ro
+      - ./certs/backend-ca.crt:/etc/nginx/ssl/backend-ca.crt:ro
