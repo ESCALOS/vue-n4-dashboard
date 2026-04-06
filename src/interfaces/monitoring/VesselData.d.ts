@@ -20,6 +20,7 @@ export interface CompletionAlert {
 export interface VesselData {
     manifest: Manifest;
     operation_type: OperationType;
+    supports_ssp_classification: boolean;
     summary: {
         holds: Summary[];
         services: Summary[];

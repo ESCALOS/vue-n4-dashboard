@@ -37,24 +37,19 @@
             v-if="selectedVesselData"
             :vessel-data="selectedVesselData"
             :loading="loading"
-            :current-shift="currentShift"
-            :summary="summary"
-            :total-goods-current-shift="totalGoodsCurrentShift"
-            :total-weight-current-shift="totalWeightCurrentShift"
         />
 
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import EmptyState from '../../components/monitoring/EmptyState.vue';
 import HeaderSection from '../../components/monitoring/HeaderSection.vue';
 import VesselTabs from '../../components/monitoring/VesselTabs.vue';
 import type { VesselsRequest } from '../../interfaces/monitoring/api/VesselResquest';
 import VesselDetail from '../../components/monitoring/VesselDetail.vue';
 import AddVesselForm from '../../components/monitoring/AddVesselForm.vue';
-import { useMonitoringCalculations } from '../../composables/monitoring/useMonitoringCalculations';
 import { useMonitoringData } from '../../composables/monitoring/useMonitoringData';
 
 const addVesselFormRef = ref<InstanceType<typeof AddVesselForm>>();
@@ -88,22 +83,6 @@ watch(selectedVesselData, async (newData) => {
     vesselDetailRef.value?.$el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 });
-
-
-const {
-  currentShift,
-  totalGoodsCurrentShift,
-  totalWeightCurrentShift,
-  serviceSummary,
-  holdSummary
-} = useMonitoringCalculations(selectedVesselData);
-
-const summary = computed(() => ({
-  holds: holdSummary.value,
-  services: serviceSummary.value
-}));
-
-
 const handleAddVessel = async (vessel: VesselsRequest) => {
   const result = await addVessel(vessel);
   if (result.success) {

@@ -12,8 +12,8 @@
 
     <MetricCard
       icon="📋"
-      title="Servicios Totales"
-      subtitle="Servicios"
+      :title="`${serviceLabel} Totales`"
+      :subtitle="serviceLabel"
       :count="servicesCount"
       :view-mode="viewMode"
       :summary="summary.services"
@@ -52,6 +52,7 @@ defineProps<{
   totalWeightCurrentShift: number;
   totalGoodsCurrentShift: number;
   operationType: OperationType;
+  serviceLabel: string;
 }>();
 </script>
 

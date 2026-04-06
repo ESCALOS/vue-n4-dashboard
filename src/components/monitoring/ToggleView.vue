@@ -10,14 +10,15 @@
         :class="['toggle-btn', { active: activeTab === 'services' }]"
         @click="$emit('update:activeTab', 'services')"
       >
-        📋 Por BL Item
+        📋 Por {{ serviceLabel }}
       </button>
     </div>
 </template>
 
 <script setup lang="ts">
 defineProps<{
-  activeTab: 'holds' | 'services'
+  activeTab: 'holds' | 'services';
+  serviceLabel: string;
 }>();
 
 defineEmits<{

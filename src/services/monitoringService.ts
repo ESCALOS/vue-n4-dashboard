@@ -18,6 +18,14 @@ export interface WorkingVessel {
     vessel_name: string;
 }
 
+export type SspPermissionScope = 'INTERNAL' | 'EXTERNAL';
+
+export interface SspPermissionClassificationItem {
+    bl_item_gkey: number;
+    permission_nbr: string;
+    permission_scope: SspPermissionScope | null;
+}
+
 /**
  * Agregar una operación al monitoreo
  */
@@ -181,6 +189,28 @@ export const refreshServices = async (
         const data = await response.json();
         throw new Error(data.message || "Error al refrescar servicios");
     }
+};
+
+/**
+ * Guardar clasificación interno/externo para permisos SSP.
+ */
+export const saveSspPermissionClassifications = async (
+    vessel: VesselsRequest,
+    items: SspPermissionClassificationItem[]
+): Promise<SspPermissionClassificationItem[]> => {
+    const response = await post('/monitoring/general-cargo/ssp-permissions/classifications', {
+        manifest_id: vessel.manifest_id,
+        operation_type: vessel.operation_type,
+        items,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Error al guardar clasificación SSP');
+    }
+
+    return data.data ?? [];
 };
 
 /**

@@ -5,7 +5,7 @@
         ⏱️ Resumen del turno actual
       </h3>
       <p class="summary-subtitle">
-        {{ activeTab === 'holds' ? 'Por Bodega' : 'Por BL Item' }} • {{ currentShift }}
+        {{ activeTab === 'holds' ? 'Por Bodega' : `Por ${serviceLabel}` }} • {{ currentShift }}
       </p>
       <div class="summary-legend">
         <span class="legend-item">
@@ -105,6 +105,7 @@ const props = defineProps<{
   activeTab: ShiftMode;
   viewMode: MetricMode;
   currentShift: string;
+  serviceLabel: string;
 }>();
 
 const items = computed(() => {
