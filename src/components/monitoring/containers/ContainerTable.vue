@@ -56,9 +56,12 @@ const formatBay = (bay: number): string => String(bay).padStart(2, '0');
 const statusLabel = (status: ContainerOperationStatus): string => {
   const labels: Record<ContainerOperationStatus, string> = {
     TO_DISCHARGE: 'Por Descargar',
+    DISCHARGING: 'Descargando',
     DISCHARGED: 'Descargado',
     NOT_ARRIVED: 'Falta Llegar',
+    NOT_ARRIVED_IN_TRANSIT: 'Falta Llegar (tránsito)',
     TO_LOAD: 'Por Embarcar',
+    LOADING: 'Embarcando',
     LOADED: 'Embarcado',
     RESTOW_PENDING: 'Reestiba Pend.',
     RESTOW_ON_YARD: 'En Muelle',
@@ -70,9 +73,12 @@ const statusLabel = (status: ContainerOperationStatus): string => {
 const statusClassName = (status: ContainerOperationStatus): string => {
   const map: Record<ContainerOperationStatus, string> = {
     TO_DISCHARGE: 'status--cyan',
+    DISCHARGING: 'status--cyan',
     DISCHARGED: 'status--green',
     NOT_ARRIVED: 'status--rose',
+    NOT_ARRIVED_IN_TRANSIT: 'status--rose',
     TO_LOAD: 'status--amber',
+    LOADING: 'status--amber',
     LOADED: 'status--orange',
     RESTOW_PENDING: 'status--purple',
     RESTOW_ON_YARD: 'status--fuchsia',

@@ -6,7 +6,12 @@
       <div class="summary-cards summary-cards--3">
         <div class="summary-card summary-card--cyan">
           <span class="summary-card-label">Por Descargar</span>
-          <span class="summary-card-value">{{ summary.discharge.to_discharge }}</span>
+          <span class="summary-card-value">
+            {{ summary.discharge.to_discharge }}
+            <small v-if="summary.discharge.discharging > 0" class="summary-card-subvalue">
+              ({{ summary.discharge.discharging }})
+            </small>
+          </span>
         </div>
         <div class="summary-card summary-card--green">
           <span class="summary-card-label">Descargados</span>
@@ -25,11 +30,21 @@
       <div class="summary-cards summary-cards--4">
         <div class="summary-card summary-card--rose">
           <span class="summary-card-label">Faltan Llegar</span>
-          <span class="summary-card-value">{{ summary.load.not_arrived }}</span>
+          <span class="summary-card-value">
+            {{ summary.load.not_arrived }}
+            <small v-if="summary.load.not_arrived_in_transit > 0" class="summary-card-subvalue">
+              ({{ summary.load.not_arrived_in_transit }})
+            </small>
+          </span>
         </div>
         <div class="summary-card summary-card--amber">
           <span class="summary-card-label">Por Embarcar</span>
-          <span class="summary-card-value">{{ summary.load.to_load }}</span>
+          <span class="summary-card-value">
+            {{ summary.load.to_load }}
+            <small v-if="summary.load.loading > 0" class="summary-card-subvalue">
+              ({{ summary.load.loading }})
+            </small>
+          </span>
         </div>
         <div class="summary-card summary-card--orange">
           <span class="summary-card-label">Embarcados</span>
@@ -128,6 +143,13 @@ defineProps<{
   font-size: 1.875rem;
   font-weight: 700;
   line-height: 1;
+}
+
+.summary-card-subvalue {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-left: 0.25rem;
+  opacity: 0.85;
 }
 
 /* Color variants */

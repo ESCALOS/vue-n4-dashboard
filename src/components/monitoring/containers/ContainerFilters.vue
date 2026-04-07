@@ -23,9 +23,12 @@
       >
         <option value="">Todos</option>
         <option value="TO_DISCHARGE">Por Descargar</option>
+        <option value="DISCHARGING">Descargando</option>
         <option value="DISCHARGED">Descargado</option>
         <option value="NOT_ARRIVED">Falta Llegar</option>
+        <option value="NOT_ARRIVED_IN_TRANSIT">Falta Llegar (tránsito)</option>
         <option value="TO_LOAD">Por Embarcar</option>
+        <option value="LOADING">Embarcando</option>
         <option value="LOADED">Embarcado</option>
         <option value="RESTOW_PENDING">Reestiba Pend.</option>
         <option value="RESTOW_ON_YARD">En Muelle</option>
