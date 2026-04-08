@@ -15,7 +15,10 @@
     />
 
     <template v-if="vesselData">
-      <ContainerSummaryCards :summary="vesselData.summary" />
+      <ContainerSummaryCards
+        :summary="vesselData.summary"
+        @open-not-arrived="openNotArrivedModal"
+      />
 
       <ContainerPendingByBay
         :pending-by-bay="vesselData.pending_by_bay"
@@ -40,19 +43,36 @@
 
       <ContainerTable :containers="filteredContainers" />
     </template>
+
+    <NotArrivedContainersModal
+      ref="notArrivedModalRef"
+      :items="notArrivedItems"
+      :loading="notArrivedLoading"
+      :error="notArrivedError"
+      :vessel-name="vesselData?.manifest.vessel_name"
+      :manifest-id="selectedVessel?.id"
+      @close="handleNotArrivedModalClose"
+      @export="exportNotArrivedExcel"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useContainerMonitoring } from '../../composables/monitoring/useContainerMonitoring';
-import { getContainerOperationsReport } from '../../services/monitoringService';
+import {
+  getContainerOperationsReport,
+  getNotArrivedContainersByManifest,
+} from '../../services/monitoringService';
 import { exportContainerOperationsExcel } from '../../services/containerOperationsExcelService';
+import { exportNotArrivedContainersExcel } from '../../services/notArrivedContainersExcelService';
+import type { NotArrivedContainerItem } from '../../interfaces/monitoring/ContainerMonitoring';
 import ContainerSearchHeader from '../../components/monitoring/containers/ContainerSearchHeader.vue';
 import ContainerSummaryCards from '../../components/monitoring/containers/ContainerSummaryCards.vue';
 import ContainerPendingByBay from '../../components/monitoring/containers/ContainerPendingByBay.vue';
 import ContainerFilters from '../../components/monitoring/containers/ContainerFilters.vue';
 import ContainerTable from '../../components/monitoring/containers/ContainerTable.vue';
+import NotArrivedContainersModal from '../../components/monitoring/containers/NotArrivedContainersModal.vue';
 
 const {
   monitoredVessels,
@@ -77,6 +97,11 @@ const {
   selectBay,
 } = useContainerMonitoring();
 
+const notArrivedModalRef = ref<InstanceType<typeof NotArrivedContainersModal> | null>(null);
+const notArrivedItems = ref<NotArrivedContainerItem[]>([]);
+const notArrivedLoading = ref(false);
+const notArrivedError = ref('');
+
 onMounted(() => {
   startVesselsSSE();
 });
@@ -91,6 +116,41 @@ const exportReport = async () => {
     console.error('Error exportando reporte de contenedores:', err);
     error.value = err instanceof Error ? err.message : 'Error al exportar reporte';
   }
+};
+
+const openNotArrivedModal = async () => {
+  if (!selectedVessel.value) return;
+
+  notArrivedError.value = '';
+  notArrivedLoading.value = true;
+  notArrivedItems.value = [];
+  notArrivedModalRef.value?.open();
+
+  try {
+    notArrivedItems.value = await getNotArrivedContainersByManifest(selectedVessel.value.id);
+  } catch (err) {
+    notArrivedError.value = err instanceof Error
+      ? err.message
+      : 'Error al cargar contenedores faltantes';
+  } finally {
+    notArrivedLoading.value = false;
+  }
+};
+
+const handleNotArrivedModalClose = () => {
+  notArrivedItems.value = [];
+  notArrivedError.value = '';
+  notArrivedLoading.value = false;
+};
+
+const exportNotArrivedExcel = async () => {
+  if (!selectedVessel.value) return;
+
+  await exportNotArrivedContainersExcel(
+    selectedVessel.value.id,
+    vesselData.value?.manifest.vessel_name ?? 'NAVE',
+    notArrivedItems.value,
+  );
 };
 </script>
 

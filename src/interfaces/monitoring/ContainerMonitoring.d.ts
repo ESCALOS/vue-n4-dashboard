@@ -92,3 +92,14 @@ export interface ContainerOperationsReport {
     restow: ContainerOperationReportRow;
     generated_at: string;
 }
+
+export interface NotArrivedContainerItem {
+    container_number: string;
+    booking: string;
+    operator: string;
+    pod: string;
+    shipper_name: string;
+    technology: string;
+    commodity: string;
+    order_gkey: number | null;
+}

@@ -8,6 +8,7 @@ import type {
     ContainerMonitoringData,
     MonitoredContainerVessel,
     ContainerOperationsReport,
+    NotArrivedContainerItem,
 } from "../interfaces/monitoring/ContainerMonitoring";
 import { get, post, del, createAuthSSE } from './httpClient';
 import type { SSEConnection } from './httpClient';
@@ -406,4 +407,42 @@ export const getContainerOperationsReport = async (
     }
 
     return result.data as ContainerOperationsReport;
+};
+
+/**
+ * Obtener contenedores faltantes por llegar para un manifiesto.
+ */
+export const getNotArrivedContainersByManifest = async (
+    manifestId: string,
+): Promise<NotArrivedContainerItem[]> => {
+    const response = await get(
+        `/monitoring/containers/not-arrived?manifest_id=${encodeURIComponent(manifestId)}`,
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.message || result.error || 'Error al obtener contenedores faltantes');
+    }
+
+    return (result.data ?? []) as NotArrivedContainerItem[];
+};
+
+/**
+ * Refrescar caché de bookings para todos los faltantes del manifiesto actual.
+ */
+export const refreshNotArrivedBookingsForManifest = async (
+    manifestId: string,
+): Promise<{ requested: number; refreshed: number }> => {
+    const response = await post('/monitoring/containers/not-arrived/refresh-all', {
+        manifest_id: manifestId,
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.message || result.error || 'Error al refrescar caché de bookings');
+    }
+
+    return result.data as { requested: number; refreshed: number };
 };

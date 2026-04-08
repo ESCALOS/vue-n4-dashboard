@@ -28,7 +28,11 @@
     <div class="summary-group">
       <h3 class="summary-group-title">Embarque</h3>
       <div class="summary-cards summary-cards--4">
-        <div class="summary-card summary-card--rose">
+        <button
+          type="button"
+          class="summary-card summary-card--rose summary-card--button"
+          @click="emit('open-not-arrived')"
+        >
           <span class="summary-card-label">Faltan Llegar</span>
           <span class="summary-card-value">
             {{ summary.load.not_arrived }}
@@ -36,7 +40,7 @@
               ({{ summary.load.not_arrived_in_transit }})
             </small>
           </span>
-        </div>
+        </button>
         <div class="summary-card summary-card--amber">
           <span class="summary-card-label">Por Embarcar</span>
           <span class="summary-card-value">
@@ -88,6 +92,10 @@ import type { ContainerMonitoringData } from '../../../interfaces/monitoring/Con
 defineProps<{
   summary: ContainerMonitoringData['summary'];
 }>();
+
+const emit = defineEmits<{
+  'open-not-arrived': [];
+}>();
 </script>
 
 <style scoped>
@@ -126,6 +134,12 @@ defineProps<{
   border-radius: 0.75rem;
   border: 1px solid;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.summary-card--button {
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
 }
 
 .summary-card:hover {
