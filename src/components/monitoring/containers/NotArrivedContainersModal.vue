@@ -26,6 +26,8 @@
       <table class="data-table">
         <thead>
           <tr>
+            <th>Cita</th>
+            <th>Fecha cita</th>
             <th>Contenedor</th>
             <th>Booking</th>
             <th>Operador</th>
@@ -36,7 +38,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in items" :key="`${item.container_number}-${item.order_gkey ?? 'none'}`">
+          <tr v-for="item in items" :key="item.container_number">
+            <td>{{ item.cita }}</td>
+            <td>{{ formatDate(item.fecha_cita) }}</td>
             <td>{{ item.container_number }}</td>
             <td>{{ item.booking }}</td>
             <td>{{ item.operator }}</td>
@@ -78,6 +82,13 @@ const open = () => {
 
 const close = () => {
   dialogRef.value?.close();
+};
+
+const formatDate = (value: string | null) => {
+  if (!value) return '-';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '-';
+  return date.toLocaleString('es-PE');
 };
 
 defineExpose({

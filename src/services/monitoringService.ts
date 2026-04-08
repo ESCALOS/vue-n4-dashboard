@@ -428,21 +428,3 @@ export const getNotArrivedContainersByManifest = async (
     return (result.data ?? []) as NotArrivedContainerItem[];
 };
 
-/**
- * Refrescar caché de bookings para todos los faltantes del manifiesto actual.
- */
-export const refreshNotArrivedBookingsForManifest = async (
-    manifestId: string,
-): Promise<{ requested: number; refreshed: number }> => {
-    const response = await post('/monitoring/containers/not-arrived/refresh-all', {
-        manifest_id: manifestId,
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-        throw new Error(result.message || result.error || 'Error al refrescar caché de bookings');
-    }
-
-    return result.data as { requested: number; refreshed: number };
-};

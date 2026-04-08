@@ -16,7 +16,16 @@ export const exportNotArrivedContainersExcel = async (
 ): Promise<void> => {
     const XLSXModule = await getXLSX();
 
+    const formatFechaCita = (value: string) => {
+        if (!value || value === '-') return '-';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+        return date.toLocaleString('es-PE');
+    };
+
     const data = rows.map((row) => ({
+        Cita: row.cita,
+        'Fecha cita': formatFechaCita(row.fecha_cita),
         Contenedor: row.container_number,
         Booking: row.booking,
         Operador: row.operator,
@@ -30,6 +39,8 @@ export const exportNotArrivedContainersExcel = async (
     const workbook = XLSXModule.utils.book_new();
 
     worksheet['!cols'] = [
+        { wch: 14 },
+        { wch: 20 },
         { wch: 16 },
         { wch: 16 },
         { wch: 28 },

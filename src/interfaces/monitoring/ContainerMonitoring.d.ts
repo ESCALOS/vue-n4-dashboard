@@ -94,6 +94,8 @@ export interface ContainerOperationsReport {
 }
 
 export interface NotArrivedContainerItem {
+    cita: string;
+    fecha_cita: string;
     container_number: string;
     booking: string;
     operator: string;
@@ -101,5 +103,4 @@ export interface NotArrivedContainerItem {
     shipper_name: string;
     technology: string;
     commodity: string;
-    order_gkey: number | null;
 }
