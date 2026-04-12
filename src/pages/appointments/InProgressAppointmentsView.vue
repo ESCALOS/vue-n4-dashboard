@@ -19,7 +19,13 @@
           </span>
         </div>
       </div>
-      <ExportInProgressButton :appointments="filteredAppointments" :disabled="isLoading" />
+      <div class="header-actions">
+        <!-- Botón de prueba EIR — ELIMINAR EN PRODUCCIÓN -->
+        <button class="btn btn-test-eir" @click="handleTestEir" :disabled="testingEir">
+          {{ testingEir ? 'Generando...' : '🧪 Test EIR' }}
+        </button>
+        <ExportInProgressButton :appointments="filteredAppointments" :disabled="isLoading" />
+      </div>
     </div>
 
     <!-- Notice no bloqueante -->
@@ -56,15 +62,109 @@
     <AppointmentTable v-else :appointments="filteredAppointments" :formatFecha="formatFecha"
       :formatTiempo="formatTiempo" :getStageLabel="getStageLabel" :getStageClass="getStageClass"
       :getTiempoClass="getTiempoClass" :getTiempoStageClass="getTiempoStageClass"
-      :getTiempoAtencion="getTiempoAtencion" :getTiempoStage="getTiempoStage" />
+      :getTiempoAtencion="getTiempoAtencion" :getTiempoStage="getTiempoStage" :onPrintEir="handlePrintEir"
+      :printingAppointmentId="printingAppointmentId" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import AppointmentFilters from '../../components/appointments/in-progress/AppointmentFilters.vue';
 import AppointmentTable from '../../components/appointments/in-progress/AppointmentTable.vue';
 import ExportInProgressButton from '../../components/appointments/in-progress/ExportInProgressButton.vue';
 import { useAppointmentsInProgress } from '../../composables/appointments/useAppointmentsInProgress';
+import type { AppointmentInProgress } from '../../types/appointments/AppointmentInProgress';
+import type { AppointmentEirPrintData } from '../../types/appointments/AppointmentEirPrint';
+import {
+  getAppointmentEirPrintData,
+  openEirPrintWindow,
+} from '../../services/appointmentsService';
+
+const printingAppointmentId = ref<string | null>(null);
+const testingEir = ref(false);
+
+const handleTestEir = async () => {
+  const cita = 'TEST-0001';
+
+  try {
+    testingEir.value = true;
+
+    const data: AppointmentEirPrintData = {
+      appointmentId: cita,
+      hasEir: true,
+      bookingInfo: {
+        booking: 'EBKG16446037',
+        manifiesto: '2026-162',
+        nave: "MSC SERENA",
+        viaje: 'NX615R',
+        mercaderia: 'FRESH POMEGRANATE',
+        tempRequerida: '6',
+        tecnologia: 'STD (Standard)',
+      },
+      eir: {
+        gkey: '55253',
+        codigo: 'EIR202600053969',
+        lineaNaviera: 'MEDITERRANEAN SHIPPING CO.',
+        gate: "IN",
+        inicio: '2026-04-12 02:01:05.940',
+        fin: '2026-04-12 02:03:00.000',
+        tecnico: 'EXSON PAUL AREVALO YARELQUE',
+        contenedor: 'MEDU9700918',
+        iso: '45R1',
+        tipo: 'REEFER HIGH CUBE',
+        tara: 4360,
+        pesoMaximo: 34000,
+        pesoBruto: 34000,
+        estado: 'ESTADO (VACIO/EMPTY)',
+        resultado: 'DAÑADO SUCIO',
+        tipoCarga: 'MTY',
+        clasificacion: 'B',
+        condicion: 'MTY',
+        fabricacion: '-',
+        precintos: '/ / /',
+        booking: 'MSCMTU010687',
+        placa: '-',
+        chofer: '-',
+        humedad: '-',
+        ventilacion: '-',
+        tecnologia: 'STD (Standard)',
+        temperaturaBooking: '-',
+        temperatura: '-',
+        o2: '-',
+        co2: '-',
+        door: 'Parche\nAbolladura',
+        front: 'Rayadura',
+        leftSide: '-',
+        rightSide: 'Óxido',
+        topRoof: '-',
+        inner: 'Limpio',
+        understructure: '-',
+        observaciones: 'Sin observaciones',
+      },
+      damages: [
+        {
+          location: '-',
+          damageType: '-',
+          component: '-',
+          repairMethod: '-',
+          responsible: '-',
+          quantity: null,
+          eirNbr: 'EIR202600053426',
+          length: null,
+          width: null,
+          area: null,
+        },
+      ],
+    };
+
+    openEirPrintWindow(data, { autoPrint: false });
+  } catch (err) {
+    console.error('Error al imprimir EIR (test):', err);
+    alert('No se pudo generar la impresión del EIR de prueba.');
+  } finally {
+    testingEir.value = false;
+  }
+};
 
 const {
   filteredAppointments,
@@ -111,6 +211,30 @@ const {
   getTiempoStage,
 
 } = useAppointmentsInProgress();
+
+const handlePrintEir = async (appointment: AppointmentInProgress) => {
+  if (!appointment.hasEir) {
+    alert('Esta cita no tiene EIR asociado.');
+    return;
+  }
+
+  try {
+    printingAppointmentId.value = appointment.cita;
+    const data = await getAppointmentEirPrintData(appointment.cita);
+
+    if (!data.hasEir || !data.eir) {
+      alert('No existe EIR para esta cita.');
+      return;
+    }
+
+    openEirPrintWindow(data);
+  } catch (error) {
+    console.error('Error al imprimir EIR:', error);
+    alert('No se pudo generar la impresión del EIR.');
+  } finally {
+    printingAppointmentId.value = null;
+  }
+};
 </script>
 
 <style scoped>
@@ -118,6 +242,35 @@ const {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-test-eir {
+  padding: 0.45rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px dashed rgba(251, 191, 36, 0.4);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-test-eir:hover:not(:disabled) {
+  background: rgba(251, 191, 36, 0.2);
+  border-color: #fbbf24;
+}
+
+.btn-test-eir:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .view-header {

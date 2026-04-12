@@ -17,6 +17,7 @@ export interface AppointmentInProgress {
     carreta: string;
     tipo: string;
     puertoDescarga: string;
+    hasEir: boolean;
 }
 
 export interface AppointmentsResponse {

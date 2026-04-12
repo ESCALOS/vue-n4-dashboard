@@ -34,11 +34,12 @@
           <th class="col-contenedor">Contenedor</th>
           <th class="col-nave">Nave</th>
           <th class="col-tipo">Tipo</th>
+          <th class="col-acciones">Acciones</th>
         </tr>
       </thead>
       <tbody>
         <tr v-if="appointments.length === 0">
-          <td colspan="16" class="empty-row">
+          <td colspan="17" class="empty-row">
             <div class="empty-state">
               <svg class="empty-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -79,6 +80,17 @@
           <td>
             <span class="tipo-badge">{{ appt.tipo || '—' }}</span>
           </td>
+          <td class="cell-acciones">
+            <button
+              v-if="appt.hasEir"
+              class="btn-eir"
+              :disabled="printingAppointmentId === appt.cita"
+              @click="onPrintEir(appt)"
+            >
+              {{ printingAppointmentId === appt.cita ? 'Imprimiendo...' : 'Imprimir EIR' }}
+            </button>
+            <span v-else class="no-eir">Sin EIR</span>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -98,6 +110,8 @@ defineProps<{
   getTiempoStageClass: (minutos: number | null) => string;
   getTiempoAtencion: (appointment: AppointmentInProgress) => number | null;
   getTiempoStage: (appointment: AppointmentInProgress) => number | null;
+  onPrintEir: (appointment: AppointmentInProgress) => void;
+  printingAppointmentId: string | null;
 }>();
 </script>
 
@@ -298,6 +312,31 @@ defineProps<{
   background: rgba(99, 102, 241, 0.1);
   color: #a5b4fc;
   border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.cell-acciones {
+  min-width: 120px;
+}
+
+.btn-eir {
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  background: rgba(59, 130, 246, 0.12);
+  color: #93c5fd;
+  border-radius: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.28rem 0.52rem;
+  cursor: pointer;
+}
+
+.btn-eir:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.no-eir {
+  color: #94a3b8;
+  font-size: 0.75rem;
 }
 
 /* Empty state */
