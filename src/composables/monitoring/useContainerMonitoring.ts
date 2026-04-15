@@ -25,6 +25,7 @@ export function useContainerMonitoring() {
     const statusFilter = ref<string>('');
     const isoFilter = ref('');
     const sizeFilter = ref<number | null>(null);
+    const positionFilter = ref('');
 
     // SSE connections
     let vesselsSSE: SSEConnection | null = null;
@@ -93,6 +94,10 @@ export function useContainerMonitoring() {
         if (sizeFilter.value !== null) {
             result = result.filter((c) => c.size === sizeFilter.value);
         }
+        if (positionFilter.value.trim()) {
+            const query = positionFilter.value.trim().toLowerCase();
+            result = result.filter((c) => c.position.toLowerCase().includes(query));
+        }
 
         return result;
     });
@@ -156,6 +161,7 @@ export function useContainerMonitoring() {
         statusFilter.value = '';
         isoFilter.value = '';
         sizeFilter.value = null;
+        positionFilter.value = '';
 
         dataSSE = createContainerDataSSE(
             vessel.id,
@@ -248,6 +254,7 @@ export function useContainerMonitoring() {
         statusFilter.value = '';
         isoFilter.value = '';
         sizeFilter.value = null;
+        positionFilter.value = '';
     };
 
     const selectBay = (bay: number) => {
@@ -282,6 +289,7 @@ export function useContainerMonitoring() {
         statusFilter,
         isoFilter,
         sizeFilter,
+        positionFilter,
         availableBays,
         availableIsos,
         availableSizes,

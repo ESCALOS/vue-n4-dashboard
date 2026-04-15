@@ -60,6 +60,17 @@
       </select>
     </div>
 
+    <div class="form-group">
+      <label class="form-label">Posición</label>
+      <input
+        :value="positionFilter"
+        type="text"
+        class="form-input"
+        placeholder="Ej: 020402"
+        @input="$emit('update:positionFilter', ($event.target as HTMLInputElement).value)"
+      />
+    </div>
+
     <div class="form-group form-group--action">
       <button class="btn btn-secondary" @click="$emit('clear-filters')">Limpiar</button>
     </div>
@@ -72,6 +83,7 @@ defineProps<{
   statusFilter: string;
   isoFilter: string;
   sizeFilter: number | null;
+  positionFilter: string;
   availableBays: number[];
   availableIsos: string[];
   availableSizes: number[];
@@ -82,6 +94,7 @@ defineEmits<{
   'update:statusFilter': [value: string];
   'update:isoFilter': [value: string];
   'update:sizeFilter': [value: number | null];
+  'update:positionFilter': [value: string];
   'clear-filters': [];
 }>();
 
@@ -135,7 +148,28 @@ const parseSelect = (event: Event): number | null => {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.form-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #2d2d44;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  background: #0f0f1a;
+  color: #e2e8f0;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input::placeholder {
+  color: #64748b;
+}
+
 .form-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.form-input:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
@@ -167,7 +201,7 @@ const parseSelect = (event: Event): number | null => {
 
 @media (min-width: 768px) {
   .filters-bar {
-    grid-template-columns: repeat(4, 1fr) auto;
+    grid-template-columns: repeat(5, 1fr) auto;
   }
 }
 </style>

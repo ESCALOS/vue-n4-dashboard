@@ -31,6 +31,7 @@
         :status-filter="statusFilter"
         :iso-filter="isoFilter"
         :size-filter="sizeFilter"
+        :position-filter="positionFilter"
         :available-bays="availableBays"
         :available-isos="availableIsos"
         :available-sizes="availableSizes"
@@ -38,6 +39,7 @@
         @update:status-filter="statusFilter = $event"
         @update:iso-filter="isoFilter = $event"
         @update:size-filter="sizeFilter = $event"
+        @update:position-filter="positionFilter = $event"
         @clear-filters="clearFilters"
       />
 
@@ -85,6 +87,7 @@ const {
   statusFilter,
   isoFilter,
   sizeFilter,
+  positionFilter,
   availableBays,
   availableIsos,
   availableSizes,

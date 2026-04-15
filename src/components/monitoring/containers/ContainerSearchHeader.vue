@@ -51,7 +51,7 @@
     <!-- Info line -->
     <p v-if="vesselName" class="search-header-info">
       Nave: <span class="search-header-vessel">{{ vesselName }}</span>
-      &mdash; Última actualización: {{ lastUpdate }}
+      &mdash; Última actualización: {{ lastUpdate !== undefined ? new Date(lastUpdate).toLocaleString() : 'N/A' }}
     </p>
 
     <p v-if="error" class="search-header-error">{{ error }}</p>
