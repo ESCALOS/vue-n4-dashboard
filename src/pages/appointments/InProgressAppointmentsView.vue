@@ -21,9 +21,9 @@
       </div>
       <div class="header-actions">
         <!-- Botón de prueba EIR — ELIMINAR EN PRODUCCIÓN -->
-        <button class="btn btn-test-eir" @click="handleTestEir" :disabled="testingEir">
+        <!-- <button class="btn btn-test-eir" @click="handleTestEir" :disabled="testingEir">
           {{ testingEir ? 'Generando...' : '🧪 Test EIR' }}
-        </button>
+        </button> -->
         <ExportInProgressButton :appointments="filteredAppointments" :disabled="isLoading" />
       </div>
     </div>
@@ -74,97 +74,97 @@ import AppointmentTable from '../../components/appointments/in-progress/Appointm
 import ExportInProgressButton from '../../components/appointments/in-progress/ExportInProgressButton.vue';
 import { useAppointmentsInProgress } from '../../composables/appointments/useAppointmentsInProgress';
 import type { AppointmentInProgress } from '../../types/appointments/AppointmentInProgress';
-import type { AppointmentEirPrintData } from '../../types/appointments/AppointmentEirPrint';
+// import type { AppointmentEirPrintData } from '../../types/appointments/AppointmentEirPrint';
 import {
   getAppointmentEirPrintData,
   openEirPrintWindow,
 } from '../../services/appointmentsService';
 
 const printingAppointmentId = ref<string | null>(null);
-const testingEir = ref(false);
+// const testingEir = ref(false);
 
-const handleTestEir = async () => {
-  const cita = 'TEST-0001';
+// const handleTestEir = async () => {
+//   const cita = 'TEST-0001';
 
-  try {
-    testingEir.value = true;
+//   try {
+//     testingEir.value = true;
 
-    const data: AppointmentEirPrintData = {
-      appointmentId: cita,
-      hasEir: true,
-      bookingInfo: {
-        booking: 'EBKG16446037',
-        manifiesto: '2026-162',
-        nave: "MSC SERENA",
-        viaje: 'NX615R',
-        mercaderia: 'FRESH POMEGRANATE',
-        tempRequerida: '6',
-        tecnologia: 'STD (Standard)',
-      },
-      eir: {
-        gkey: '55253',
-        codigo: 'EIR202600053969',
-        lineaNaviera: 'MEDITERRANEAN SHIPPING CO.',
-        gate: "IN",
-        inicio: '2026-04-12 02:01:05.940',
-        fin: '2026-04-12 02:03:00.000',
-        tecnico: 'EXSON PAUL AREVALO YARELQUE',
-        contenedor: 'MEDU9700918',
-        iso: '45R1',
-        tipo: 'REEFER HIGH CUBE',
-        tara: 4360,
-        pesoMaximo: 34000,
-        pesoBruto: 34000,
-        estado: 'ESTADO (VACIO/EMPTY)',
-        resultado: 'DAÑADO SUCIO',
-        tipoCarga: 'MTY',
-        clasificacion: 'B',
-        condicion: 'MTY',
-        fabricacion: '-',
-        precintos: '/ / /',
-        booking: 'MSCMTU010687',
-        placa: '-',
-        chofer: '-',
-        humedad: '-',
-        ventilacion: '-',
-        tecnologia: 'STD (Standard)',
-        temperaturaBooking: '-',
-        temperatura: '-',
-        o2: '-',
-        co2: '-',
-        door: 'Parche\nAbolladura',
-        front: 'Rayadura',
-        leftSide: '-',
-        rightSide: 'Óxido',
-        topRoof: '-',
-        inner: 'Limpio',
-        understructure: '-',
-        observaciones: 'Sin observaciones',
-      },
-      damages: [
-        {
-          location: '-',
-          damageType: '-',
-          component: '-',
-          repairMethod: '-',
-          responsible: '-',
-          quantity: null,
-          eirNbr: 'EIR202600053426',
-          length: null,
-          width: null,
-          area: null,
-        },
-      ],
-    };
+//     const data: AppointmentEirPrintData = {
+//       appointmentId: cita,
+//       hasEir: true,
+//       bookingInfo: {
+//         booking: 'EBKG16446037',
+//         manifiesto: '2026-162',
+//         nave: "MSC SERENA",
+//         viaje: 'NX615R',
+//         mercaderia: 'FRESH POMEGRANATE',
+//         tempRequerida: '6',
+//         tecnologia: 'STD (Standard)',
+//       },
+//       eir: {
+//         gkey: '55253',
+//         codigo: 'EIR202600053969',
+//         lineaNaviera: 'MEDITERRANEAN SHIPPING CO.',
+//         gate: "IN",
+//         inicio: '2026-04-12 02:01:05.940',
+//         fin: '2026-04-12 02:03:00.000',
+//         tecnico: 'EXSON PAUL AREVALO YARELQUE',
+//         contenedor: 'MEDU9700918',
+//         iso: '45R1',
+//         tipo: 'REEFER HIGH CUBE',
+//         tara: 4360,
+//         pesoMaximo: 34000,
+//         pesoBruto: 34000,
+//         estado: 'ESTADO (VACIO/EMPTY)',
+//         resultado: 'DAÑADO SUCIO',
+//         tipoCarga: 'MTY',
+//         clasificacion: 'B',
+//         condicion: 'MTY',
+//         fabricacion: '-',
+//         precintos: '/ / /',
+//         booking: 'MSCMTU010687',
+//         placa: '-',
+//         chofer: '-',
+//         humedad: '-',
+//         ventilacion: '-',
+//         tecnologia: 'STD (Standard)',
+//         temperaturaBooking: '-',
+//         temperatura: '-',
+//         o2: '-',
+//         co2: '-',
+//         door: 'Parche\nAbolladura',
+//         front: 'Rayadura',
+//         leftSide: '-',
+//         rightSide: 'Óxido',
+//         topRoof: '-',
+//         inner: 'Limpio',
+//         understructure: '-',
+//         observaciones: 'Sin observaciones',
+//       },
+//       damages: [
+//         {
+//           location: '-',
+//           damageType: '-',
+//           component: '-',
+//           repairMethod: '-',
+//           responsible: '-',
+//           quantity: null,
+//           eirNbr: 'EIR202600053426',
+//           length: null,
+//           width: null,
+//           area: null,
+//         },
+//       ],
+//     };
 
-    openEirPrintWindow(data, { autoPrint: false });
-  } catch (err) {
-    console.error('Error al imprimir EIR (test):', err);
-    alert('No se pudo generar la impresión del EIR de prueba.');
-  } finally {
-    testingEir.value = false;
-  }
-};
+//     openEirPrintWindow(data, { autoPrint: false });
+//   } catch (err) {
+//     console.error('Error al imprimir EIR (test):', err);
+//     alert('No se pudo generar la impresión del EIR de prueba.');
+//   } finally {
+//     testingEir.value = false;
+//   }
+// };
 
 const {
   filteredAppointments,

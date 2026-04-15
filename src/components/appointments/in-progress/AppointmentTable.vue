@@ -34,7 +34,7 @@
           <th class="col-contenedor">Contenedor</th>
           <th class="col-nave">Nave</th>
           <th class="col-tipo">Tipo</th>
-          <th class="col-acciones">Acciones</th>
+          <!-- <th class="col-acciones">Acciones</th> -->
         </tr>
       </thead>
       <tbody>
@@ -80,7 +80,7 @@
           <td>
             <span class="tipo-badge">{{ appt.tipo || '—' }}</span>
           </td>
-          <td class="cell-acciones">
+          <!-- <td class="cell-acciones">
             <button
               v-if="appt.hasEir"
               class="btn-eir"
@@ -90,7 +90,7 @@
               {{ printingAppointmentId === appt.cita ? 'Imprimiendo...' : 'Imprimir EIR' }}
             </button>
             <span v-else class="no-eir">Sin EIR</span>
-          </td>
+          </td> -->
         </tr>
       </tbody>
     </table>
