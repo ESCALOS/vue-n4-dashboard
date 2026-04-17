@@ -8,7 +8,7 @@ services:
       - "8080"
 
   nginx:
-    image: nginx:1.27-alpine
+    image: nginx:stable-alpine3.23
     container_name: n4-frontend-proxy
     depends_on:
       - frontend
