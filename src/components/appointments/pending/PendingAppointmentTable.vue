@@ -8,7 +8,13 @@
           <th class="col-estado">Estado</th>
           <th class="col-linea">Línea</th>
           <th class="col-booking">Booking</th>
-          <th class="col-tecnologia">Tecnología</th>
+          <th class="col-tecnologia">Tec.</th>
+          <th class="col-puerto">
+            <div class="header-puerto">
+              <div>Puerto</div>
+              <div>Descarga</div>
+            </div>
+          </th>
           <th class="col-placa">Placa</th>
           <th class="col-carreta">Carreta</th>
           <th class="col-cliente">Cliente</th>
@@ -42,10 +48,11 @@
           <td>{{ appt.linea || '—' }}</td>
           <td>{{ appt.booking || '—' }}</td>
           <td>{{ appt.tecnologia || '—' }}</td>
+          <td>{{ appt.puertoDescarga || '—' }}</td>
           <td>{{ appt.placa || '—' }}</td>
           <td>{{ appt.carreta || '—' }}</td>
           <td class="cell-cliente">{{ appt.cliente || '—' }}</td>
-          <td>{{ appt.producto || '—' }}</td>
+          <td :title="appt.producto || '—'" class="truncate">{{ appt.producto || '—' }}</td>
           <td class="cell-contenedor">{{ appt.contenedor || '—' }}</td>
           <td class="cell-nave">{{ appt.nave || '—' }}</td>
           <td>
@@ -218,5 +225,11 @@ defineProps<{
 .empty-icon {
   width: 2.5rem;
   height: 2.5rem;
+}
+
+.truncate {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
