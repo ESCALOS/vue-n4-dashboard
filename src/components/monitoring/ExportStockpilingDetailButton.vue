@@ -62,33 +62,59 @@ const handleExport = async () => {
       return;
     }
 
+    const totalBultosManifestados = props.vesselData.summary.services.reduce(
+      (sum, bl) => sum + bl.goods.manifested,
+      0
+    );
+    const includeBultosColumn = totalBultosManifestados > 0;
+
     // Crear el workbook
     const wb = XLSX.default.utils.book_new();
-    const sheetData = createSheetData(tickets, exportTitle.value);
+    const sheetData = createSheetData(tickets, exportTitle.value, includeBultosColumn);
     const ws = XLSX.default.utils.aoa_to_sheet(sheetData);
 
     // Aplicar estilos
-    applyStylesToSheet(ws, tickets.length, XLSX.default);
+    applyStylesToSheet(ws, tickets.length, XLSX.default, includeBultosColumn);
 
     // Ajustar anchos de columna
-    ws['!cols'] = [
-      { wch: 12 }, // Código
-      { wch: 25 }, // Anuncio
-      { wch: 20 }, // OS
-      { wch: 15 }, // Zona
-      { wch: 15 }, // G Remision
-      { wch: 20 }, // G Transportista
-      { wch: 15 }, // Peso Ingreso
-      { wch: 15 }, // Peso Salida
-      { wch: 15 }, // Peso Neto
-      { wch: 12 }, // Tracto
-      { wch: 12 }, // Carreta
-      { wch: 30 }, // Conductor
-      { wch: 20 }, // Fecha Salida
-      { wch: 30 }, // Notas
-      { wch: 20 }, // RUC Transportista
-      { wch: 20 }  // Bodega
-    ];
+    ws['!cols'] = includeBultosColumn
+      ? [
+          { wch: 12 }, // Código
+          { wch: 25 }, // Anuncio
+          { wch: 20 }, // OS
+          { wch: 15 }, // Zona
+          { wch: 15 }, // G Remision
+          { wch: 20 }, // G Transportista
+          { wch: 15 }, // Peso Ingreso
+          { wch: 15 }, // Peso Salida
+          { wch: 15 }, // Peso Neto
+          { wch: 12 }, // Bultos
+          { wch: 12 }, // Tracto
+          { wch: 12 }, // Carreta
+          { wch: 30 }, // Conductor
+          { wch: 20 }, // Fecha Salida
+          { wch: 30 }, // Notas
+          { wch: 20 }, // RUC Transportista
+          { wch: 20 }  // Bodega
+        ]
+      : [
+          { wch: 12 }, // Código
+          { wch: 25 }, // Anuncio
+          { wch: 20 }, // OS
+          { wch: 15 }, // Zona
+          { wch: 15 }, // G Remision
+          { wch: 20 }, // G Transportista
+          { wch: 15 }, // Peso Ingreso
+          { wch: 15 }, // Peso Salida
+          { wch: 15 }, // Peso Neto
+          { wch: 12 }, // Tracto
+          { wch: 12 }, // Carreta
+          { wch: 30 }, // Conductor
+          { wch: 20 }, // Fecha Salida
+          { wch: 30 }, // Notas
+          { wch: 20 }, // RUC Transportista
+          { wch: 20 }  // Bodega
+        ];
 
     // Agregar al workbook
     XLSX.default.utils.book_append_sheet(wb, ws, exportTitle.value.slice(0, 31));
@@ -105,7 +131,11 @@ const handleExport = async () => {
   }
 };
 
-const createSheetData = (tickets: StockpilingTicket[], title: string): any[][] => {
+const createSheetData = (
+  tickets: StockpilingTicket[],
+  title: string,
+  includeBultosColumn: boolean,
+): any[][] => {
   const vesselName = props.vesselData.manifest.name;
   
   // Calcular tonelajes
@@ -171,6 +201,7 @@ const createSheetData = (tickets: StockpilingTicket[], title: string): any[][] =
       'PESO INGRESO',
       'PESO SALIDA',
       'PESO NETO',
+      ...(includeBultosColumn ? ['BULTOS'] : []),
       'TRACTO',
       'CARRETA',
       'CONDUCTOR',
@@ -193,6 +224,7 @@ const createSheetData = (tickets: StockpilingTicket[], title: string): any[][] =
       ticket.pesoIngreso, // Convertir a toneladas
       ticket.pesoSalida,  // Convertir a toneladas
       ticket.pesoNeto,    // Convertir a toneladas
+      ...(includeBultosColumn ? [ticket.bultos ?? 0] : []),
       ticket.tracto,
       ticket.carreta,
       ticket.conductor,
@@ -212,7 +244,12 @@ const createSheetData = (tickets: StockpilingTicket[], title: string): any[][] =
   return data;
 };
 
-const applyStylesToSheet = (ws: any, ticketsCount: number, XLSX: any) => {
+const applyStylesToSheet = (
+  ws: any,
+  ticketsCount: number,
+  XLSX: any,
+  includeBultosColumn: boolean,
+) => {
   // Estilo para el título principal (Fila 2)
   const titleStyle = {
     font: { bold: true, sz: 14 },
@@ -281,22 +318,30 @@ const applyStylesToSheet = (ws: any, ticketsCount: number, XLSX: any) => {
   }
 
   // Aplicar estilos a los encabezados (Fila 9)
-  const headerCols = ['A9', 'B9', 'C9', 'D9', 'E9', 'F9', 'G9', 'H9', 'I9', 'J9', 'K9', 'L9', 'M9', 'N9', 'O9', 'P9'];
+  const columnCount = includeBultosColumn ? 17 : 16;
+  const headerCols = Array.from({ length: columnCount }, (_, i) =>
+    XLSX.utils.encode_cell({ r: 8, c: i }),
+  );
   headerCols.forEach(cell => {
     if (ws[cell]) ws[cell].s = headerStyle;
   });
 
   // Aplicar estilos a las filas de datos (desde fila 10)
   const dataStartRow = 9; // Fila 10 en base 0
+  const weightColumns = [6, 7, 8];
+  const bultosColumn = includeBultosColumn ? 9 : -1;
   for (let row = dataStartRow; row < dataStartRow + ticketsCount; row++) {
-    for (let col = 0; col < 16; col++) {
+    for (let col = 0; col < columnCount; col++) {
       const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
       if (!ws[cellAddress]) ws[cellAddress] = { t: 's', v: '' };
       ws[cellAddress].s = dataStyle;
 
-      // Aplicar formato numérico a columnas de peso (E, F, G - índices 4, 5, 6)
-      if ((col === 4 || col === 5 || col === 6) && ws[cellAddress].v && typeof ws[cellAddress].v === 'number') {
+      // Aplicar formato numérico a columnas de peso y bultos
+      if (weightColumns.includes(col) && ws[cellAddress].v && typeof ws[cellAddress].v === 'number') {
         ws[cellAddress].z = '#,##0.000';
+      }
+      if (col === bultosColumn && ws[cellAddress].v && typeof ws[cellAddress].v === 'number') {
+        ws[cellAddress].z = '#,##0';
       }
     }
   }
