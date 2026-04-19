@@ -25,24 +25,13 @@ const props = defineProps<{
 
 const exporting = ref(false);
 
-const formatExportDate = (value?: string | null): string => {
+const parseExportDate = (value?: string | null): Date | '' => {
   if (!value) return '';
 
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '';
 
-  const datePart = date.toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  });
-  const timePart = date.toLocaleTimeString('es-ES', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  });
-
-  return `${datePart} ${timePart}`;
+  return date;
 };
 
 const exportTitle = computed(() => {
@@ -91,7 +80,7 @@ const handleExport = async () => {
     // Crear el workbook
     const wb = XLSX.default.utils.book_new();
     const sheetData = createSheetData(tickets, exportTitle.value, includeBultosColumn);
-    const ws = XLSX.default.utils.aoa_to_sheet(sheetData);
+    const ws = XLSX.default.utils.aoa_to_sheet(sheetData, { cellDates: true });
 
     // Aplicar estilos
     applyStylesToSheet(ws, tickets.length, XLSX.default, includeBultosColumn);
@@ -248,7 +237,7 @@ const createSheetData = (
       ticket.tracto,
       ticket.carreta,
       ticket.conductor,
-      formatExportDate(ticket.fechaSalida),
+      parseExportDate(ticket.fechaSalida),
       ticket.notas,
       ticket.rucTransportista,
       ticket.bodega
@@ -344,6 +333,7 @@ const applyStylesToSheet = (
   const dataStartRow = 9; // Fila 10 en base 0
   const weightColumns = [6, 7, 8];
   const bultosColumn = includeBultosColumn ? 9 : -1;
+  const dateColumn = includeBultosColumn ? 13 : 12;
   for (let row = dataStartRow; row < dataStartRow + ticketsCount; row++) {
     for (let col = 0; col < columnCount; col++) {
       const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
@@ -356,6 +346,10 @@ const applyStylesToSheet = (
       }
       if (col === bultosColumn && ws[cellAddress].v && typeof ws[cellAddress].v === 'number') {
         ws[cellAddress].z = '#,##0';
+      }
+      if (col === dateColumn && ws[cellAddress].v instanceof Date) {
+        ws[cellAddress].t = 'd';
+        ws[cellAddress].z = 'dd/mm/yyyy hh:mm';
       }
     }
   }
