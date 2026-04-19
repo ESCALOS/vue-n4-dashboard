@@ -25,6 +25,26 @@ const props = defineProps<{
 
 const exporting = ref(false);
 
+const formatExportDate = (value?: string | null): string => {
+  if (!value) return '';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+
+  const datePart = date.toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  const timePart = date.toLocaleTimeString('es-ES', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+
+  return `${datePart} ${timePart}`;
+};
+
 const exportTitle = computed(() => {
   const operationLabel = getOperationLabel(props.vesselData.operation_type).toUpperCase();
   const commodityRaw = props.vesselData.summary.services[0]?.commodity?.trim();
@@ -228,13 +248,7 @@ const createSheetData = (
       ticket.tracto,
       ticket.carreta,
       ticket.conductor,
-      ticket.fechaSalida ? new Date(ticket.fechaSalida).toLocaleString('es-ES', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      }) : '',
+      formatExportDate(ticket.fechaSalida),
       ticket.notas,
       ticket.rucTransportista,
       ticket.bodega
