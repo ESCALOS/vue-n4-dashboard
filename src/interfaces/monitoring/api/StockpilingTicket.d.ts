@@ -1,5 +1,6 @@
 export interface StockpilingTicket {
     codigo: string;
+    blNbr: string;
     blItemNbr: string;
     gRemision: string;
     gTransportista: string;
@@ -14,4 +15,8 @@ export interface StockpilingTicket {
     notas: string;
     rucTransportista: string;
     bodega: string;
+    balanzaIngreso: string;
+    balanceroIngreso: string;
+    balanzaSalida: string;
+    balanceroSalida: string;
 }

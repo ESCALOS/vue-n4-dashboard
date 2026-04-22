@@ -91,6 +91,7 @@ const handleExport = async () => {
           { wch: 12 }, // Código
           { wch: 25 }, // Anuncio
           { wch: 20 }, // OS
+          { wch: 20 }, // BL
           { wch: 15 }, // Zona
           { wch: 15 }, // G Remision
           { wch: 20 }, // G Transportista
@@ -104,12 +105,17 @@ const handleExport = async () => {
           { wch: 20 }, // Fecha Salida
           { wch: 30 }, // Notas
           { wch: 20 }, // RUC Transportista
-          { wch: 20 }  // Bodega
+          { wch: 20 }, // Bodega
+          { wch: 24 }, // Balanza Ingreso
+          { wch: 22 }, // Balancero Ingreso
+          { wch: 24 }, // Balanza Salida
+          { wch: 22 }  // Balancero Salida
         ]
       : [
           { wch: 12 }, // Código
           { wch: 25 }, // Anuncio
           { wch: 20 }, // OS
+          { wch: 20 }, // BL
           { wch: 15 }, // Zona
           { wch: 15 }, // G Remision
           { wch: 20 }, // G Transportista
@@ -122,7 +128,11 @@ const handleExport = async () => {
           { wch: 20 }, // Fecha Salida
           { wch: 30 }, // Notas
           { wch: 20 }, // RUC Transportista
-          { wch: 20 }  // Bodega
+          { wch: 20 }, // Bodega
+          { wch: 24 }, // Balanza Ingreso
+          { wch: 22 }, // Balancero Ingreso
+          { wch: 24 }, // Balanza Salida
+          { wch: 22 }  // Balancero Salida
         ];
 
     // Agregar al workbook
@@ -203,7 +213,8 @@ const createSheetData = (
     [
       'CÓDIGO',
       'ANUNCIO',
-      'OS',
+      'BL ITEM',
+      'BL',
       'ZONA',
       'G REMISION',
       'G TRANSPORTISTA',
@@ -217,7 +228,11 @@ const createSheetData = (
       'FECHA SALIDA',
       'NOTAS',
       'RUC TRANSPORTISTA',
-      'BODEGA'
+      'BODEGA',
+      'BALANZA INGRESO',
+      'BALANCERO INGRESO',
+      'BALANZA SALIDA',
+      'BALANCERO SALIDA'
     ]
   ];
 
@@ -227,6 +242,7 @@ const createSheetData = (
       ticket.codigo,
       vesselName,
       ticket.blItemNbr,
+      ticket.blNbr,
       '', // Zona vacía
       ticket.gRemision,
       ticket.gTransportista,
@@ -240,7 +256,11 @@ const createSheetData = (
       parseExportDate(ticket.fechaSalida),
       ticket.notas,
       ticket.rucTransportista,
-      ticket.bodega
+      ticket.bodega,
+      ticket.balanzaIngreso,
+      ticket.balanceroIngreso,
+      ticket.balanzaSalida,
+      ticket.balanceroSalida
     ]);
   });
 
@@ -298,7 +318,8 @@ const applyStylesToSheet = (
 
   // Aplicar merge y estilo al título (Fila 2)
   if (!ws['!merges']) ws['!merges'] = [];
-  ws['!merges'].push({ s: { r: 1, c: 0 }, e: { r: 1, c: 10 } });
+  const columnCount = includeBultosColumn ? 22 : 21;
+  ws['!merges'].push({ s: { r: 1, c: 0 }, e: { r: 1, c: columnCount - 1 } });
   if (ws['A2']) ws['A2'].s = titleStyle;
 
   // Aplicar estilo a "NAVE"
@@ -321,7 +342,6 @@ const applyStylesToSheet = (
   }
 
   // Aplicar estilos a los encabezados (Fila 9)
-  const columnCount = includeBultosColumn ? 17 : 16;
   const headerCols = Array.from({ length: columnCount }, (_, i) =>
     XLSX.utils.encode_cell({ r: 8, c: i }),
   );
@@ -331,9 +351,9 @@ const applyStylesToSheet = (
 
   // Aplicar estilos a las filas de datos (desde fila 10)
   const dataStartRow = 9; // Fila 10 en base 0
-  const weightColumns = [6, 7, 8];
-  const bultosColumn = includeBultosColumn ? 9 : -1;
-  const dateColumn = includeBultosColumn ? 13 : 12;
+  const weightColumns = [7, 8, 9];
+  const bultosColumn = includeBultosColumn ? 10 : -1;
+  const dateColumn = includeBultosColumn ? 14 : 13;
   for (let row = dataStartRow; row < dataStartRow + ticketsCount; row++) {
     for (let col = 0; col < columnCount; col++) {
       const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
