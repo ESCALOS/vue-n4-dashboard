@@ -104,7 +104,7 @@ export const createVesselSSEConnection = (
     onStatusChange?: (status: SSEConnectionStatus) => void,
 ): SSEConnection => {
     const eventSource = createAuthSSE(
-        `/monitoring/general-cargo/stream?manifest_id=${vessel.manifest_id}&operation_type=${vessel.operation_type}`
+        `/monitoring/general-cargo/stream?manifest_id=${vessel.manifest_id}&operation=${vessel.operation_type}`
     );
 
     eventSource.onmessage = (event) => {
@@ -137,7 +137,7 @@ export const getVesselMonitorData = async (
     vessel: VesselsResponse
 ): Promise<VesselData> => {
     const response = await get(
-        `/monitoring/general-cargo/stream?manifest_id=${vessel.manifest.id}&operation_type=${vessel.operation_type}`
+        `/monitoring/general-cargo/stream?manifest_id=${vessel.manifest.id}&operation=${vessel.operation_type}`
     );
 
     if (!response.ok) {
