@@ -7,6 +7,8 @@ const WATCHDOG_INTERVAL_MS = 5_000;
 const CONNECT_TIMEOUT_MS = 8_000;
 const RECONNECT_BASE_DELAY_MS = 2_000;
 const RECONNECT_MAX_DELAY_MS = 10_000;
+const RECONNECT_NOTICE_THRESHOLD = 3;
+const MANUAL_RECOVERY_DELAY_MS = 4_000;
 
 let isRefreshing = false;
 let refreshPromise: Promise<boolean> | null = null;
@@ -202,6 +204,7 @@ export function createAuthSSE(path: string): SSEConnection {
     let connectTimeout: ReturnType<typeof setTimeout> | null = null;
     let watchdogInterval: ReturnType<typeof setInterval> | null = null;
     let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+    let manualRecoveryTimer: ReturnType<typeof setTimeout> | null = null;
     let lastEventAt = Date.now();
     let reconnectAttempts = 0;
     let reconnecting = false;
@@ -253,6 +256,11 @@ export function createAuthSSE(path: string): SSEConnection {
             clearTimeout(reconnectTimer);
             reconnectTimer = null;
         }
+
+        if (manualRecoveryTimer) {
+            clearTimeout(manualRecoveryTimer);
+            manualRecoveryTimer = null;
+        }
     }
 
     function closeCurrentES() {
@@ -285,7 +293,9 @@ export function createAuthSSE(path: string): SSEConnection {
         if (closed) return;
 
         reconnecting = false;
-        emitError(reason);
+        if (reconnectAttempts >= RECONNECT_NOTICE_THRESHOLD) {
+            emitError(reason);
+        }
 
         const isHealthy = await checkBackendHealth();
         if (!isHealthy) {
@@ -313,10 +323,38 @@ export function createAuthSSE(path: string): SSEConnection {
 
         reconnecting = true;
         reconnectAttempts += 1;
-        emitStatus('reconnecting');
+
+        if (reconnectAttempts >= RECONNECT_NOTICE_THRESHOLD) {
+            emitStatus('reconnecting');
+        } else {
+            emitStatus('degraded');
+        }
 
         closeCurrentES();
         void connect(reason);
+    }
+
+    function scheduleManualRecovery(reason: string) {
+        if (closed || reconnecting) return;
+
+        if (reconnectAttempts >= RECONNECT_NOTICE_THRESHOLD - 1) {
+            emitStatus('reconnecting');
+        } else {
+            emitStatus('degraded');
+        }
+
+        if (manualRecoveryTimer) {
+            return;
+        }
+
+        manualRecoveryTimer = setTimeout(() => {
+            manualRecoveryTimer = null;
+
+            if (closed || reconnecting) return;
+            if (currentES?.readyState === EventSource.OPEN) return;
+
+            reconnect(reason);
+        }, MANUAL_RECOVERY_DELAY_MS);
     }
 
     async function connect(reason = 'initial') {
@@ -366,6 +404,11 @@ export function createAuthSSE(path: string): SSEConnection {
                 connectTimeout = null;
             }
 
+            if (manualRecoveryTimer) {
+                clearTimeout(manualRecoveryTimer);
+                manualRecoveryTimer = null;
+            }
+
             reconnecting = false;
             reconnectAttempts = 0;
             touchEventTimestamp();
@@ -384,41 +427,33 @@ export function createAuthSSE(path: string): SSEConnection {
         currentES.onerror = async () => {
             if (closed) return;
 
-            emitStatus('degraded');
-            emitError('sse-error');
-
             if (connectTimeout) {
                 clearTimeout(connectTimeout);
                 connectTimeout = null;
             }
 
+            const readyState = currentES?.readyState;
+
+            if (readyState === EventSource.OPEN) {
+                return;
+            }
+
+            if (readyState === EventSource.CONNECTING) {
+                scheduleManualRecovery('eventsource-connecting');
+                return;
+            }
+
             // readyState CLOSED = permanent failure (HTTP 401, etc.)
-            if (currentES?.readyState === EventSource.CLOSED) {
+            if (readyState === EventSource.CLOSED) {
                 closeCurrentES();
 
                 if (closed) return;
 
-                // Attempt to refresh the token and reconnect
-                const refreshed = await refreshSession(authStore);
-                if (refreshed && !closed) {
-                    reconnect('refresh-ok');
-                    return;
-                }
-
-                const hasRefreshToken = !!normalizeToken(authStore.refreshToken);
-                if (!hasRefreshToken && !closed) {
-                    emitStatus('unauthorized');
-                    emitError('unauthorized');
-                    router.push('/login');
-                    return;
-                }
-
-                onReconnectFailed('refresh-failed');
+                reconnect('eventsource-closed');
                 return;
             }
 
-            // readyState CONNECTING = transiente. Activamos fallback de reconexión.
-            reconnect('eventsource-connecting');
+            scheduleManualRecovery('eventsource-error');
         };
 
         startWatchdog();
