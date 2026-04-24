@@ -74,7 +74,11 @@ async function authFetch(
         headers.set('Content-Type', 'application/json');
     }
 
-    const response = await fetch(input, { ...init, headers });
+    const response = await fetch(input, {
+        ...init,
+        headers,
+        credentials: init.credentials ?? 'include',
+    });
 
     if (response.status === 401 && normalizeToken(authStore.refreshToken)) {
         const refreshed = await refreshSession(authStore);
@@ -88,7 +92,11 @@ async function authFetch(
             }
 
             headers.set('Authorization', `Bearer ${refreshedToken}`);
-            return fetch(input, { ...init, headers });
+            return fetch(input, {
+                ...init,
+                headers,
+                credentials: init.credentials ?? 'include',
+            });
         }
 
         const hasRefreshToken = !!normalizeToken(authStore.refreshToken);
@@ -107,6 +115,19 @@ async function authFetch(
     }
 
     return response;
+}
+
+async function requestSseCookie(): Promise<boolean> {
+    try {
+        const response = await authFetch(url('/auth/sse-token'), {
+            method: 'POST',
+            credentials: 'include',
+        });
+
+        return response.ok;
+    } catch {
+        return false;
+    }
 }
 
 /**
@@ -295,10 +316,10 @@ export function createAuthSSE(path: string): SSEConnection {
         emitStatus('reconnecting');
 
         closeCurrentES();
-        connect(reason);
+        void connect(reason);
     }
 
-    function connect(reason = 'initial') {
+    async function connect(reason = 'initial') {
         if (closed) return;
 
         if (reconnectTimer) {
@@ -318,9 +339,16 @@ export function createAuthSSE(path: string): SSEConnection {
             return;
         }
 
-        const separator = path.includes('?') ? '&' : '?';
-        const fullUrl = `${API_BASE_URL}${path}${separator}token=${encodeURIComponent(accessToken)}`;
-        currentES = new EventSource(fullUrl);
+        const hasSseCookie = await requestSseCookie();
+        if (!hasSseCookie) {
+            await onReconnectFailed(`${reason}-sse-token-failed`);
+            return;
+        }
+
+        if (closed) return;
+
+        const fullUrl = `${API_BASE_URL}${path}`;
+        currentES = new EventSource(fullUrl, { withCredentials: true });
         touchEventTimestamp();
 
         connectTimeout = setTimeout(() => {
@@ -396,6 +424,6 @@ export function createAuthSSE(path: string): SSEConnection {
         startWatchdog();
     }
 
-    connect();
+    void connect();
     return connection;
 }
