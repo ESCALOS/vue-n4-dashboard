@@ -1,0 +1,174 @@
+# =============================================================================
+#  Caddyfile — amagi.pdparacas.com.pe:8060
+#  WAF: Coraza + OWASP CRS v4
+#  Frontend: Vue (192.168.28.47:8080, contenedor interno)
+#  API:      NestJS (10.20.13.13) — sin prefijo /api
+# =============================================================================
+
+{
+    order coraza_waf first
+    auto_https off
+    admin off
+
+    log {
+        output file /var/log/caddy/access.log {
+            roll_size     100MiB
+            roll_keep     10
+            roll_keep_for 720h
+        }
+        format json
+        level  INFO
+    }
+}
+
+amagi.pdparacas.com.pe:8060 {
+
+    tls /etc/caddy/certs/amagi.crt /etc/caddy/certs/amagi.key
+
+    # Coraza: todas las directivas en archivo externo para evitar
+    # que el backtick de Caddyfile inyecte espacios de indentacion
+    coraza_waf {
+        load_owasp_crs
+        directives "Include /etc/caddy/waf/coraza-main.conf"
+    }
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options    "nosniff"
+        X-Frame-Options           "SAMEORIGIN"
+        X-XSS-Protection          "1; mode=block"
+        Referrer-Policy           "strict-origin-when-cross-origin"
+        -Server
+    }
+
+    handle_errors 403 {
+            header Content-Type "text/html; charset=utf-8"
+                respond `<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Solicitud bloqueada</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+            --bg: #0b1020;
+            --card: #131a2e;
+            --text: #eaf0ff;
+            --muted: #a7b1cc;
+            --accent: #ff5d5d;
+            --border: #2a3350;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: radial-gradient(circle at top, #182346 0%, var(--bg) 55%);
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            color: var(--text);
+            padding: 24px;
+        }
+
+        .card {
+            width: min(680px, 100%);
+            background: color-mix(in srgb, var(--card) 92%, black 8%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 10px 35px rgb(0 0 0 / 0.35);
+            padding: 28px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgb(255 93 93 / 0.15);
+            color: #ff9b9b;
+            border: 1px solid rgb(255 93 93 / 0.35);
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-weight: 700;
+            letter-spacing: .3px;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            font-size: clamp(1.4rem, 2.3vw, 2rem);
+            line-height: 1.2;
+        }
+
+        p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .meta {
+            margin-top: 22px;
+            font-size: 0.92rem;
+            color: var(--muted);
+            border-top: 1px solid var(--border);
+            padding-top: 14px;
+        }
+
+        code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            color: var(--text);
+            background: rgb(255 255 255 / 0.06);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2px 8px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <main class="card" role="main" aria-labelledby="title">
+        <span class="badge">Error 403</span>
+        <h1 id="title">Solicitud bloqueada por política de seguridad</h1>
+        <p>
+            Tu solicitud fue detenida por las reglas de seguridad del sistema.
+            Si crees que se trata de un error, contacta al administrador e indica el identificador de solicitud.
+        </p>
+    </main>
+</body>
+</html>` 403
+    }
+
+    handle /api/* {
+        uri strip_prefix /api
+
+        reverse_proxy http://10.20.13.13 {
+            header_up Host             "10.20.13.13"
+            header_up X-Real-IP        {remote_host}
+            header_up X-Forwarded-For  {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+
+            transport http {
+                dial_timeout            10s
+                response_header_timeout 60s
+            }
+
+            fail_duration 30s
+        }
+    }
+
+    handle {
+        reverse_proxy frontend:8080 {
+            header_up Host              {host}
+            header_up X-Real-IP        {remote_host}
+            header_up X-Forwarded-For  {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+
+            transport http {
+                dial_timeout            5s
+                response_header_timeout 30s
+            }
+        }
+    }
+}

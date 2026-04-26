@@ -1,4 +1,5 @@
 services:
+ 
   frontend:
     build:
       context: .
@@ -6,16 +7,34 @@ services:
     restart: unless-stopped
     expose:
       - "8080"
-
-  nginx:
-    image: nginx:stable-alpine3.23
-    container_name: n4-frontend-proxy
+    networks:
+      - internal
+ 
+  caddy:
+    build:
+      context: ./caddy
+      dockerfile: Dockerfile
+    container_name: waf-caddy
     depends_on:
       - frontend
     restart: unless-stopped
-    environment:
-      BACKEND_UPSTREAM: ${BACKEND_UPSTREAM:-http://10.20.13.13}
     ports:
-      - "80:80"
+      - "8060:8060"
     volumes:
-      - ./nginx/reverse-proxy.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy/waf/coraza-main.conf:/etc/caddy/waf/coraza-main.conf:ro
+      - ./caddy/waf/coraza-tuning.conf:/etc/caddy/waf/coraza-tuning.conf:ro
+      - ./caddy/certs:/etc/caddy/certs:ro
+      - caddy_logs:/var/log/caddy
+      - caddy_data:/data
+    networks:
+      - internal
+ 
+volumes:
+  caddy_logs:
+  caddy_data:
+ 
+networks:
+  internal:
+    driver: bridge
+ 
