@@ -7,7 +7,7 @@
 
 {
     order coraza_waf first
-    auto_https off
+    auto_https disable_certs
     admin off
 
     log {
