@@ -15,13 +15,6 @@
       <button class="btn btn-primary" :disabled="loading || !newManifestId.trim()" @click="handleAdd">
         {{ loading ? 'Agregando...' : 'Agregar Nave' }}
       </button>
-      <button
-        class="btn btn-secondary"
-        :disabled="!selectedVessel"
-        @click="$emit('export-report')"
-      >
-        Exportar Excel
-      </button>
     </div>
 
     <!-- Monitored Vessels Tabs -->
@@ -29,7 +22,7 @@
       <div
         v-for="vessel in monitoredVessels"
         :key="vessel.id"
-        :class="['vessel-tab', { 'vessel-tab--active': selectedVessel?.id === vessel.id }]"
+        :class="['vessel-tab', { 'vessel-tab--active': selectedVessel?.gkey === vessel.gkey }]"
       >
         <button
           type="button"
@@ -43,7 +36,7 @@
           type="button"
           class="vessel-tab-remove"
           title="Remover nave"
-          @click="$emit('remove-vessel', vessel.id)"
+          @click="$emit('remove-vessel', vessel.gkey)"
         >✕</button>
       </div>
     </div>
@@ -77,9 +70,8 @@ defineProps<{
 
 const emit = defineEmits<{
   'add-vessel': [manifestId: string];
-  'remove-vessel': [manifestId: string];
+  'remove-vessel': [carrierVisitGkey: number];
   'select-vessel': [vessel: MonitoredContainerVessel];
-  'export-report': [];
 }>();
 
 const newManifestId = ref('');

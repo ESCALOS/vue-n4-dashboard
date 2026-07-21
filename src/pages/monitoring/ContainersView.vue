@@ -11,10 +11,24 @@
       @add-vessel="addVessel"
       @remove-vessel="removeVessel"
       @select-vessel="selectVessel"
-      @export-report="exportReport"
     />
 
     <template v-if="vesselData">
+      <div class="selected-vessel-actions">
+        <div>
+          <strong>{{ vesselData.manifest.vessel_name }}</strong>
+          <span>Manifiesto {{ vesselData.manifest.id }}</span>
+        </div>
+        <div class="selected-vessel-buttons">
+          <button class="export-button" :disabled="loading || exportLoading" @click="exportReport">
+            Exportar resumen de operación
+          </button>
+          <button class="export-button export-button--booking" :disabled="loading || exportLoading" @click="exportBookings">
+            Exportar reservas de embarque
+          </button>
+        </div>
+      </div>
+
       <ContainerSummaryCards
         :summary="vesselData.summary"
         @open-not-arrived="openNotArrivedModal"
@@ -52,7 +66,7 @@
       :loading="notArrivedLoading"
       :error="notArrivedError"
       :vessel-name="vesselData?.manifest.vessel_name"
-      :manifest-id="selectedVessel?.id"
+      :manifest-id="vesselData?.manifest.id"
       @close="handleNotArrivedModalClose"
       @export="exportNotArrivedExcel"
     />
@@ -64,10 +78,12 @@ import { onMounted, ref } from 'vue';
 import { useContainerMonitoring } from '../../composables/monitoring/useContainerMonitoring';
 import {
   getContainerOperationsReport,
+  getContainerBookingExport,
   getNotArrivedContainersByManifest,
 } from '../../services/monitoringService';
 import { exportContainerOperationsExcel } from '../../services/containerOperationsExcelService';
 import { exportNotArrivedContainersExcel } from '../../services/notArrivedContainersExcelService';
+import { exportContainerBookingExcel } from '../../services/containerBookingExcelService';
 import type { NotArrivedContainerItem } from '../../interfaces/monitoring/ContainerMonitoring';
 import ContainerSearchHeader from '../../components/monitoring/containers/ContainerSearchHeader.vue';
 import ContainerSummaryCards from '../../components/monitoring/containers/ContainerSummaryCards.vue';
@@ -104,6 +120,7 @@ const notArrivedModalRef = ref<InstanceType<typeof NotArrivedContainersModal> | 
 const notArrivedItems = ref<NotArrivedContainerItem[]>([]);
 const notArrivedLoading = ref(false);
 const notArrivedError = ref('');
+const exportLoading = ref(false);
 
 onMounted(() => {
   startVesselsSSE();
@@ -113,11 +130,29 @@ const exportReport = async () => {
   if (!selectedVessel.value) return;
 
   try {
-    const report = await getContainerOperationsReport(selectedVessel.value.id);
+    exportLoading.value = true;
+    const report = await getContainerOperationsReport(selectedVessel.value.gkey);
     await exportContainerOperationsExcel(report);
   } catch (err) {
     console.error('Error exportando reporte de contenedores:', err);
     error.value = err instanceof Error ? err.message : 'Error al exportar reporte';
+  } finally {
+    exportLoading.value = false;
+  }
+};
+
+const exportBookings = async () => {
+  if (!selectedVessel.value) return;
+  try {
+    exportLoading.value = true;
+    error.value = '';
+    const items = await getContainerBookingExport(selectedVessel.value.gkey);
+    await exportContainerBookingExcel(items, vesselData.value?.manifest.id ?? selectedVessel.value.id);
+  } catch (err) {
+    console.error('Error exportando reservas de embarque:', err);
+    error.value = err instanceof Error ? err.message : 'Error al exportar reservas de embarque';
+  } finally {
+    exportLoading.value = false;
   }
 };
 
@@ -130,7 +165,7 @@ const openNotArrivedModal = async () => {
   notArrivedModalRef.value?.open();
 
   try {
-    notArrivedItems.value = await getNotArrivedContainersByManifest(selectedVessel.value.id);
+    notArrivedItems.value = await getNotArrivedContainersByManifest(selectedVessel.value.gkey);
   } catch (err) {
     notArrivedError.value = err instanceof Error
       ? err.message
@@ -150,7 +185,7 @@ const exportNotArrivedExcel = async () => {
   if (!selectedVessel.value) return;
 
   await exportNotArrivedContainersExcel(
-    selectedVessel.value.id,
+    vesselData.value?.manifest.id ?? selectedVessel.value.id,
     vesselData.value?.manifest.vessel_name ?? 'NAVE',
     notArrivedItems.value,
   );
@@ -165,5 +200,49 @@ const exportNotArrivedExcel = async () => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.selected-vessel-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #2d2d44;
+  border-radius: 0.75rem;
+  background: #1a1a2e;
+  color: #e2e8f0;
+}
+
+.selected-vessel-actions span {
+  display: block;
+  margin-top: 0.25rem;
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.selected-vessel-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.export-button {
+  padding: 0.625rem 1rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: #0ea5e9;
+  color: #fff;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.export-button--booking { background: #4f46e5; }
+.export-button:disabled { cursor: not-allowed; opacity: 0.5; }
+
+@media (max-width: 48rem) {
+  .selected-vessel-actions { align-items: flex-start; flex-direction: column; }
 }
 </style>

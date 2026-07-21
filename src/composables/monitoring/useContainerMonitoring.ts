@@ -116,11 +116,13 @@ export function useContainerMonitoring() {
 
                 // If selected vessel was removed, clean up
                 if (selectedVessel.value) {
-                    const stillExists = vessels.some((v) => v.id === selectedVessel.value!.id);
-                    if (!stillExists) {
+                    const updatedVessel = vessels.find((v) => v.gkey === selectedVessel.value!.gkey);
+                    if (!updatedVessel) {
                         closeDataSSE();
                         selectedVessel.value = null;
                         vesselData.value = null;
+                    } else {
+                        selectedVessel.value = { ...updatedVessel };
                     }
                 }
             },
@@ -164,7 +166,7 @@ export function useContainerMonitoring() {
         positionFilter.value = '';
 
         dataSSE = createContainerDataSSE(
-            vessel.id,
+            vessel.gkey,
             (data) => {
                 connectionState.value = 'connected';
                 vesselData.value = data;
@@ -231,9 +233,9 @@ export function useContainerMonitoring() {
         }
     };
 
-    const removeVessel = async (manifestId: string) => {
+    const removeVessel = async (carrierVisitGkey: number) => {
         try {
-            await removeContainerVessel(manifestId);
+            await removeContainerVessel(carrierVisitGkey);
             // The SSE will update the list and clean up automatically
         } catch (err) {
             console.error('Error removiendo nave:', err);

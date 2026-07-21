@@ -6,6 +6,7 @@ import type { StockpilingTicket } from "../interfaces/monitoring/api/Stockpiling
 import type { IndirectShipmentTicket } from "../interfaces/monitoring/api/IndirectShipmentTicket";
 import type {
     ContainerMonitoringData,
+    ContainerBookingExportItem,
     MonitoredContainerVessel,
     ContainerOperationsReport,
     NotArrivedContainerItem,
@@ -312,9 +313,9 @@ export const addContainerVessel = async (manifestId: string): Promise<void> => {
 /**
  * Remover una nave del monitoreo de contenedores
  */
-export const removeContainerVessel = async (manifestId: string): Promise<void> => {
+export const removeContainerVessel = async (carrierVisitGkey: number): Promise<void> => {
     const response = await del('/monitoring/containers/vessels', {
-        manifest_id: manifestId,
+        carrier_visit_gkey: carrierVisitGkey,
     });
     if (!response.ok) {
         const data = await response.json();
@@ -358,13 +359,13 @@ export const createContainerVesselsSSE = (
  * Crear conexión SSE para recibir datos de monitoreo de contenedores de una nave
  */
 export const createContainerDataSSE = (
-    manifestId: string,
+    carrierVisitGkey: number,
     onData: (data: ContainerMonitoringData) => void,
     onError?: (error: Error) => void,
     onStatusChange?: (status: SSEConnectionStatus) => void,
 ): SSEConnection => {
     const eventSource = createAuthSSE(
-        `/monitoring/containers/stream?manifest_id=${encodeURIComponent(manifestId)}`
+        `/monitoring/containers/stream?carrier_visit_gkey=${encodeURIComponent(carrierVisitGkey)}`
     );
 
     eventSource.onmessage = (event) => {
@@ -394,10 +395,10 @@ export const createContainerDataSSE = (
  * Obtener datos del reporte operacional de contenedores para exportación Excel
  */
 export const getContainerOperationsReport = async (
-    manifestId: string,
+    carrierVisitGkey: number,
 ): Promise<ContainerOperationsReport> => {
     const response = await get(
-        `/monitoring/containers/export-data?manifest_id=${encodeURIComponent(manifestId)}`,
+        `/monitoring/containers/export-data?carrier_visit_gkey=${encodeURIComponent(carrierVisitGkey)}`,
     );
 
     const result = await response.json();
@@ -413,10 +414,10 @@ export const getContainerOperationsReport = async (
  * Obtener contenedores faltantes por llegar para un manifiesto.
  */
 export const getNotArrivedContainersByManifest = async (
-    manifestId: string,
+    carrierVisitGkey: number,
 ): Promise<NotArrivedContainerItem[]> => {
     const response = await get(
-        `/monitoring/containers/not-arrived?manifest_id=${encodeURIComponent(manifestId)}`,
+        `/monitoring/containers/not-arrived?carrier_visit_gkey=${encodeURIComponent(carrierVisitGkey)}`,
     );
 
     const result = await response.json();
@@ -426,5 +427,18 @@ export const getNotArrivedContainersByManifest = async (
     }
 
     return (result.data ?? []) as NotArrivedContainerItem[];
+};
+
+export const getContainerBookingExport = async (
+    carrierVisitGkey: number,
+): Promise<ContainerBookingExportItem[]> => {
+    const response = await get(
+        `/monitoring/containers/booking-export-data?carrier_visit_gkey=${encodeURIComponent(carrierVisitGkey)}`,
+    );
+    const result = await response.json();
+    if (!response.ok) {
+        throw new Error(result.message || result.error || 'Error al obtener reservas de embarque');
+    }
+    return (result.data ?? []) as ContainerBookingExportItem[];
 };
 
