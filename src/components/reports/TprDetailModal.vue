@@ -187,6 +187,7 @@ function formatDate(value: string): string {
   return Number.isNaN(date.getTime())
     ? value
     : date.toLocaleString('es-PE', {
+      timeZone: 'UTC',
       dateStyle: 'short',
       timeStyle: 'medium',
     });

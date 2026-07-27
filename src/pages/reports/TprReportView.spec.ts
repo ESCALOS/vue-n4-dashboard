@@ -142,6 +142,8 @@ describe('TprReportView', () => {
     ]);
     expect(wrapper.text()).toContain('2026-100');
     expect(wrapper.text()).toContain('TEST VESSEL');
+    expect(wrapper.text()).toContain('3:00:00 p. m.');
+    expect(wrapper.text()).not.toContain('10:00:00 a. m.');
   });
 
   it('preserves the row order received from the backend', async () => {
