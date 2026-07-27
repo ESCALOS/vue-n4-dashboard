@@ -35,7 +35,14 @@ describe('TprReportView', () => {
           hasDetails: true,
         },
         {
-          uniqueId: '5X321220BDRY40FT',
+          uniqueId: '5X101000BDUMSDUM',
+          accountDescription: 'Container Vessel calls',
+          total: 10,
+          reportType: 'CONTAINER_VESSEL',
+          hasDetails: false,
+        },
+        {
+          uniqueId: '5X321120BDRY40FT',
           accountDescription: "Truck OUT Local Empty Dry 40'",
           total: 0,
           reportType: 'TRUCK_IN_OUT',
@@ -74,20 +81,43 @@ describe('TprReportView', () => {
     await flushPromises();
 
     const rows = wrapper.findAll('tbody tr');
-    expect(rows).toHaveLength(3);
-    const [positiveRow, zeroRow, defaultRow] = rows;
-    if (!positiveRow || !zeroRow || !defaultRow) {
-      throw new Error('Expected positive, zero-total and default rows');
+    expect(rows).toHaveLength(4);
+    const [positiveRow, vesselCallsRow, zeroRow, defaultRow] = rows;
+    if (!positiveRow || !vesselCallsRow || !zeroRow || !defaultRow) {
+      throw new Error(
+        'Expected positive, Vessel calls, zero-total and default rows',
+      );
     }
     expect(positiveRow.classes()).toContain('interactive');
     expect(positiveRow.attributes('tabindex')).toBe('0');
+    expect(vesselCallsRow.classes()).toContain('non-interactive');
+    expect(vesselCallsRow.attributes('tabindex')).toBeUndefined();
     expect(zeroRow.classes()).toContain('non-interactive');
     expect(zeroRow.attributes('tabindex')).toBeUndefined();
     expect(defaultRow.classes()).toContain('non-interactive');
     expect(defaultRow.attributes('title')).toBe('Sin registros para mostrar');
 
+    await vesselCallsRow.trigger('click');
     await zeroRow.trigger('click');
     await defaultRow.trigger('click');
     expect(wrapper.find('dialog').exists()).toBe(false);
+  });
+
+  it('preserves the row order received from the backend', async () => {
+    const wrapper = mount(TprReportView);
+
+    await wrapper.get('.button-primary').trigger('click');
+    await flushPromises();
+
+    expect(
+      wrapper
+        .findAll('tbody .unique-id')
+        .map((cell) => cell.text()),
+    ).toEqual([
+      '5X111110BDRY20FT',
+      '5X101000BDUMSDUM',
+      '5X321120BDRY40FT',
+      '71010001',
+    ]);
   });
 });
