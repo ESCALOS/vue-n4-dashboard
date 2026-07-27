@@ -9,6 +9,7 @@ const PendingAppointmentsView = () => import('./pages/appointments/PendingAppoin
 const InProgressAppointmentsView = () => import('./pages/appointments/InProgressAppointmentsView.vue');
 const GeneralCargoInProgressAppointmentsView = () => import('./pages/appointments/GeneralCargoInProgressAppointmentsView.vue');
 const UsersView = () => import('./pages/admin/UsersView.vue');
+const TprReportView = () => import('./pages/reports/TprReportView.vue');
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,6 +48,11 @@ const router = createRouter({
             path: '/citas/en-proceso/carga-general',
             name: 'general-cargo-in-progress-appointments',
             component: GeneralCargoInProgressAppointmentsView
+        },
+        {
+            path: '/reportes/tpr',
+            name: 'tpr-report',
+            component: TprReportView,
         },
         {
             path: '/admin/usuarios',

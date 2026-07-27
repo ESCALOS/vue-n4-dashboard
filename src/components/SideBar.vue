@@ -162,6 +162,35 @@
             </ul>
           </div>
 
+          <!-- Reportes Section -->
+          <div class="nav-section" :class="{ 'is-expanded': !isCollapsed }">
+            <h2
+              class="section-title"
+              :class="{ 'desktop-visible': !isCollapsed }"
+            >
+              Reportes
+            </h2>
+            <div class="section-divider" :class="{ 'desktop-hidden': !isCollapsed }"></div>
+            <ul class="nav-list">
+              <li>
+                <router-link
+                  to="/reportes/tpr"
+                  @click="closeSidebarOnMobile"
+                  :class="[
+                    'nav-link',
+                    { 'is-expanded': !isCollapsed }
+                  ]"
+                  active-class="is-active"
+                >
+                  <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6m4 6V7m4 10v-3M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
+                  </svg>
+                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">Reporte TPR</span>
+                </router-link>
+              </li>
+            </ul>
+          </div>
+
           <!-- Administración Section (Admin only) -->
           <div v-if="authStore.isAdmin" class="nav-section" :class="{ 'is-expanded': !isCollapsed }">
             <h2 
