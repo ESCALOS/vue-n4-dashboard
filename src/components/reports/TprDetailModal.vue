@@ -26,7 +26,24 @@
     </p>
 
     <div v-else class="table-wrapper">
-      <table>
+      <table v-if="detail.detailKind === 'VESSEL_CALLS'" class="vessel-calls-table">
+        <thead>
+          <tr>
+            <th>ATD</th>
+            <th>MANIFIESTO</th>
+            <th>NAVE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(row, index) in vesselCallRows" :key="`${row.manifest}-${row.atd}-${index}`">
+            <td>{{ formatDate(row.atd) }}</td>
+            <td>{{ row.manifest }}</td>
+            <td>{{ display(row.vessel) }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table v-else class="movements-table">
         <thead>
           <tr>
             <th>FECHA</th>
@@ -45,7 +62,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(row, index) in detail.rows" :key="`${row.container}-${row.movementDate}-${index}`">
+          <tr v-for="(row, index) in movementRows" :key="`${row.container}-${row.movementDate}-${index}`">
             <td>{{ formatDate(row.movementDate) }}</td>
             <td>{{ row.container }}</td>
             <td>{{ row.operation }}</td>
@@ -89,11 +106,13 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref } from 'vue';
+import { computed, nextTick, onMounted, ref } from 'vue';
 import { tprReportService } from '../../services/tprReportService';
 import type {
   TprDetailResponse,
+  TprDetailRow,
   TprSummaryRow,
+  TprVesselCallDetailRow,
 } from '../../types/reports/TprReport';
 
 const props = defineProps<{
@@ -108,6 +127,16 @@ const loading = ref(false);
 const exporting = ref(false);
 const error = ref('');
 const pageSize = 100;
+const movementRows = computed(() =>
+  detail.value?.detailKind === 'MOVEMENTS'
+    ? detail.value.rows as TprDetailRow[]
+    : [],
+);
+const vesselCallRows = computed(() =>
+  detail.value?.detailKind === 'VESSEL_CALLS'
+    ? detail.value.rows as TprVesselCallDetailRow[]
+    : [],
+);
 
 async function loadPage(page: number) {
   if (!props.topic.reportType) return;
@@ -197,7 +226,9 @@ onMounted(async () => {
 .dialog-toolbar { padding-block: 0.75rem; }
 .detail-meta { display: flex; flex-wrap: wrap; gap: 1rem; color: #94a3b8; font-size: 0.85rem; }
 .table-wrapper { max-height: 58vh; overflow: auto; border-block: 1px solid #273449; }
-table { width: 100%; min-width: 105rem; border-collapse: collapse; }
+table { width: 100%; border-collapse: collapse; }
+.movements-table { min-width: 105rem; }
+.vessel-calls-table { min-width: 40rem; }
 th, td { padding: 0.65rem 0.75rem; border-bottom: 1px solid #1f2937; text-align: left; white-space: nowrap; font-size: 0.78rem; }
 th { position: sticky; top: 0; z-index: 1; color: #cbd5e1; background: #0f172a; }
 tbody tr:nth-child(even) { background: rgba(30, 41, 59, 0.35); }
