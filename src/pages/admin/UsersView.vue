@@ -3,6 +3,8 @@ import { ref, onMounted, computed, watch } from 'vue';
 import { usersService } from '../../services/usersService';
 import type { User, CreateUserPayload, UpdateUserPayload } from '../../services/usersService';
 import { useAuthStore } from '../../stores/auth';
+import { VIEW_DEFINITIONS } from '../../config/viewPrivileges';
+import type { Privilege } from '../../config/viewPrivileges';
 
 const authStore = useAuthStore();
 
@@ -27,6 +29,7 @@ const form = ref({
     password: '',
     name: '',
     role: 'USER' as 'ADMIN' | 'USER',
+    privileges: [] as Privilege[],
     isActive: true,
 });
 
@@ -89,7 +92,7 @@ function openCreate() {
     isEditing.value = false;
     editingUserId.value = null;
     modalError.value = '';
-    form.value = { email: '', password: '', name: '', role: 'USER', isActive: true };
+    form.value = { email: '', password: '', name: '', role: 'USER', privileges: [], isActive: true };
     showModal.value = true;
 }
 
@@ -103,6 +106,7 @@ function openEdit(user: User) {
         password: '',
         name: user.name || '',
         role: user.role,
+        privileges: [...user.privileges],
         isActive: user.isActive,
     };
     showModal.value = true;
@@ -119,6 +123,7 @@ async function handleSave() {
             if (form.value.name) payload.name = form.value.name;
             if (form.value.password) payload.password = form.value.password;
             payload.role = form.value.role;
+            payload.privileges = form.value.role === 'ADMIN' ? [] : form.value.privileges;
             payload.isActive = form.value.isActive;
 
             await usersService.update(editingUserId.value, payload);
@@ -127,6 +132,7 @@ async function handleSave() {
                 email: form.value.email,
                 password: form.value.password,
                 role: form.value.role,
+                privileges: form.value.role === 'ADMIN' ? [] : form.value.privileges,
             };
             if (form.value.name) payload.name = form.value.name;
 
@@ -380,6 +386,19 @@ onMounted(loadUsers);
                                 </select>
                             </div>
                         </div>
+
+                        <fieldset class="privileges-fieldset" :disabled="isSaving || form.role === 'ADMIN'">
+                            <legend class="form-label">Vistas permitidas</legend>
+                            <p v-if="form.role === 'ADMIN'" class="form-hint privileges-hint">
+                                Los administradores tienen acceso total a todas las vistas.
+                            </p>
+                            <div v-else class="privileges-grid">
+                                <label v-for="view in VIEW_DEFINITIONS" :key="view.privilege" class="privilege-option">
+                                    <input v-model="form.privileges" type="checkbox" :value="view.privilege" />
+                                    <span>{{ view.label }}</span>
+                                </label>
+                            </div>
+                        </fieldset>
 
                         <div class="modal-actions">
                             <button type="button" class="btn btn-secondary" @click="showModal = false" :disabled="isSaving">
@@ -910,6 +929,39 @@ onMounted(loadUsers);
 .form-row {
     display: flex;
     gap: 1rem;
+}
+
+.privileges-fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.privileges-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+    margin-top: 0.5rem;
+}
+
+.privilege-option {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.7rem;
+    border: 1px solid #374151;
+    border-radius: 0.5rem;
+    color: #d1d5db;
+    cursor: pointer;
+}
+
+.privilege-option:has(input:checked) {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.12);
+}
+
+.privileges-hint {
+    margin: 0.5rem 0 0;
 }
 
 .modal-actions {

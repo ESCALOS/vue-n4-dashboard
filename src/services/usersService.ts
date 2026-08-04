@@ -1,10 +1,12 @@
 import { get, post, patch, del } from './httpClient';
+import type { Privilege } from '../config/viewPrivileges';
 
 export interface User {
     id: string;
     email: string;
     name: string | null;
     role: 'ADMIN' | 'USER';
+    privileges: Privilege[];
     isActive: boolean;
     createdAt: string;
     updatedAt?: string;
@@ -15,6 +17,7 @@ export interface CreateUserPayload {
     password: string;
     name?: string;
     role?: 'ADMIN' | 'USER';
+    privileges?: Privilege[];
 }
 
 export interface UpdateUserPayload {
@@ -22,6 +25,7 @@ export interface UpdateUserPayload {
     password?: string;
     role?: 'ADMIN' | 'USER';
     isActive?: boolean;
+    privileges?: Privilege[];
 }
 
 export const usersService = {

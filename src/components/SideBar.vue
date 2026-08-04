@@ -38,17 +38,17 @@
           <h1 class="sidebar-logo-title">
             <span class="logo-mobile">
               <img
-              src="/logo-letter.webp"
+              :src="'/logo-letter.webp'"
               alt="logo"
               style="max-height: 4rem; width: auto; margin-left: 0.5rem;"
               />
             </span>
             <span class="logo-desktop">
               <template v-if="isCollapsed">
-                <img src="/icon.png" alt="logo" class="sidebar-logo-img" />
+                <img :src="'/icon.png'" alt="logo" class="sidebar-logo-img" />
               </template>
               <template v-else>
-                <img src="/logo-letter.webp" alt="logo" style="max-height: 4rem; width: auto; padding-top: 0.5rem;" />
+                <img :src="'/logo-letter.webp'" alt="logo" style="max-height: 4rem; width: auto; padding-top: 0.5rem;" />
               </template>
             </span>
           </h1>
@@ -57,18 +57,19 @@
         <!-- Navigation -->
         <nav class="sidebar-nav">
           <!-- Monitoreo de Naves Section -->
-          <div class="nav-section" :class="{ 'is-expanded': !isCollapsed }">
+          <div v-if="hasSection('monitoring')" class="nav-section" :class="{ 'is-expanded': !isCollapsed }">
             <h2 
               class="section-title"
               :class="{ 'desktop-visible': !isCollapsed }"
             >
-              Monitoreo de Naves
+              {{ sectionLabel('monitoring') }}
             </h2>
             <div class="section-divider" :class="{ 'desktop-hidden': !isCollapsed }"></div>
             <ul class="nav-list">
               <li>
                 <router-link
-                  to="/monitoreo/carga-general"
+                  v-if="canAccessView('general-cargo')"
+                  :to="viewDefinition('general-cargo').path"
                   @click="closeSidebarOnMobile"
                   :class="[
                     'nav-link',
@@ -79,12 +80,13 @@
                   <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                   </svg>
-                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">Carga General</span>
+                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">{{ viewDefinition('general-cargo').label }}</span>
                 </router-link>
               </li>
               <li>
                 <router-link
-                  to="/monitoreo/contenedores"
+                  v-if="canAccessView('containers')"
+                  :to="viewDefinition('containers').path"
                   @click="closeSidebarOnMobile"
                   :class="[
                     'nav-link',
@@ -95,25 +97,26 @@
                   <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10m-11 9h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v11a2 2 0 002 2z" />
                   </svg>
-                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">Contenedores</span>
+                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">{{ viewDefinition('containers').label }}</span>
                 </router-link>
               </li>
             </ul>
           </div>
 
           <!-- Citas Section -->
-          <div class="nav-section" :class="{ 'is-expanded': !isCollapsed }">
+          <div v-if="hasSection('appointments')" class="nav-section" :class="{ 'is-expanded': !isCollapsed }">
             <h2 
               class="section-title"
               :class="{ 'desktop-visible': !isCollapsed }"
             >
-              Citas
+              {{ sectionLabel('appointments') }}
             </h2>
             <div class="section-divider" :class="{ 'desktop-hidden': !isCollapsed }"></div>
             <ul class="nav-list">
               <li>
                 <router-link
-                  to="/citas/pendientes"
+                  v-if="canAccessView('pending-appointments')"
+                  :to="viewDefinition('pending-appointments').path"
                   @click="closeSidebarOnMobile"
                   :class="[
                     'nav-link',
@@ -124,12 +127,13 @@
                   <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">Pendientes</span>
+                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">{{ viewDefinition('pending-appointments').label }}</span>
                 </router-link>
               </li>
               <li>
                 <router-link
-                  to="/citas/en-proceso"
+                  v-if="canAccessView('in-progress-appointments')"
+                  :to="viewDefinition('in-progress-appointments').path"
                   @click="closeSidebarOnMobile"
                   :class="[
                     'nav-link',
@@ -140,12 +144,13 @@
                   <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">En Proceso</span>
+                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">{{ viewDefinition('in-progress-appointments').label }}</span>
                 </router-link>
               </li>
               <li>
                 <router-link
-                  to="/citas/en-proceso/carga-general"
+                  v-if="canAccessView('general-cargo-in-progress-appointments')"
+                  :to="viewDefinition('general-cargo-in-progress-appointments').path"
                   @click="closeSidebarOnMobile"
                   :class="[
                     'nav-link',
@@ -156,25 +161,26 @@
                   <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M6 12h12M9 17h6" />
                   </svg>
-                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">En Proceso CG</span>
+                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">{{ viewDefinition('general-cargo-in-progress-appointments').label }}</span>
                 </router-link>
               </li>
             </ul>
           </div>
 
           <!-- Reportes Section -->
-          <div class="nav-section" :class="{ 'is-expanded': !isCollapsed }">
+          <div v-if="hasSection('reports')" class="nav-section" :class="{ 'is-expanded': !isCollapsed }">
             <h2
               class="section-title"
               :class="{ 'desktop-visible': !isCollapsed }"
             >
-              Reportes
+              {{ sectionLabel('reports') }}
             </h2>
             <div class="section-divider" :class="{ 'desktop-hidden': !isCollapsed }"></div>
             <ul class="nav-list">
               <li>
                 <router-link
-                  to="/reportes/tpr"
+                  v-if="canAccessView('tpr-report')"
+                  :to="viewDefinition('tpr-report').path"
                   @click="closeSidebarOnMobile"
                   :class="[
                     'nav-link',
@@ -185,7 +191,7 @@
                   <svg class="nav-icon" :class="{ 'with-margin': !isCollapsed }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6m4 6V7m4 10v-3M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
                   </svg>
-                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">Reporte TPR</span>
+                  <span class="nav-label" :class="{ 'desktop-visible': !isCollapsed }">{{ viewDefinition('tpr-report').label }}</span>
                 </router-link>
               </li>
             </ul>
@@ -257,10 +263,20 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import ChangePasswordModal from './ChangePasswordModal.vue';
+import { VIEW_DEFINITIONS, VIEW_SECTIONS } from '../config/viewPrivileges';
+import type { ViewSection } from '../config/viewPrivileges';
 
 const router = useRouter();
 
 const authStore = useAuthStore();
+
+const viewDefinition = (id: string) => VIEW_DEFINITIONS.find((item) => item.id === id)!;
+const sectionLabel = (section: ViewSection) => VIEW_SECTIONS.find((item) => item.id === section)!.label;
+const canAccessView = (id: string) => authStore.canAccess(viewDefinition(id).privilege);
+
+const hasSection = (section: ViewSection) => VIEW_DEFINITIONS.some(
+  (view) => view.section === section && authStore.canAccess(view.privilege),
+);
 
 const isOpen = ref(false);
 const isCollapsed = ref(true); // Colapsado por defecto en desktop

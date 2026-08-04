@@ -3,6 +3,8 @@ import { ref, computed } from 'vue';
 import { authService } from '../services/authService';
 import { AuthServiceError } from '../services/authService';
 import type { AuthUser } from '../services/authService';
+import { canAccessPrivilege } from '../config/viewPrivileges';
+import type { Privilege } from '../config/viewPrivileges';
 
 const TOKEN_KEY = 'n4_access_token';
 const REFRESH_KEY = 'n4_refresh_token';
@@ -26,10 +28,16 @@ export const useAuthStore = defineStore('auth', () => {
     const accessToken = ref<string | null>(normalizeToken(localStorage.getItem(TOKEN_KEY)));
     const refreshToken = ref<string | null>(normalizeToken(localStorage.getItem(REFRESH_KEY)));
     const user = ref<AuthUser | null>(loadUser());
+    const isUserSynced = ref(false);
 
     // Getters
     const isAuthenticated = computed(() => hasValidTokens(accessToken.value, refreshToken.value));
     const isAdmin = computed(() => user.value?.role === 'ADMIN');
+    const canAccess = (privilege: Privilege) => canAccessPrivilege(
+        user.value?.role,
+        user.value?.privileges,
+        privilege,
+    );
 
     // Helpers
     function loadUser(): AuthUser | null {
@@ -65,6 +73,7 @@ export const useAuthStore = defineStore('auth', () => {
         accessToken.value = null;
         refreshToken.value = null;
         user.value = null;
+        isUserSynced.value = false;
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(REFRESH_KEY);
         localStorage.removeItem(USER_KEY);
@@ -80,6 +89,7 @@ export const useAuthStore = defineStore('auth', () => {
 
         setTokens(response.accessToken, response.refreshToken);
         setUser(response.user);
+        isUserSynced.value = true;
         return response;
     }
 
@@ -98,6 +108,8 @@ export const useAuthStore = defineStore('auth', () => {
                 return false;
             }
             setTokens(response.accessToken, response.refreshToken);
+            setUser(response.user);
+            isUserSynced.value = true;
             return true;
         } catch (error) {
             if (error instanceof AuthServiceError && error.type !== 'auth') {
@@ -106,6 +118,24 @@ export const useAuthStore = defineStore('auth', () => {
             }
 
             clearAuth();
+            return false;
+        }
+    }
+
+    async function syncUser(): Promise<boolean> {
+        if (isUserSynced.value) return true;
+
+        const normalizedAccessToken = normalizeToken(accessToken.value);
+        if (!normalizedAccessToken) return false;
+
+        try {
+            setUser(await authService.me(normalizedAccessToken));
+            isUserSynced.value = true;
+            return true;
+        } catch (error) {
+            if (error instanceof AuthServiceError && error.type === 'auth') {
+                return refresh();
+            }
             return false;
         }
     }
@@ -130,9 +160,11 @@ export const useAuthStore = defineStore('auth', () => {
         // Getters
         isAuthenticated,
         isAdmin,
+        canAccess,
         // Actions
         login,
         refresh,
+        syncUser,
         logout,
     };
 });

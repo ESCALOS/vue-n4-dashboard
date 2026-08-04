@@ -3,6 +3,7 @@ export interface AuthUser {
     email: string;
     name: string | null;
     role: 'ADMIN' | 'USER';
+    privileges: import('../config/viewPrivileges').Privilege[];
 }
 
 export interface LoginResponse {
@@ -14,6 +15,7 @@ export interface LoginResponse {
 export interface RefreshResponse {
     accessToken: string;
     refreshToken: string;
+    user: AuthUser;
 }
 
 export type AuthServiceErrorType = 'network' | 'auth' | 'server';
@@ -118,8 +120,30 @@ export const authService = {
             );
         }
 
-        if (!data?.accessToken || !data?.refreshToken) {
+        if (!data?.accessToken || !data?.refreshToken || !data?.user) {
             throw new AuthServiceError('Respuesta inválida del servidor', 'server', response.status);
+        }
+
+        return data;
+    },
+
+    async me(accessToken: string): Promise<AuthUser> {
+        let response: Response;
+        try {
+            response = await fetch(`${API_BASE_URL}/auth/me`, {
+                headers: { Authorization: `Bearer ${accessToken}` },
+            });
+        } catch {
+            throw new AuthServiceError('No hay conexiÃ³n con el servidor', 'network');
+        }
+
+        const data = await parseJsonSafely<AuthUser & { message?: string }>(response);
+        if (!response.ok || !data) {
+            throw new AuthServiceError(
+                data?.message || 'No se pudo validar la sesiÃ³n',
+                response.status === 401 ? 'auth' : 'server',
+                response.status,
+            );
         }
 
         return data;
