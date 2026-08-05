@@ -50,6 +50,7 @@ defineEmits<{
 const getOperationBadgeClass = (operationType: OperationType): string => {
   const badges: Record<OperationType, string> = {
     DISPATCHING: 'dispatching-badge',
+    DISCHARGING: 'discharging-badge',
     INDIRECT_LOADING: 'indirect-loading-badge',
     STOCKPILING: 'stockpiling-badge',
     DIRECT_LOADING: 'direct-loading-badge'
@@ -126,6 +127,12 @@ const getOperationBadgeClass = (operationType: OperationType): string => {
   background: rgba(59, 130, 246, 0.15);
   color: #3b82f6;
   border-color: rgba(59, 130, 246, 0.3);
+}
+
+.discharging-badge {
+  background: rgba(6, 182, 212, 0.15);
+  color: #06b6d4;
+  border-color: rgba(6, 182, 212, 0.3);
 }
 
 .indirect-loading-badge {

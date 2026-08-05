@@ -33,7 +33,7 @@
         </div>
         
         <div v-if="viewMode === 'goods'" class="detail-row">
-          <span class="detail-label">Descargado:</span>
+          <span class="detail-label">{{ getOperationLabel(operationType) }}:</span>
           <span class="detail-value detail-value-primary">{{ formatNumber(summary.goods.processed.value) }}</span>
         </div>
         
@@ -71,6 +71,7 @@ defineProps<{
 const getOperationLabel = (tipo: OperationType): string => {
   const labels: Record<OperationType, string> = {
     DISPATCHING: 'Despachado',
+    DISCHARGING: 'Descargado',
     STOCKPILING: 'Acopiado',
     DIRECT_LOADING: 'Embarcado',
     INDIRECT_LOADING: 'Embarcado',

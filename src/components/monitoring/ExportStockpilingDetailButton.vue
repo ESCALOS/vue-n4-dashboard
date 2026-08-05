@@ -1,6 +1,6 @@
 <template>
   <button 
-    v-if="vesselData.operation_type === 'STOCKPILING' || vesselData.operation_type === 'DISPATCHING'"
+    v-if="vesselData.operation_type === 'STOCKPILING' || vesselData.operation_type === 'DISPATCHING' || vesselData.operation_type === 'DISCHARGING'"
     @click="handleExport" 
     class="btn btn-export-stockpiling-detail" 
     :disabled="loading || exporting"

@@ -22,6 +22,7 @@ export const getShiftClass = (shift: string): string => {
 export const getOperationLabel = (tipo: OperationType): string => {
     const labels: Record<OperationType, string> = {
         'DISPATCHING': 'Despacho',
+        'DISCHARGING': 'Descarga',
         'INDIRECT_LOADING': 'Embarque Ind.',
         'STOCKPILING': 'Acopio',
         'DIRECT_LOADING': 'Embarque Dir.'

@@ -155,6 +155,7 @@ defineProps<{
 const getOperationLabel = (tipo: OperationType): string => {
   const labels: Record<OperationType, string> = {
     DISPATCHING: '🚚 Despachado',
+    DISCHARGING: '📥 Descargado',
     STOCKPILING: '📦 Acopiado',
     DIRECT_LOADING: '🚢 Embarcado',
     INDIRECT_LOADING: '🚢 Embarcado',

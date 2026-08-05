@@ -66,6 +66,7 @@
           :disabled="loading"
         >
           <option value="DISPATCHING">📦 Despacho</option>
+          <option value="DISCHARGING">📥 Descarga</option>
           <option value="INDIRECT_LOADING">🚢 Embarque Indirecto</option>
           <option value="STOCKPILING">📥 Acopio</option>
           <option value="DIRECT_LOADING">🚢 Embarque Directo</option>
