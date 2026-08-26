@@ -86,6 +86,7 @@ export interface ContainerBookingExportItem {
     fds: string;
     appointment: string;
     booking: string;
+    operator: string;
     container_number: string;
     iso_code: string;
     type: string;

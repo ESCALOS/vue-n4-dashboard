@@ -8,7 +8,7 @@ const getXLSX = async () => {
 };
 
 const HEADERS = [
-    'LINEA', 'MANIFIESTO', 'NAVE', 'POO', 'POL', 'POD', 'FDS', 'CITA',
+    'LINEA', 'MANIFIESTO', 'NAVE', 'POO', 'POL', 'POD', 'FDS', 'CITA', 'OPERADOR',
     'BOOKING NBR', 'CONTAINER NBR', 'ISOCODE', 'TYPE', 'TOTAL', 'STATUS',
     'STATUS2', 'COMMODITY', 'TEMPERATURE', 'Tec. Reefer', 'SHIPPER',
 ];
@@ -20,7 +20,7 @@ export const exportContainerBookingExcel = async (
     const XLSXModule = await getXLSX();
     const rows = items.map((item) => [
         item.line, item.manifest, item.vessel, item.poo, item.pol, item.pod, item.fds,
-        item.appointment, item.booking, item.container_number, item.iso_code, item.type,
+        item.appointment, item.operator, item.booking, item.container_number, item.iso_code, item.type,
         item.total, item.status, item.status2, item.commodity, item.temperature,
         item.reefer_technology, item.shipper,
     ]);
@@ -51,7 +51,8 @@ export const exportContainerBookingExcel = async (
     worksheet['!cols'] = HEADERS.map((header) => ({
         wch: Math.max(12, Math.min(28, header.length + 4)),
     }));
-    worksheet['!autofilter'] = { ref: `A1:S${rows.length + 1}` };
+    const lastColumn = XLSXModule.utils.encode_col(HEADERS.length - 1);
+    worksheet['!autofilter'] = { ref: `A1:${lastColumn}${rows.length + 1}` };
     XLSXModule.utils.book_append_sheet(workbook, worksheet, 'Reservas Embarque');
 
     const date = new Date().toISOString().slice(0, 10);
