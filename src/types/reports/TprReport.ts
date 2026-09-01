@@ -1,6 +1,7 @@
-export type TprReportType = 'ALL' | 'CONTAINER_VESSEL' | 'TRUCK_IN_OUT';
+export type TprReportType = 'ALL' | 'CONTAINER_VESSEL' | 'TRUCK_IN_OUT' | 'PERFORMANCE_EQUIPMENT';
 export type TprDetailReportType = Exclude<TprReportType, 'ALL'>;
-export type TprDetailKind = 'MOVEMENTS' | 'VESSEL_CALLS';
+export type TprDetailKind = 'MOVEMENTS' | 'VESSEL_CALLS' | 'EQUIPMENT_MOVES';
+export type TprEquipmentOwnership = 'ALL' | 'INTERNAL' | 'RENTED';
 
 export interface TprSummaryRow {
   uniqueId: string;
@@ -39,6 +40,12 @@ export interface TprVesselCallDetailRow {
   vessel: string | null;
 }
 
+export interface TprEquipmentDetailRow {
+  equipment: string;
+  ownership: Exclude<TprEquipmentOwnership, 'ALL'>;
+  total: number;
+}
+
 export interface TprDetailResponse {
   period: string;
   reportType: TprDetailReportType;
@@ -47,7 +54,8 @@ export interface TprDetailResponse {
   generatedAt: string;
   cached: boolean;
   detailKind: TprDetailKind;
-  rows: Array<TprDetailRow | TprVesselCallDetailRow>;
+  filteredTotal: number;
+  rows: Array<TprDetailRow | TprVesselCallDetailRow | TprEquipmentDetailRow>;
   pagination: {
     page: number;
     limit: number;

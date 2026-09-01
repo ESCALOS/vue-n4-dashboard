@@ -11,9 +11,18 @@
 
     <div class="dialog-toolbar">
       <div class="detail-meta">
-        <span>Total: <strong>{{ detail?.pagination.total ?? topic.total }}</strong></span>
+        <span>Total general: <strong>{{ topic.total.toLocaleString('es-PE') }}</strong></span>
+        <span v-if="isEquipmentDetail">Subtotal filtrado: <strong>{{ (detail?.filteredTotal ?? 0).toLocaleString('es-PE') }}</strong></span>
         <span v-if="detail">{{ detail.cached ? 'Desde caché' : 'Generado desde N4' }}</span>
       </div>
+      <label v-if="isEquipmentTopic" class="ownership-filter">
+        <span>Tipo de equipo</span>
+        <select v-model="ownership" :disabled="loading" @change="changeOwnership">
+          <option value="ALL">Todos</option>
+          <option value="INTERNAL">Internas</option>
+          <option value="RENTED">Alquiladas</option>
+        </select>
+      </label>
       <button class="button button-primary" :disabled="exporting" @click="exportDetail">
         {{ exporting ? 'Exportando…' : 'Exportar detalle' }}
       </button>
@@ -26,7 +35,18 @@
     </p>
 
     <div v-else class="table-wrapper">
-      <table v-if="detail.detailKind === 'VESSEL_CALLS'" class="vessel-calls-table">
+      <table v-if="detail.detailKind === 'EQUIPMENT_MOVES'" class="equipment-table">
+        <thead><tr><th>EQUIPO</th><th>TIPO</th><th class="numeric">TOTAL MOVIMIENTOS</th></tr></thead>
+        <tbody>
+          <tr v-for="row in equipmentRows" :key="`${row.equipment}-${row.ownership}`">
+            <td>{{ row.equipment }}</td>
+            <td>{{ row.ownership === 'INTERNAL' ? 'Interna' : 'Alquilada' }}</td>
+            <td class="numeric">{{ row.total.toLocaleString('es-PE') }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table v-else-if="detail.detailKind === 'VESSEL_CALLS'" class="vessel-calls-table">
         <thead>
           <tr>
             <th>ATD</th>
@@ -111,6 +131,8 @@ import { tprReportService } from '../../services/tprReportService';
 import type {
   TprDetailResponse,
   TprDetailRow,
+  TprEquipmentDetailRow,
+  TprEquipmentOwnership,
   TprSummaryRow,
   TprVesselCallDetailRow,
 } from '../../types/reports/TprReport';
@@ -127,6 +149,9 @@ const loading = ref(false);
 const exporting = ref(false);
 const error = ref('');
 const pageSize = 100;
+const ownership = ref<TprEquipmentOwnership>('ALL');
+const isEquipmentTopic = computed(() => props.topic.reportType === 'PERFORMANCE_EQUIPMENT');
+const isEquipmentDetail = computed(() => detail.value?.detailKind === 'EQUIPMENT_MOVES');
 const movementRows = computed(() =>
   detail.value?.detailKind === 'MOVEMENTS'
     ? detail.value.rows as TprDetailRow[]
@@ -135,6 +160,11 @@ const movementRows = computed(() =>
 const vesselCallRows = computed(() =>
   detail.value?.detailKind === 'VESSEL_CALLS'
     ? detail.value.rows as TprVesselCallDetailRow[]
+    : [],
+);
+const equipmentRows = computed(() =>
+  detail.value?.detailKind === 'EQUIPMENT_MOVES'
+    ? detail.value.rows as TprEquipmentDetailRow[]
     : [],
 );
 
@@ -149,6 +179,7 @@ async function loadPage(page: number) {
       props.topic.uniqueId,
       page,
       pageSize,
+      ownership.value,
     );
   } catch (reason) {
     error.value = reason instanceof Error ? reason.message : 'Error al cargar el detalle';
@@ -166,12 +197,17 @@ async function exportDetail() {
       props.period,
       props.topic.reportType,
       props.topic.uniqueId,
+      ownership.value,
     );
   } catch (reason) {
     error.value = reason instanceof Error ? reason.message : 'Error al exportar el detalle';
   } finally {
     exporting.value = false;
   }
+}
+
+async function changeOwnership() {
+  await loadPage(1);
 }
 
 function close() {
@@ -224,12 +260,16 @@ onMounted(async () => {
 .eyebrow { margin: 0; color: #60a5fa; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
 .description { margin: 0; color: #94a3b8; font-size: 0.9rem; }
 .icon-button { border: 0; background: transparent; color: #cbd5e1; cursor: pointer; font-size: 1.25rem; }
-.dialog-toolbar { padding-block: 0.75rem; }
+.dialog-toolbar { padding-block: 0.75rem; flex-wrap: wrap; }
 .detail-meta { display: flex; flex-wrap: wrap; gap: 1rem; color: #94a3b8; font-size: 0.85rem; }
+.ownership-filter { display: flex; align-items: center; gap: 0.5rem; color: #cbd5e1; font-size: 0.8rem; }
+.ownership-filter select { padding: 0.45rem 0.65rem; color: #e5e7eb; background: #0f172a; border: 1px solid #334155; border-radius: 0.5rem; }
 .table-wrapper { max-height: 58vh; overflow: auto; border-block: 1px solid #273449; }
 table { width: 100%; border-collapse: collapse; }
 .movements-table { min-width: 105rem; }
 .vessel-calls-table { min-width: 40rem; }
+.equipment-table { min-width: 36rem; }
+.numeric { text-align: right; }
 th, td { padding: 0.65rem 0.75rem; border-bottom: 1px solid #1f2937; text-align: left; white-space: nowrap; font-size: 0.78rem; }
 th { position: sticky; top: 0; z-index: 1; color: #cbd5e1; background: #0f172a; }
 tbody tr:nth-child(even) { background: rgba(30, 41, 59, 0.35); }

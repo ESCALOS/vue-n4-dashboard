@@ -4,7 +4,7 @@
       <div>
         <p class="eyebrow">Reportes</p>
         <h1>Reporte TPR</h1>
-        <p>Totales contables de Container Vessel y Truck IN / OUT.</p>
+        <p>Totales contables de Container Vessel, Truck IN / OUT y Performance Equipment.</p>
       </div>
     </header>
 
@@ -19,6 +19,7 @@
           <option value="ALL">Todos</option>
           <option value="CONTAINER_VESSEL">Container Vessel</option>
           <option value="TRUCK_IN_OUT">Truck IN / OUT</option>
+          <option value="PERFORMANCE_EQUIPMENT">Performance Equipment</option>
         </select>
       </label>
       <label class="search-field">

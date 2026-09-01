@@ -2,6 +2,7 @@ import { get, post } from './httpClient';
 import type {
   TprDetailReportType,
   TprDetailResponse,
+  TprEquipmentOwnership,
   TprReportType,
   TprSummaryResponse,
 } from '../types/reports/TprReport';
@@ -58,6 +59,7 @@ export const tprReportService = {
     uniqueId: string,
     page: number,
     limit: number,
+    ownership: TprEquipmentOwnership = 'ALL',
   ): Promise<TprDetailResponse> {
     const response = await get(`/tpr-reports/details?${queryString({
       period,
@@ -65,6 +67,7 @@ export const tprReportService = {
       uniqueId,
       page,
       limit,
+      ownership,
     })}`);
     await requireOk(response, 'No se pudo consultar el detalle TPR');
     return response.json();
@@ -85,11 +88,13 @@ export const tprReportService = {
     period: string,
     reportType: TprDetailReportType,
     uniqueId: string,
+    ownership: TprEquipmentOwnership = 'ALL',
   ): Promise<void> {
     const response = await get(`/tpr-reports/details/export?${queryString({
       period,
       reportType,
       uniqueId,
+      ownership,
     })}`);
     await download(response, `Reporte_TPR_Detalle_${uniqueId}_${period}.xlsx`);
   },

@@ -33,6 +33,7 @@ describe('TprReportView', () => {
       generatedAt: '2026-07-24T12:00:00.000Z',
       cached: true,
       detailKind: 'VESSEL_CALLS',
+      filteredTotal: 1,
       rows: [
         {
           atd: '2026-07-10T15:00:00.000Z',
@@ -162,5 +163,41 @@ describe('TprReportView', () => {
       '5X321120BDRY40FT',
       '71010001',
     ]);
+  });
+
+  it('shows grouped equipment detail and reloads it with the ownership filter', async () => {
+    getSummary.mockResolvedValueOnce({
+      period: '2026-07', generatedAt: '2026-07-24T12:00:00.000Z', cached: false,
+      rows: [{
+        uniqueId: '81013073',
+        accountDescription: 'Performance Equipment RST Total Moves',
+        total: 12,
+        reportType: 'PERFORMANCE_EQUIPMENT',
+        hasDetails: true,
+      }],
+    });
+    getDetails.mockResolvedValue({
+      period: '2026-07', reportType: 'PERFORMANCE_EQUIPMENT', uniqueId: '81013073',
+      accountDescription: 'Performance Equipment RST Total Moves', generatedAt: '2026-07-24T12:00:00.000Z',
+      cached: false, detailKind: 'EQUIPMENT_MOVES', filteredTotal: 7,
+      rows: [{ equipment: 'RS06', ownership: 'RENTED', total: 7 }],
+      pagination: { page: 1, limit: 100, total: 1, totalPages: 1 },
+    });
+    const wrapper = mount(TprReportView);
+    await wrapper.get('input[type="month"]').setValue('2026-07');
+    await wrapper.get('.button-primary').trigger('click');
+    await flushPromises();
+    await wrapper.get('tbody tr').trigger('click');
+    await flushPromises();
+
+    expect(wrapper.findAll('dialog th').map((header) => header.text())).toEqual([
+      'EQUIPO', 'TIPO', 'TOTAL MOVIMIENTOS',
+    ]);
+    expect(wrapper.text()).toContain('Subtotal filtrado: 7');
+    await wrapper.get('.ownership-filter select').setValue('RENTED');
+    await flushPromises();
+    expect(getDetails).toHaveBeenLastCalledWith(
+      '2026-07', 'PERFORMANCE_EQUIPMENT', '81013073', 1, 100, 'RENTED',
+    );
   });
 });
