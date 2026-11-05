@@ -33,7 +33,15 @@
             <td class="td-mono">{{ item.position }}</td>
           </tr>
           <tr v-if="!containers.length">
-            <td colspan="7" class="td-empty">No se encontraron contenedores</td>
+            <td colspan="7" class="td-empty">
+              <div class="empty-state">
+                <div class="empty-state-icon">⌕</div>
+                <div class="empty-state-copy">
+                  <strong>No se encontraron contenedores</strong>
+                  <span>Prueba con otros filtros o limpia la búsqueda actual.</span>
+                </div>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -164,9 +172,48 @@ const statusClassName = (status: ContainerOperationStatus): string => {
 }
 
 .td-empty {
-  padding: 1.5rem;
+  padding: 1.25rem 1rem;
   text-align: center;
-  color: #475569;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: #94a3b8;
+  padding: 0.5rem 0;
+}
+
+.empty-state-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.12);
+  color: #cbd5e1;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.empty-state-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.empty-state-copy strong {
+  color: #e2e8f0;
+  font-size: 0.875rem;
+}
+
+.empty-state-copy span {
+  color: #94a3b8;
+  font-size: 0.75rem;
+  margin-top: 0.15rem;
 }
 
 /* Status badges */

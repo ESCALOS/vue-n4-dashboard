@@ -25,6 +25,7 @@ export function useContainerMonitoring() {
     const statusFilter = ref<string>('');
     const isoFilter = ref('');
     const sizeFilter = ref<number | null>(null);
+    const containerFilter = ref('');
     const positionFilter = ref('');
 
     // SSE connections
@@ -93,6 +94,10 @@ export function useContainerMonitoring() {
         }
         if (sizeFilter.value !== null) {
             result = result.filter((c) => c.size === sizeFilter.value);
+        }
+        if (containerFilter.value.trim()) {
+            const query = containerFilter.value.trim().toLowerCase();
+            result = result.filter((c) => c.container_number.toLowerCase().includes(query));
         }
         if (positionFilter.value.trim()) {
             const query = positionFilter.value.trim().toLowerCase();
@@ -163,6 +168,7 @@ export function useContainerMonitoring() {
         statusFilter.value = '';
         isoFilter.value = '';
         sizeFilter.value = null;
+        containerFilter.value = '';
         positionFilter.value = '';
 
         dataSSE = createContainerDataSSE(
@@ -256,6 +262,7 @@ export function useContainerMonitoring() {
         statusFilter.value = '';
         isoFilter.value = '';
         sizeFilter.value = null;
+        containerFilter.value = '';
         positionFilter.value = '';
     };
 
@@ -291,6 +298,7 @@ export function useContainerMonitoring() {
         statusFilter,
         isoFilter,
         sizeFilter,
+        containerFilter,
         positionFilter,
         availableBays,
         availableIsos,

@@ -61,6 +61,17 @@
     </div>
 
     <div class="form-group">
+      <label class="form-label">Contenedor</label>
+      <input
+        :value="containerFilter"
+        type="text"
+        class="form-input"
+        placeholder="Ej: CAIU..."
+        @input="$emit('update:containerFilter', ($event.target as HTMLInputElement).value)"
+      />
+    </div>
+
+    <div class="form-group">
       <label class="form-label">Posición</label>
       <input
         :value="positionFilter"
@@ -83,6 +94,7 @@ defineProps<{
   statusFilter: string;
   isoFilter: string;
   sizeFilter: number | null;
+  containerFilter: string;
   positionFilter: string;
   availableBays: number[];
   availableIsos: string[];
@@ -94,6 +106,7 @@ defineEmits<{
   'update:statusFilter': [value: string];
   'update:isoFilter': [value: string];
   'update:sizeFilter': [value: number | null];
+  'update:containerFilter': [value: string];
   'update:positionFilter': [value: string];
   'clear-filters': [];
 }>();
@@ -201,7 +214,7 @@ const parseSelect = (event: Event): number | null => {
 
 @media (min-width: 768px) {
   .filters-bar {
-    grid-template-columns: repeat(5, 1fr) auto;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) auto;
   }
 }
 </style>
