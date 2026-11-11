@@ -3,43 +3,20 @@
     <table class="data-table appointments-table">
       <thead>
         <tr>
-          <th class="col-cita">Cita</th>
-          <th class="col-fecha">Fecha Cita</th>
-          <th class="col-fecha">Fecha Stage</th>
-          <th class="col-stage">Stage</th>
-          <th class="col-tiempo">
-            <div class="header-tiempo">
-              <div>Tiempo</div>
-              <div>Atención</div>
-            </div>
+          <th v-for="column in columns" :key="column.key" :class="column.className"
+            :aria-sort="sortKey === column.key ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'">
+            <button type="button" class="sort-button" @click="toggleSort(column.key)"
+              :title="sortKey === column.key ? (sortDirection === 'asc' ? 'Ordenar descendente' : 'Restablecer orden original') : 'Ordenar ascendente'">
+              <span>{{ column.label }}</span>
+              <span class="sort-indicator" :class="{ active: sortKey === column.key }" aria-hidden="true">{{ sortKey === column.key ? (sortDirection === 'asc' ? '↑' : '↓') : '↕' }}</span>
+            </button>
           </th>
-          <th class="col-tiempo">
-            <div class="header-tiempo">
-              <div>Tiempo</div>
-              <div>Stage</div>
-            </div>
-          </th>
-          <th class="col-linea">Línea</th>
-          <th class="col-booking">Booking</th>
-          <th class="col-tecnologia">Tec.</th>
-          <th class="col-puerto">
-            <div class="header-puerto">
-              <div>Puerto</div>
-              <div>Descarga</div>
-            </div>
-          </th>
-          <th class="col-placa">Placa</th>
-          <th class="col-cliente">Cliente</th>
-          <th class="col-producto">Producto</th>
-          <th class="col-contenedor">Contenedor</th>
-          <th class="col-nave">Nave</th>
-          <th class="col-tipo">Tipo</th>
           <!-- <th class="col-acciones">Acciones</th> -->
         </tr>
       </thead>
       <tbody>
         <tr v-if="appointments.length === 0">
-          <td colspan="17" class="empty-row">
+          <td :colspan="columns.length" class="empty-row">
             <div class="empty-state">
               <svg class="empty-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -49,7 +26,7 @@
             </div>
           </td>
         </tr>
-        <tr v-for="appt in appointments" :key="appt.cita" class="appointment-row">
+        <tr v-for="appt in sortedAppointments" :key="appt.cita" class="appointment-row">
           <td class="cell-cita">{{ appt.cita || '—' }}</td>
           <td class="cell-fecha">{{ formatFecha(appt.fechaCita) }}</td>
           <td class="cell-fecha">{{ formatFecha(appt.fechaStage) }}</td>
@@ -98,9 +75,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue';
+import { STAGE_ORDER } from '../../../types/appointments/AppointmentInProgress';
 import type { AppointmentInProgress } from '../../../types/appointments/AppointmentInProgress';
 
-defineProps<{
+const props = defineProps<{
   appointments: AppointmentInProgress[];
   formatFecha: (fecha: string | null) => string;
   formatTiempo: (minutos: number | null) => string;
@@ -113,9 +92,135 @@ defineProps<{
   onPrintEir: (appointment: AppointmentInProgress) => void;
   printingAppointmentId: string | null;
 }>();
+
+type SortKey = keyof AppointmentInProgress | 'tiempoAtencion' | 'tiempoStage';
+const columns: { key: SortKey; label: string; className: string }[] = [
+  {
+    "key": "cita",
+    "label": "Cita",
+    "className": "col-cita"
+  },
+  {
+    "key": "fechaCita",
+    "label": "Fecha Cita",
+    "className": "col-fecha"
+  },
+  {
+    "key": "fechaStage",
+    "label": "Fecha Stage",
+    "className": "col-fecha"
+  },
+  {
+    "key": "stage",
+    "label": "Stage",
+    "className": "col-stage"
+  },
+  {
+    "key": "tiempoAtencion",
+    "label": "Tiempo Atención",
+    "className": "col-tiempo"
+  },
+  {
+    "key": "tiempoStage",
+    "label": "Tiempo Stage",
+    "className": "col-tiempo"
+  },
+  {
+    "key": "linea",
+    "label": "Línea",
+    "className": "col-linea"
+  },
+  {
+    "key": "booking",
+    "label": "Booking",
+    "className": "col-booking"
+  },
+  {
+    "key": "tecnologia",
+    "label": "Tec.",
+    "className": "col-tecnologia"
+  },
+  {
+    "key": "puertoDescarga",
+    "label": "Puerto Descarga",
+    "className": "col-puerto"
+  },
+  {
+    "key": "placa",
+    "label": "Placa",
+    "className": "col-placa"
+  },
+  {
+    "key": "cliente",
+    "label": "Cliente",
+    "className": "col-cliente"
+  },
+  {
+    "key": "producto",
+    "label": "Producto",
+    "className": "col-producto"
+  },
+  {
+    "key": "contenedor",
+    "label": "Contenedor",
+    "className": "col-contenedor"
+  },
+  {
+    "key": "nave",
+    "label": "Nave",
+    "className": "col-nave"
+  },
+  {
+    "key": "tipo",
+    "label": "Tipo",
+    "className": "col-tipo"
+  }
+];
+const sortKey = ref<SortKey | null>(null);
+const sortDirection = ref<'asc' | 'desc'>('asc');
+const collator = new Intl.Collator('es', { numeric: true, sensitivity: 'base' });
+function toggleSort(key: SortKey) {
+  if (sortKey.value !== key) {
+    sortKey.value = key;
+    sortDirection.value = 'asc';
+  } else if (sortDirection.value === 'asc') sortDirection.value = 'desc';
+  else sortKey.value = null;
+}
+function getSortValue(appointment: AppointmentInProgress, key: SortKey): string | number | null {
+  let value: string | number | boolean | null;
+  if (key === 'tiempoAtencion') value = props.getTiempoAtencion(appointment);
+  else if (key === 'tiempoStage') value = props.getTiempoStage(appointment);
+  else if (key === 'fechaCita' || key === 'fechaStage') {
+    const date = appointment[key];
+    value = date ? Date.parse(date) : null;
+  } else if (key === 'stage') value = STAGE_ORDER[appointment.stage] ?? props.getStageLabel(appointment.stage);
+  else value = appointment[key];
+  if (value == null || (typeof value === 'number' && !Number.isFinite(value))) return null;
+  if ((key === 'tiempoAtencion' || key === 'tiempoStage') && typeof value === 'number' && value < 0) return null;
+  return typeof value === 'string' ? value.trim() || null : typeof value === 'boolean' ? Number(value) : value;
+}
+const sortedAppointments = computed(() => {
+  const key = sortKey.value;
+  if (!key) return props.appointments;
+  const direction = sortDirection.value === 'asc' ? 1 : -1;
+  return props.appointments.map(appointment => ({ appointment, value: getSortValue(appointment, key) }))
+    .sort((a, b) => {
+      // Missing values stay last regardless of direction; do not mutate the stream data.
+      if (a.value === null) return b.value === null ? 0 : 1;
+      if (b.value === null) return -1;
+      return direction * (typeof a.value === 'number' && typeof b.value === 'number'
+        ? a.value - b.value : collator.compare(String(a.value), String(b.value)));
+    }).map(({ appointment }) => appointment);
+});
 </script>
 
 <style scoped>
+.sort-button { display: flex; align-items: center; gap: 0.35rem; width: 100%; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; text-transform: inherit; letter-spacing: inherit; text-align: inherit; cursor: pointer; }
+.sort-button:hover, .sort-button:focus-visible, .sort-indicator.active { color: #93c5fd; }
+.sort-button:focus-visible { outline: 2px solid #60a5fa; outline-offset: 4px; }
+.sort-indicator { color: #64748b; }
+.col-tiempo .sort-button > span:first-child, .col-puerto .sort-button > span:first-child { white-space: normal; text-align: center; }
+
 .table-container {
   overflow-x: auto;
   border-radius: 0.5rem;
