@@ -30,13 +30,13 @@ export function useAppointmentsInProgress() {
     });
 
     // Filters
-    const filterNave = ref('');
-    const filterLinea = ref('');
-    const filterCliente = ref('');
-    const filterTecnologia = ref('');
-    const filterProducto = ref('');
-    const filterStage = ref('');
-    const filterTipo = ref('');
+    const filterNave = ref<string[]>([]);
+    const filterLinea = ref<string[]>([]);
+    const filterCliente = ref<string[]>([]);
+    const filterTecnologia = ref<string[]>([]);
+    const filterProducto = ref<string[]>([]);
+    const filterStage = ref<string[]>([]);
+    const filterTipo = ref<string[]>([]);
     const searchQuery = ref('');
 
     let eventSource: SSEConnection | null = null;
@@ -73,26 +73,26 @@ export function useAppointmentsInProgress() {
     const filteredAppointments = computed(() => {
         let data = appointments.value;
 
-        if (filterNave.value) {
-            data = data.filter((a) => a.nave === filterNave.value);
+        if (filterNave.value.length) {
+            data = data.filter((a) => filterNave.value.includes(a.nave));
         }
-        if (filterLinea.value) {
-            data = data.filter((a) => a.linea === filterLinea.value);
+        if (filterLinea.value.length) {
+            data = data.filter((a) => filterLinea.value.includes(a.linea));
         }
-        if (filterCliente.value) {
-            data = data.filter((a) => a.cliente === filterCliente.value);
+        if (filterCliente.value.length) {
+            data = data.filter((a) => filterCliente.value.includes(a.cliente));
         }
-        if (filterTecnologia.value) {
-            data = data.filter((a) => a.tecnologia === filterTecnologia.value);
+        if (filterTecnologia.value.length) {
+            data = data.filter((a) => filterTecnologia.value.includes(a.tecnologia));
         }
-        if (filterProducto.value) {
-            data = data.filter((a) => a.producto === filterProducto.value);
+        if (filterProducto.value.length) {
+            data = data.filter((a) => filterProducto.value.includes(a.producto));
         }
-        if (filterStage.value) {
-            data = data.filter((a) => a.stage === filterStage.value);
+        if (filterStage.value.length) {
+            data = data.filter((a) => filterStage.value.includes(a.stage));
         }
-        if (filterTipo.value) {
-            data = data.filter((a) => a.tipo === filterTipo.value);
+        if (filterTipo.value.length) {
+            data = data.filter((a) => filterTipo.value.includes(a.tipo));
         }
         if (searchQuery.value) {
             const q = searchQuery.value.toLowerCase();
@@ -109,22 +109,22 @@ export function useAppointmentsInProgress() {
     });
 
     const hasActiveFilters = computed(() =>
-        !!(filterNave.value || filterLinea.value || filterCliente.value ||
-            filterTecnologia.value || filterProducto.value || filterStage.value ||
-            filterTipo.value || searchQuery.value),
+        !!(filterNave.value.length || filterLinea.value.length || filterCliente.value.length ||
+            filterTecnologia.value.length || filterProducto.value.length || filterStage.value.length ||
+            filterTipo.value.length || searchQuery.value),
     );
 
     // ============================================
     // METHODS
     // ============================================
     function clearFilters() {
-        filterNave.value = '';
-        filterLinea.value = '';
-        filterCliente.value = '';
-        filterTecnologia.value = '';
-        filterProducto.value = '';
-        filterStage.value = '';
-        filterTipo.value = '';
+        filterNave.value = [];
+        filterLinea.value = [];
+        filterCliente.value = [];
+        filterTecnologia.value = [];
+        filterProducto.value = [];
+        filterStage.value = [];
+        filterTipo.value = [];
         searchQuery.value = '';
     }
 

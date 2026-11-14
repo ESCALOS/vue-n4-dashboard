@@ -24,13 +24,13 @@ export function usePendingAppointments() {
     });
 
     // Filters
-    const filterNave = ref('');
-    const filterLinea = ref('');
-    const filterCliente = ref('');
-    const filterTecnologia = ref('');
-    const filterProducto = ref('');
-    const filterTipo = ref('');
-    const filterEstado = ref('');
+    const filterNave = ref<string[]>([]);
+    const filterLinea = ref<string[]>([]);
+    const filterCliente = ref<string[]>([]);
+    const filterTecnologia = ref<string[]>([]);
+    const filterProducto = ref<string[]>([]);
+    const filterTipo = ref<string[]>([]);
+    const filterEstado = ref<string[]>([]);
     const searchQuery = ref('');
     const hideExpired = ref(false);
 
@@ -73,26 +73,26 @@ export function usePendingAppointments() {
             data = data.filter((a) => a.estado !== 'vencida');
         }
 
-        if (filterNave.value) {
-            data = data.filter((a) => a.nave === filterNave.value);
+        if (filterNave.value.length) {
+            data = data.filter((a) => filterNave.value.includes(a.nave));
         }
-        if (filterLinea.value) {
-            data = data.filter((a) => a.linea === filterLinea.value);
+        if (filterLinea.value.length) {
+            data = data.filter((a) => filterLinea.value.includes(a.linea));
         }
-        if (filterCliente.value) {
-            data = data.filter((a) => a.cliente === filterCliente.value);
+        if (filterCliente.value.length) {
+            data = data.filter((a) => filterCliente.value.includes(a.cliente));
         }
-        if (filterTecnologia.value) {
-            data = data.filter((a) => a.tecnologia === filterTecnologia.value);
+        if (filterTecnologia.value.length) {
+            data = data.filter((a) => filterTecnologia.value.includes(a.tecnologia));
         }
-        if (filterProducto.value) {
-            data = data.filter((a) => a.producto === filterProducto.value);
+        if (filterProducto.value.length) {
+            data = data.filter((a) => filterProducto.value.includes(a.producto));
         }
-        if (filterTipo.value) {
-            data = data.filter((a) => a.tipo === filterTipo.value);
+        if (filterTipo.value.length) {
+            data = data.filter((a) => filterTipo.value.includes(a.tipo));
         }
-        if (filterEstado.value) {
-            data = data.filter((a) => a.estado === filterEstado.value);
+        if (filterEstado.value.length) {
+            data = data.filter((a) => filterEstado.value.includes(a.estado));
         }
         if (searchQuery.value) {
             const q = searchQuery.value.toLowerCase();
@@ -109,22 +109,22 @@ export function usePendingAppointments() {
     });
 
     const hasActiveFilters = computed(() =>
-        !!(filterNave.value || filterLinea.value || filterCliente.value ||
-            filterTecnologia.value || filterProducto.value ||
-            filterTipo.value || filterEstado.value || searchQuery.value || hideExpired.value),
+        !!(filterNave.value.length || filterLinea.value.length || filterCliente.value.length ||
+            filterTecnologia.value.length || filterProducto.value.length ||
+            filterTipo.value.length || filterEstado.value.length || searchQuery.value || hideExpired.value),
     );
 
     // ============================================
     // METHODS
     // ============================================
     function clearFilters() {
-        filterNave.value = '';
-        filterLinea.value = '';
-        filterCliente.value = '';
-        filterTecnologia.value = '';
-        filterProducto.value = '';
-        filterTipo.value = '';
-        filterEstado.value = '';
+        filterNave.value = [];
+        filterLinea.value = [];
+        filterCliente.value = [];
+        filterTecnologia.value = [];
+        filterProducto.value = [];
+        filterTipo.value = [];
+        filterEstado.value = [];
         searchQuery.value = '';
         hideExpired.value = false;
     }

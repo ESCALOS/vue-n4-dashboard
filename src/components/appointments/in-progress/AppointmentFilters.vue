@@ -12,47 +12,26 @@
 
     <!-- Selects -->
     <div class="filter-selects">
-      <select :value="filterStage" @change="$emit('update:filterStage', ($event.target as HTMLSelectElement).value)"
-        class="filter-select">
-        <option value="">Todos los Stages</option>
-        <option v-for="opt in stageOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
-      </select>
+      <AppointmentMultiSelect :model-value="filterStage" @update:model-value="$emit('update:filterStage', $event)"
+        label="Todos los Stages" :options="stageOptions" />
 
-      <select :value="filterTipo" @change="$emit('update:filterTipo', ($event.target as HTMLSelectElement).value)"
-        class="filter-select">
-        <option value="">Todos los Tipos</option>
-        <option v-for="opt in tipoOptions" :key="opt" :value="opt">{{ opt }}</option>
-      </select>
+      <AppointmentMultiSelect :model-value="filterTipo" @update:model-value="$emit('update:filterTipo', $event)"
+        label="Todos los Tipos" :options="tipoOptions" />
 
-      <select :value="filterLinea" @change="$emit('update:filterLinea', ($event.target as HTMLSelectElement).value)"
-        class="filter-select">
-        <option value="">Todas las Líneas</option>
-        <option v-for="opt in lineaOptions" :key="opt" :value="opt">{{ opt }}</option>
-      </select>
+      <AppointmentMultiSelect :model-value="filterLinea" @update:model-value="$emit('update:filterLinea', $event)"
+        label="Todas las Líneas" :options="lineaOptions" />
 
-      <select :value="filterNave" @change="$emit('update:filterNave', ($event.target as HTMLSelectElement).value)"
-        class="filter-select">
-        <option value="">Todas las Naves</option>
-        <option v-for="opt in naveOptions" :key="opt" :value="opt">{{ opt }}</option>
-      </select>
+      <AppointmentMultiSelect :model-value="filterNave" @update:model-value="$emit('update:filterNave', $event)"
+        label="Todas las Naves" :options="naveOptions" />
 
-      <select :value="filterCliente"
-        @change="$emit('update:filterCliente', ($event.target as HTMLSelectElement).value)" class="filter-select">
-        <option value="">Todos los Clientes</option>
-        <option v-for="opt in clienteOptions" :key="opt" :value="opt">{{ opt }}</option>
-      </select>
+      <AppointmentMultiSelect :model-value="filterCliente" @update:model-value="$emit('update:filterCliente', $event)"
+        label="Todos los Clientes" :options="clienteOptions" />
 
-      <select :value="filterTecnologia"
-        @change="$emit('update:filterTecnologia', ($event.target as HTMLSelectElement).value)" class="filter-select">
-        <option value="">Todas las Tecnologías</option>
-        <option v-for="opt in tecnologiaOptions" :key="opt" :value="opt">{{ opt }}</option>
-      </select>
+      <AppointmentMultiSelect :model-value="filterTecnologia" @update:model-value="$emit('update:filterTecnologia', $event)"
+        label="Todas las Tecnologías" :options="tecnologiaOptions" />
 
-      <select :value="filterProducto"
-        @change="$emit('update:filterProducto', ($event.target as HTMLSelectElement).value)" class="filter-select">
-        <option value="">Todos los Productos</option>
-        <option v-for="opt in productoOptions" :key="opt" :value="opt">{{ opt }}</option>
-      </select>
+      <AppointmentMultiSelect :model-value="filterProducto" @update:model-value="$emit('update:filterProducto', $event)"
+        label="Todos los Productos" :options="productoOptions" />
     </div>
 
     <!-- Clear filters -->
@@ -66,15 +45,16 @@
 </template>
 
 <script setup lang="ts">
+import AppointmentMultiSelect from '../AppointmentMultiSelect.vue';
 defineProps<{
   searchQuery: string;
-  filterStage: string;
-  filterTipo: string;
-  filterLinea: string;
-  filterNave: string;
-  filterCliente: string;
-  filterTecnologia: string;
-  filterProducto: string;
+  filterStage: string[];
+  filterTipo: string[];
+  filterLinea: string[];
+  filterNave: string[];
+  filterCliente: string[];
+  filterTecnologia: string[];
+  filterProducto: string[];
   hasActiveFilters: boolean;
   stageOptions: { value: string; label: string }[];
   tipoOptions: string[];
@@ -87,13 +67,13 @@ defineProps<{
 
 defineEmits<{
   'update:searchQuery': [value: string];
-  'update:filterStage': [value: string];
-  'update:filterTipo': [value: string];
-  'update:filterLinea': [value: string];
-  'update:filterNave': [value: string];
-  'update:filterCliente': [value: string];
-  'update:filterTecnologia': [value: string];
-  'update:filterProducto': [value: string];
+  'update:filterStage': [value: string[]];
+  'update:filterTipo': [value: string[]];
+  'update:filterLinea': [value: string[]];
+  'update:filterNave': [value: string[]];
+  'update:filterCliente': [value: string[]];
+  'update:filterTecnologia': [value: string[]];
+  'update:filterProducto': [value: string[]];
   clearFilters: [];
 }>();
 </script>
