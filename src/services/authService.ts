@@ -1,8 +1,11 @@
+import type { ShippingLine } from '../config/shippingLines';
 export interface AuthUser {
     id: string;
     email: string;
     name: string | null;
     role: 'ADMIN' | 'USER';
+    isInternal?: boolean;
+    allowedLines?: ShippingLine[];
     privileges: import('../config/viewPrivileges').Privilege[];
 }
 

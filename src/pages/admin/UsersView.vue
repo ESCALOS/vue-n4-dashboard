@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { SHIPPING_LINES, type ShippingLine } from '../../config/shippingLines';
 import { ref, onMounted, computed, watch } from 'vue';
 import { usersService } from '../../services/usersService';
 import type { User, CreateUserPayload, UpdateUserPayload } from '../../services/usersService';
@@ -25,6 +26,7 @@ const isSaving = ref(false);
 
 // Form
 const form = ref({
+    isInternal: true, allowedLines: [] as ShippingLine[],
     email: '',
     password: '',
     name: '',
@@ -92,7 +94,7 @@ function openCreate() {
     isEditing.value = false;
     editingUserId.value = null;
     modalError.value = '';
-    form.value = { email: '', password: '', name: '', role: 'USER', privileges: [], isActive: true };
+    form.value = { isInternal: true, allowedLines: [], email: '', password: '', name: '', role: 'USER', privileges: [], isActive: true };
     showModal.value = true;
 }
 
@@ -102,6 +104,7 @@ function openEdit(user: User) {
     editingUserId.value = user.id;
     modalError.value = '';
     form.value = {
+        isInternal: user.isInternal ?? true, allowedLines: [...(user.allowedLines ?? [])],
         email: user.email,
         password: '',
         name: user.name || '',
@@ -115,11 +118,12 @@ function openEdit(user: User) {
 // Save user (create or update)
 async function handleSave() {
     modalError.value = '';
+    if (!form.value.isInternal && !form.value.allowedLines.length) { modalError.value = 'Seleccione al menos una línea'; return; }
     isSaving.value = true;
 
     try {
         if (isEditing.value && editingUserId.value) {
-            const payload: UpdateUserPayload = {};
+            const payload: UpdateUserPayload = { isInternal: form.value.isInternal, allowedLines: form.value.isInternal ? [] : form.value.allowedLines };
             if (form.value.name) payload.name = form.value.name;
             if (form.value.password) payload.password = form.value.password;
             payload.role = form.value.role;
@@ -129,6 +133,7 @@ async function handleSave() {
             await usersService.update(editingUserId.value, payload);
         } else {
             const payload: CreateUserPayload = {
+                isInternal: form.value.isInternal, allowedLines: form.value.isInternal ? [] : form.value.allowedLines,
                 email: form.value.email,
                 password: form.value.password,
                 role: form.value.role,
@@ -245,7 +250,7 @@ onMounted(loadUsers);
                             <th>Usuario</th>
                             <th>Rol</th>
                             <th>Estado</th>
-                            <th>Creado</th>
+                            <th>Líneas</th><th>Creado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -272,6 +277,7 @@ onMounted(loadUsers);
                                     {{ user.isActive ? 'Activo' : 'Inactivo' }}
                                 </span>
                             </td>
+                            <td>{{ user.isInternal !== false ? "Todas" : (user.allowedLines || []).join(", ") }}</td>
                             <td class="date-cell">{{ formatDate(user.createdAt) }}</td>
                             <td>
                                 <div class="action-buttons">
@@ -387,6 +393,15 @@ onMounted(loadUsers);
                             </div>
                         </div>
 
+                        <fieldset :disabled="isSaving" class="privileges-fieldset">
+                            <legend>Acceso a líneas</legend>
+                            <label><input type="checkbox" v-model="form.isInternal" /> Usuario interno (todas las líneas)</label>
+                            <div v-if="!form.isInternal" class="shipping-lines-options">
+                                <label v-for="line in SHIPPING_LINES" :key="line.code" class="shipping-line-option">
+                                    <input type="checkbox" v-model="form.allowedLines" :value="line.code" /> {{ line.code }}
+                                </label>
+                            </div>
+                        </fieldset>
                         <fieldset class="privileges-fieldset" :disabled="isSaving || form.role === 'ADMIN'">
                             <legend class="form-label">Vistas permitidas</legend>
                             <p v-if="form.role === 'ADMIN'" class="form-hint privileges-hint">
@@ -935,6 +950,21 @@ onMounted(loadUsers);
     margin: 0;
     padding: 0;
     border: 0;
+}
+
+.shipping-lines-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+    margin-top: 0.75rem;
+}
+
+.shipping-line-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+    cursor: pointer;
 }
 
 .privileges-grid {

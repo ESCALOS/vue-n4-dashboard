@@ -1,4 +1,7 @@
+import type { ShippingLine } from '../config/shippingLines';
+
 import { get, post, patch, del } from './httpClient';
+
 import type { Privilege } from '../config/viewPrivileges';
 
 export interface User {
@@ -6,6 +9,8 @@ export interface User {
     email: string;
     name: string | null;
     role: 'ADMIN' | 'USER';
+    isInternal?: boolean;
+    allowedLines?: ShippingLine[];
     privileges: Privilege[];
     isActive: boolean;
     createdAt: string;
@@ -17,6 +22,8 @@ export interface CreateUserPayload {
     password: string;
     name?: string;
     role?: 'ADMIN' | 'USER';
+    isInternal?: boolean;
+    allowedLines?: ShippingLine[];
     privileges?: Privilege[];
 }
 
@@ -25,6 +32,8 @@ export interface UpdateUserPayload {
     password?: string;
     role?: 'ADMIN' | 'USER';
     isActive?: boolean;
+    isInternal?: boolean;
+    allowedLines?: ShippingLine[];
     privileges?: Privilege[];
 }
 
