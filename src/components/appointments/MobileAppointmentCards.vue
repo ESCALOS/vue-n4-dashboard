@@ -1,5 +1,5 @@
 <template>
-  <section class="mobile-appointments" :aria-label="mode === 'pending' ? 'Citas pendientes' : 'Citas en proceso'">
+  <section ref="listElement" class="mobile-appointments" :aria-label="mode === 'pending' ? 'Citas pendientes' : 'Citas en proceso'">
     <div v-if="types.length" class="type-legend" aria-label="Leyenda de tipos de cita">
       <span class="legend-label">Tipos de cita</span>
       <ul>
@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts" generic="T extends PendingAppointment | AppointmentInProgress">
-import { computed } from 'vue';
+import { computed, onBeforeUpdate, onUpdated, ref } from 'vue';
 import type { PendingAppointment } from '../../types/appointments/PendingAppointment';
 import type { AppointmentInProgress } from '../../types/appointments/AppointmentInProgress';
 
@@ -81,6 +81,37 @@ defineSlots<{
   status(props: { appointment: T }): unknown;
   times(props: { appointment: T }): unknown;
 }>();
+
+const listElement = ref<HTMLElement | null>(null);
+let previousAppointments = props.appointments;
+let readingAnchor: { element: HTMLElement; top: number } | null = null;
+
+onBeforeUpdate(() => {
+  readingAnchor = null;
+  if (previousAppointments === props.appointments) return;
+  previousAppointments = props.appointments;
+  const list = listElement.value;
+  // Desktop keeps its existing table behavior. At the page top, let new arrivals appear.
+  if (!list || !list.getClientRects().length || window.scrollY <= 0) return;
+  // Anchor to visible content rather than the card top, which may be far above an open detail.
+  const element = Array.from(list.querySelectorAll<HTMLElement>('h3, dt, dd, summary'))
+    .find(node => {
+      const rect = node.getBoundingClientRect();
+      return rect.height > 0 && rect.top >= 0 && rect.top < window.innerHeight;
+    });
+  if (element) readingAnchor = { element, top: element.getBoundingClientRect().top };
+});
+
+onUpdated(() => {
+  const anchor = readingAnchor;
+  readingAnchor = null;
+  if (!anchor?.element.isConnected || !anchor.element.getClientRects().length) return;
+  // Measure after layout so any native browser compensation is already included.
+  const delta = anchor.element.getBoundingClientRect().top - anchor.top;
+  if (Math.abs(delta) > 0.5) {
+    window.scrollBy({ top: delta, left: 0, behavior: 'instant' });
+  }
+});
 
 const normalizeType = (type: string) => (type || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 const isType = (type: string, expected: string) => normalizeType(type) === normalizeType(expected);
@@ -113,7 +144,7 @@ const lineStyle = (line: string) => {
 .mobile-appointments { display: none; }
 
 @media (max-width: 767px) {
-  .mobile-appointments { display: grid; gap: 0.875rem; min-width: 0; }
+  .mobile-appointments { display: grid; gap: 0.875rem; min-width: 0; overflow-anchor: none; }
 }
 
 .type-legend { color: #cbd5e1; font-size: 0.75rem; }
