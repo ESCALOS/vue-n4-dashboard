@@ -1,5 +1,15 @@
 <template>
-  <MobileAppointmentCards :appointments="sortedAppointments" :legend-types="legendTypes" mode="in-progress" :format-fecha="formatFecha">
+  <MobileAppointmentCards :appointments="mobileSortedAppointments" :legend-types="legendTypes" mode="in-progress" :format-fecha="formatFecha" :scroll-reset-key="mobileSort">
+    <template #controls>
+      <label class="mobile-sort">
+        <span>Ordenar por fecha de cita</span>
+        <select v-model="mobileSort">
+          <option value="original">Orden original</option>
+          <option value="asc">Más antiguas primero</option>
+          <option value="desc">Más recientes primero</option>
+        </select>
+      </label>
+    </template>
     <template #status="{ appointment }">
       <span :class="['stage-badge', getStageClass(appointment.stage)]">{{ getStageLabel(appointment.stage) }}</span>
     </template>
@@ -216,10 +226,9 @@ function getSortValue(appointment: AppointmentInProgress, key: SortKey): string 
   if ((key === 'tiempoAtencion' || key === 'tiempoStage') && typeof value === 'number' && value < 0) return null;
   return typeof value === 'string' ? value.trim() || null : typeof value === 'boolean' ? Number(value) : value;
 }
-const sortedAppointments = computed(() => {
-  const key = sortKey.value;
+function sortAppointments(key: SortKey | null, sortDirection: 'asc' | 'desc') {
   if (!key) return props.appointments;
-  const direction = sortDirection.value === 'asc' ? 1 : -1;
+  const direction = sortDirection === 'asc' ? 1 : -1;
   return props.appointments.map(appointment => ({ appointment, value: getSortValue(appointment, key) }))
     .sort((a, b) => {
       // Missing values stay last regardless of direction; do not mutate the stream data.
@@ -228,10 +237,17 @@ const sortedAppointments = computed(() => {
       return direction * (typeof a.value === 'number' && typeof b.value === 'number'
         ? a.value - b.value : collator.compare(String(a.value), String(b.value)));
     }).map(({ appointment }) => appointment);
-});
+}
+const sortedAppointments = computed(() => sortAppointments(sortKey.value, sortDirection.value));
+const mobileSort = ref<'original' | 'asc' | 'desc'>('original');
+const mobileSortedAppointments = computed(() => mobileSort.value === 'original'
+  ? props.appointments : sortAppointments('fechaCita', mobileSort.value));
 </script>
 
 <style scoped>
+.mobile-sort { display: grid; gap: 0.4rem; min-width: 0; color: #cbd5e1; font-size: 0.875rem; }
+.mobile-sort select { width: 100%; min-width: 0; min-height: 48px; box-sizing: border-box; padding: 0.625rem; border: 1px solid #64748b; border-radius: 0.375rem; background: #0f172a; color: #e2e8f0; color-scheme: dark; font: inherit; font-size: max(1rem, 1em); }
+.mobile-sort select:focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; }
 @media (max-width: 767px) {
   .table-container { display: none; }
 }

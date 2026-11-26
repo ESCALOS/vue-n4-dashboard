@@ -20,7 +20,9 @@ describe('mobile appointment cards', () => {
     expect(wrapper.text()).not.toContain('Contenedor');
     expect(wrapper.text()).not.toContain('MSKU1234567');
     expect(wrapper.get('.priority-data .full-width').text()).toContain('ABC-123');
-    expect(wrapper.get('.detail-data').text()).toContain('BK123');
+    expect(wrapper.get('.priority-data').text()).toContain('BK123');
+    expect(wrapper.get('.priority-data').text()).toContain('Reefer');
+    expect(wrapper.get('.detail-data').text()).not.toMatch(/Booking|BK123|Tecnología|Reefer/);
   });
 
   it.each(['pending', 'in-progress'] as const)('omits inapplicable return details in %s, preserving identification and line', (mode) => {
@@ -29,6 +31,7 @@ describe('mobile appointment cards', () => {
     });
     expect(wrapper.get('.line-code').text()).toBe('MSC');
     expect(wrapper.get('.priority-data').text()).toContain('MSKU1234567');
+    expect(wrapper.get('.priority-data').text()).not.toMatch(/Booking|BK123|Tecnología|Reefer/);
     expect(wrapper.get('.detail-data').text()).not.toMatch(/Booking|BK123|Nave|MSC Serena|Producto|Uva fresca|Tecnología|Reefer|Puerto de descarga|RTM/);
     expect(wrapper.get('.detail-data').text()).toContain('Cliente con nombre largo');
     expect(wrapper.get('.detail-data').text()).toContain('CRT-456');

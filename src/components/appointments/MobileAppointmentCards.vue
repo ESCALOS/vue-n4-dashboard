@@ -1,5 +1,6 @@
 <template>
   <section ref="listElement" class="mobile-appointments" :aria-label="mode === 'pending' ? 'Citas pendientes' : 'Citas en proceso'">
+    <slot name="controls" />
     <div v-if="types.length" class="type-legend" aria-label="Leyenda de tipos de cita">
       <span class="legend-label">Tipos de cita</span>
       <ul>
@@ -15,7 +16,8 @@
 
     <article v-for="appointment in appointments" :key="appointment.cita" class="appointment-card">
       <header class="card-heading">
-        <h3>Cita {{ appointment.cita || '—' }}</h3>
+        <h3 v-if="mode === 'in-progress'">{{ appointment.fechaCita && Number.isFinite(Date.parse(appointment.fechaCita)) ? formatFecha(appointment.fechaCita) : 'Sin fecha de cita' }}</h3>
+        <h3 v-else>Cita {{ appointment.cita || '—' }}</h3>
         <span class="line-code" :style="lineStyle(appointment.linea)" :aria-label="`Línea ${appointment.linea || 'N.E.'}`">{{ appointment.linea || 'N.E.' }}</span>
         <span class="appointment-type" :class="typeClass(appointment.tipo)">
           <span class="type-dot" aria-hidden="true"></span>{{ appointment.tipo || 'Otro' }}
@@ -30,6 +32,10 @@
         <div v-if="!isType(appointment.tipo, 'Despacho')">
           <dt>Contenedor</dt><dd>{{ appointment.contenedor || '—' }}</dd>
         </div>
+        <template v-if="!isType(appointment.tipo, 'Devolución')">
+          <div><dt>Booking</dt><dd>{{ appointment.booking || '—' }}</dd></div>
+          <div><dt>Tecnología</dt><dd>{{ appointment.tecnologia || '—' }}</dd></div>
+        </template>
         <div v-if="mode === 'pending'" class="full-width appointment-date">
           <dt>Fecha de cita</dt><dd>{{ formatFecha(appointment.fechaCita) }}</dd>
         </div>
@@ -48,15 +54,13 @@
         <dl class="detail-data">
           <div><dt>Cliente</dt><dd>{{ appointment.cliente || '—' }}</dd></div>
           <template v-if="!isType(appointment.tipo, 'Devolución')">
-            <div><dt>Booking</dt><dd>{{ appointment.booking || '—' }}</dd></div>
             <div><dt>Producto</dt><dd>{{ appointment.producto || '—' }}</dd></div>
-            <div><dt>Tecnología</dt><dd>{{ appointment.tecnologia || '—' }}</dd></div>
             <div><dt>Puerto de descarga</dt><dd>{{ appointment.puertoDescarga || '—' }}</dd></div>
             <div><dt>Nave</dt><dd>{{ appointment.nave || '—' }}</dd></div>
           </template>
           <div><dt>Carreta</dt><dd>{{ appointment.carreta || '—' }}</dd></div>
           <template v-if="mode === 'in-progress'">
-            <div><dt>Fecha de cita</dt><dd>{{ formatFecha(appointment.fechaCita) }}</dd></div>
+            <div><dt>Número de cita</dt><dd>{{ appointment.cita || '—' }}</dd></div>
             <div><dt>Ingreso a etapa</dt><dd>{{ formatFecha('fechaStage' in appointment ? appointment.fechaStage : null) }}</dd></div>
           </template>
         </dl>
@@ -75,19 +79,27 @@ const props = defineProps<{
   legendTypes?: string[];
   mode: 'pending' | 'in-progress';
   formatFecha: (fecha: string | null) => string;
+  scrollResetKey?: string;
 }>();
 
 defineSlots<{
+  controls(): unknown;
   status(props: { appointment: T }): unknown;
   times(props: { appointment: T }): unknown;
 }>();
 
 const listElement = ref<HTMLElement | null>(null);
 let previousAppointments = props.appointments;
+let previousScrollResetKey = props.scrollResetKey;
 let readingAnchor: { element: HTMLElement; top: number } | null = null;
 
 onBeforeUpdate(() => {
   readingAnchor = null;
+  if (previousScrollResetKey !== props.scrollResetKey) {
+    previousScrollResetKey = props.scrollResetKey;
+    previousAppointments = props.appointments;
+    return;
+  }
   if (previousAppointments === props.appointments) return;
   previousAppointments = props.appointments;
   const list = listElement.value;

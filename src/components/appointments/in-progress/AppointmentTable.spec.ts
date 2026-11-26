@@ -16,6 +16,51 @@ const mountTable = (appointments: AppointmentInProgress[]) => mount(AppointmentT
 const ids = (wrapper: ReturnType<typeof mountTable>) => wrapper.findAll('.cell-cita').map(cell => cell.text());
 
 describe('appointment table local sorting', () => {
+  it('shows appointment date in mobile headings and moves its number into details', () => {
+    const wrapper = mountTable([
+      appointment('123', { fechaCita: '2026-11-25T14:30:00' }),
+      appointment('456', { fechaCita: null }),
+    ]);
+    const cards = wrapper.findAll('article');
+    expect(cards[0]!.get('h3').text()).toBe('2026-11-25T14:30:00');
+    expect(cards[0]!.get('.detail-data').text()).toContain('Número de cita123');
+    expect(cards[0]!.get('.detail-data').text()).not.toContain('Fecha de cita');
+    expect(cards[1]!.get('h3').text()).toBe('Sin fecha de cita');
+    expect(ids(wrapper)).toEqual(['123', '456']);
+  });
+
+  it('sorts mobile dates independently, retains ties and missing values last, and persists across updates', async () => {
+    const data = [
+      appointment('A', { fechaCita: '2026-11-25T14:30:00' }),
+      appointment('B', { fechaCita: '2026-11-24T14:30:00' }),
+      appointment('C', { fechaCita: null }),
+      appointment('D', { fechaCita: 'invalid' }),
+      appointment('E', { fechaCita: '2026-11-24T14:30:00' }),
+    ];
+    const wrapper = mountTable(data);
+    const mobileIds = () => wrapper.findAll('article .detail-data').map(detail =>
+      detail.findAll('div').find(field => field.find('dt').text() === 'Número de cita')!.get('dd').text());
+    const select = wrapper.get('select');
+    expect(select.element.value).toBe('original');
+    expect(mobileIds()).toEqual(['A', 'B', 'C', 'D', 'E']);
+    const detail = wrapper.findAll('details')[1]!.element as HTMLDetailsElement;
+    detail.open = true;
+    await select.setValue('asc');
+    expect(mobileIds()).toEqual(['B', 'E', 'A', 'C', 'D']);
+    expect(detail.open).toBe(true);
+    expect(ids(wrapper)).toEqual(['A', 'B', 'C', 'D', 'E']);
+    await select.setValue('desc');
+    expect(mobileIds()).toEqual(['A', 'B', 'E', 'C', 'D']);
+    await wrapper.setProps({ appointments: [...data, appointment('F', { fechaCita: '2026-11-26' })] });
+    expect(mobileIds()).toEqual(['F', 'A', 'B', 'E', 'C', 'D']);
+    expect(select.element.value).toBe('desc');
+    await wrapper.findAll('th button')[0]!.trigger('click');
+    expect(mobileIds()).toEqual(['F', 'A', 'B', 'E', 'C', 'D']);
+    await select.setValue('original');
+    expect(mobileIds()).toEqual(['A', 'B', 'C', 'D', 'E', 'F']);
+    expect(data.map(row => row.cita)).toEqual(['A', 'B', 'C', 'D', 'E']);
+  });
+
   it('uses the existing stage and duration formatters in mobile cards and omits dispatch containers', () => {
     const wrapper = mountTable([appointment('1', {
       tipo: 'Despacho', placa: 'ABC-123', contenedor: 'MSKU1234567', tiempo: 52,
