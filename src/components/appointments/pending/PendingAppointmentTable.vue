@@ -1,4 +1,9 @@
 <template>
+  <MobileAppointmentCards :appointments="appointments" :legend-types="legendTypes" mode="pending" :format-fecha="formatFecha">
+    <template #status="{ appointment }">
+      <span :class="['estado-badge', getEstadoClass(appointment.estado)]">{{ getEstadoLabel(appointment.estado) }}</span>
+    </template>
+  </MobileAppointmentCards>
   <div class="table-container">
     <table class="data-table appointments-table">
       <thead>
@@ -65,11 +70,13 @@
 </template>
 
 <script setup lang="ts">
+import MobileAppointmentCards from '../MobileAppointmentCards.vue';
 import type { AppointmentEstado, PendingAppointment } from '../../../types/appointments/PendingAppointment';
 
 
 defineProps<{
   appointments: PendingAppointment[];
+  legendTypes?: string[];
   formatFecha: (fecha: string | null) => string;
   getEstadoLabel: (estado: AppointmentEstado) => string;
   getEstadoClass: (estado: AppointmentEstado) => string;
@@ -78,6 +85,10 @@ defineProps<{
 </script>
 
 <style scoped>
+@media (max-width: 767px) {
+  .table-container { display: none; }
+}
+
 .table-container {
   overflow-x: auto;
   border-radius: 0.5rem;

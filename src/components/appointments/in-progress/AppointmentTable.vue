@@ -1,4 +1,19 @@
 <template>
+  <MobileAppointmentCards :appointments="sortedAppointments" :legend-types="legendTypes" mode="in-progress" :format-fecha="formatFecha">
+    <template #status="{ appointment }">
+      <span :class="['stage-badge', getStageClass(appointment.stage)]">{{ getStageLabel(appointment.stage) }}</span>
+    </template>
+    <template #times="{ appointment }">
+      <div>
+        <dt>Atención total</dt>
+        <dd><span :class="['tiempo-badge', getTiempoClass(getTiempoAtencion(appointment))]">{{ formatTiempo(getTiempoAtencion(appointment)) }}</span></dd>
+      </div>
+      <div>
+        <dt>En esta etapa</dt>
+        <dd><span :class="['tiempo-badge', getTiempoStageClass(getTiempoStage(appointment))]">{{ formatTiempo(getTiempoStage(appointment)) }}</span></dd>
+      </div>
+    </template>
+  </MobileAppointmentCards>
   <div class="table-container">
     <table class="data-table appointments-table">
       <thead>
@@ -76,11 +91,13 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import MobileAppointmentCards from '../MobileAppointmentCards.vue';
 import { STAGE_ORDER } from '../../../types/appointments/AppointmentInProgress';
 import type { AppointmentInProgress } from '../../../types/appointments/AppointmentInProgress';
 
 const props = defineProps<{
   appointments: AppointmentInProgress[];
+  legendTypes?: string[];
   formatFecha: (fecha: string | null) => string;
   formatTiempo: (minutos: number | null) => string;
   getStageLabel: (stage: string) => string;
@@ -215,6 +232,10 @@ const sortedAppointments = computed(() => {
 </script>
 
 <style scoped>
+@media (max-width: 767px) {
+  .table-container { display: none; }
+}
+
 .sort-button { display: flex; align-items: center; gap: 0.35rem; width: 100%; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; text-transform: inherit; letter-spacing: inherit; text-align: inherit; cursor: pointer; }
 .sort-button:hover, .sort-button:focus-visible, .sort-indicator.active { color: #93c5fd; }
 .sort-button:focus-visible { outline: 2px solid #60a5fa; outline-offset: 4px; }

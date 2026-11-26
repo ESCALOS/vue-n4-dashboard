@@ -16,6 +16,19 @@ const mountTable = (appointments: AppointmentInProgress[]) => mount(AppointmentT
 const ids = (wrapper: ReturnType<typeof mountTable>) => wrapper.findAll('.cell-cita').map(cell => cell.text());
 
 describe('appointment table local sorting', () => {
+  it('uses the existing stage and duration formatters in mobile cards and omits dispatch containers', () => {
+    const wrapper = mountTable([appointment('1', {
+      tipo: 'Despacho', placa: 'ABC-123', contenedor: 'MSKU1234567', tiempo: 52,
+      fechaCita: '2026-11-25', fechaStage: '2026-11-25T15:00:00',
+    })]);
+    const card = wrapper.get('article');
+    expect(card.get('.card-status').text()).toBe('yard');
+    expect(card.findAll('.time-data dd').map(value => value.text())).toEqual(['52', '52']);
+    expect(card.text()).not.toContain('MSKU1234567');
+    expect(card.get('.detail-data').text()).toContain('Ingreso a etapa');
+    expect(card.get('.detail-data').text()).toContain('2026-11-25T15:00:00');
+  });
+
   it('cycles natural ordering and preserves sorting when the stream updates without mutating input', async () => {
     const data = [appointment('10'), appointment('2')];
     const wrapper = mountTable(data);

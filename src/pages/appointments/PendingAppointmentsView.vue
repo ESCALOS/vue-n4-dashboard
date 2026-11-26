@@ -53,7 +53,7 @@
     </div>
 
     <!-- Table -->
-    <PendingAppointmentTable v-else :appointments="filteredAppointments" :formatFecha="formatFecha"
+    <PendingAppointmentTable v-else :appointments="filteredAppointments" :legend-types="tipoOptions" :formatFecha="formatFecha"
       :getEstadoLabel="getEstadoLabel" :getEstadoClass="getEstadoClass" :getRowClass="getRowClass" />
   </div>
 </template>

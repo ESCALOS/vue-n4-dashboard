@@ -59,7 +59,7 @@
     </div>
 
     <!-- Table -->
-    <AppointmentTable v-else :appointments="filteredAppointments" :formatFecha="formatFecha"
+    <AppointmentTable v-else :appointments="filteredAppointments" :legend-types="tipoOptions" :formatFecha="formatFecha"
       :formatTiempo="formatTiempo" :getStageLabel="getStageLabel" :getStageClass="getStageClass"
       :getTiempoClass="getTiempoClass" :getTiempoStageClass="getTiempoStageClass"
       :getTiempoAtencion="getTiempoAtencion" :getTiempoStage="getTiempoStage" :onPrintEir="handlePrintEir"
